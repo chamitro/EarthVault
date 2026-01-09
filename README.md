@@ -1,24 +1,25 @@
-🌍 EarthVault - Environmental Intelligence Terminal
+# 🌍 EarthVault — Environmental Intelligence Terminal
 
-EarthVault is a web application designed to provide deep atmospheric and environmental insights. By synthesizing historical climate records and global development indicators, EarthVault allows users to explore 50 years of planetary data through an intuitive, "cyber-vault" styled interface.
-🚀 Live Features
+**EarthVault** is a web application designed to synthesize and visualize global environmental data. It offer users a deep dive into years of atmospheric history and global development trends through a sleek, "cyber-vault" styled interface.
 
-    Weather History Vault: Access 50 years of temperature and humidity data. Features "Era Shift" detection (comparing the last 25 years against the previous 25) and "Intensity Streaks."
+---
 
-    Forest Heritage: Track global terrestrial biodiversity and forest coverage percentages using World Bank indicators.
+## 🚀 Overview
 
-    Agriculture Vault: Analyze agricultural land resilience and usage trends across different global regions.
+EarthVault bridges the gap between raw scientific data and intuitive visualization. By integrating real-time weather archives with long-term socioeconomic indicators, the platform provides a holistic view of Earth's changing landscape across five specialized intelligence vaults.
 
-    Energy & Renewables: Visualize the transition from fossil fuels to renewable sources, including dedicated tracking for hydro, solar, and wind energy gaps.
+### 🏛️ The Intelligence Vaults
+* **🌪️ Weather History**: 50 years of daily temperature and humidity records. Features **Era Shift** detection (comparing 25-year climate blocks) and **System Streaks**.
+* **🌳 Forest Heritage**: Real-time tracking of global terrestrial biodiversity and forest coverage percentages.
+* **🌾 Agriculture Resilience**: Analysis of agricultural land usage and food production sustainability.
+* **⚡ Energy & Renewables**: Visualizing the global transition to clean energy, tracking the gap between fossil fuels and renewables.
+* **💧 Water Quality**: Monitoring freshwater safety access and regional pollution risk metrics.
 
-    Water Quality: Monitor safely managed freshwater access and pollution risk metrics.
+---
 
-    Bilingual Support: Fully localized interface supporting both English and Greek.
+## 📊 Data Compliance & Legal
 
-📊 Data Architecture
-
-The application acts as a real-time intelligence terminal, fetching data from premium open-source providers:
-
-    Open-Meteo API: Powers the historical weather engine, providing daily max/mean temperatures and relative humidity since 1970.
-
-    World Bank Data API: Feeds the environmental vaults with global development indicators (Forestry, Agriculture, Renewable Energy, and Water Safety).
+This project is built with strict adherence to open-data protocols and transparency:
+* **Attribution**: Weather data is credited to Open-Meteo (CC BY 4.0).
+* **Indicators**: Socio-environmental metrics are provided by the World Bank Group.
+* **Privacy**: Zero tracking. All searches and cache remain local to the user's browser.
