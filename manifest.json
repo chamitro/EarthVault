@@ -1,0 +1,17 @@
+{
+  "name": "Weather History Vault",
+  "short_name": "WeatherVault",
+  "start_url": "/weatherhistoryvault/index.html",
+  "scope": "/weatherhistoryvault/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4f46e5",
+  "icons": [
+    {
+      "src": "https://raw.githubusercontent.com/chamitro/weatherhistoryvault/main/icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
