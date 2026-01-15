@@ -10,7 +10,7 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title>EarthVault - Environmental</title>
+    <title>EarthVault - Environmental & Academic</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;800&family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -36,12 +36,327 @@
             transition: all 0.3s ease;
             -webkit-backdrop-filter: blur(8px);
         }
+        
+        .vault-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.15);
+            border-color: rgba(99, 102, 241, 0.2);
+        }
+        
+        /* Micro-interactions for stat cards */
+        .stat-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Year grid item hover */
+        .year-item {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .year-item:hover {
+            transform: scale(1.15) translateY(-2px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+            z-index: 10;
+        }
+        
+        /* Button press effect */
+        button:active {
+            transform: scale(0.98);
+        }
+        
+        /* Smooth number transitions */
+        .animated-number {
+            transition: all 0.3s ease;
+        }
+        
+        /* Card entrance animation */
+        @keyframes cardEntrance {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-in {
+            animation: cardEntrance 0.6s ease-out forwards;
+        }
+        
         .search-glow:focus { 
             box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); 
             outline: none;
         }
         
-        /* Mobile-specific improvements */
+        /* Splash Screen Styles */
+        #splash-screen {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.5s ease-in;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+        
+        #splash-screen.fade-out {
+            animation: fadeOut 0.6s ease-out forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 30px rgba(16, 185, 129, 0.3); }
+            50% { box-shadow: 0 0 50px rgba(16, 185, 129, 0.5); }
+        }
+        
+        .splash-content {
+            max-width: 500px;
+            width: 100%;
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 1.5rem;
+            padding: 1.5rem 1.25rem;
+            text-align: center;
+            animation: slideUp 0.8s ease-out;
+            position: relative;
+            overflow: hidden;
+            margin: auto;
+            max-height: 95vh;
+            overflow-y: auto;
+        }
+        
+        .splash-content::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+        
+        .splash-content > * {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .splash-logo {
+            font-size: 1.75rem;
+            font-weight: 900;
+            margin-bottom: 0.25rem;
+            background: linear-gradient(135deg, #10b981, #06b6d4, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .splash-subtitle {
+            font-size: 0.625rem;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.25rem;
+        }
+        
+        .splash-disclaimer {
+            font-size: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .splash-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+        
+        .splash-stat {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem;
+            padding: 0.75rem 0.5rem;
+            animation: slideUp 0.8s ease-out backwards;
+        }
+        
+        .splash-stat:nth-child(1) { animation-delay: 0.1s; }
+        .splash-stat:nth-child(2) { animation-delay: 0.15s; }
+        .splash-stat:nth-child(3) { animation-delay: 0.2s; }
+        .splash-stat:nth-child(4) { animation-delay: 0.25s; }
+        .splash-stat:nth-child(5) { animation-delay: 0.3s; }
+        .splash-stat:nth-child(6) { animation-delay: 0.35s; }
+        
+        .splash-stat h5 {
+            font-size: 0.5rem;
+            margin-bottom: 0.4rem;
+            line-height: 1.2;
+        }
+        
+        .splash-stat-value {
+            display: flex;
+            align-items: baseline;
+            gap: 0.25rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .splash-stat-number {
+            font-size: 1.25rem;
+            font-weight: 900;
+            line-height: 1;
+        }
+        
+        .splash-stat-unit {
+            font-size: 0.5rem;
+            font-weight: 700;
+        }
+        
+        .splash-enter-btn {
+            margin-top: 1rem;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: glow 2s ease-in-out infinite, slideUp 0.8s ease-out 0.4s backwards;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+            white-space: nowrap;
+        }
+        
+        .splash-enter-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(16, 185, 129, 0.5);
+        }
+        
+        .splash-enter-btn:active {
+            transform: translateY(0);
+        }
+        
+        @media (max-width: 768px) {
+            .splash-content {
+                padding: 1.25rem 1rem;
+                max-width: 95%;
+            }
+            
+            .splash-logo {
+                font-size: 1.5rem;
+            }
+            
+            .splash-subtitle {
+                font-size: 0.5rem;
+                margin-bottom: 0.25rem;
+            }
+            
+            .splash-disclaimer {
+                font-size: 0.45rem;
+                margin-bottom: 0.75rem;
+            }
+            
+            .splash-stats-grid {
+                gap: 0.4rem;
+                margin: 0.75rem 0;
+            }
+            
+            .splash-stat {
+                padding: 0.6rem 0.4rem;
+            }
+            
+            .splash-stat h5 {
+                font-size: 0.45rem;
+                margin-bottom: 0.35rem;
+            }
+            
+            .splash-stat-number {
+                font-size: 1rem;
+            }
+            
+            .splash-stat-unit {
+                font-size: 0.45rem;
+            }
+            
+            .splash-enter-btn {
+                padding: 0.65rem 1.25rem;
+                font-size: 0.65rem;
+                margin-top: 0.75rem;
+                letter-spacing: 0.02em;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            .splash-logo {
+                font-size: 1.25rem;
+            }
+            
+            .splash-stat-number {
+                font-size: 0.9rem;
+            }
+            
+            .splash-stat h5 {
+                font-size: 0.4rem;
+            }
+        }
+        
+        @media (max-height: 700px) {
+            .splash-content {
+                padding: 1rem 1rem;
+                margin: 0.5rem auto;
+            }
+            
+            .splash-logo {
+                font-size: 1.5rem;
+                margin-bottom: 0.25rem;
+            }
+            
+            .splash-stats-grid {
+                margin: 0.75rem 0;
+            }
+            
+            .splash-stat {
+                padding: 0.5rem 0.4rem;
+            }
+            
+            .splash-enter-btn {
+                margin-top: 0.75rem;
+                padding: 0.6rem 1.5rem;
+            }
+        }
+        
         @media (max-width: 768px) {
             .mode-buttons {
                 display: grid;
@@ -49,130 +364,105 @@
                 gap: 0.5rem;
                 width: 100%;
             }
-            
             .mode-btn {
                 padding: 0.75rem 1rem;
                 font-size: 10px;
                 white-space: nowrap;
             }
-            
             .search-container {
                 flex-direction: column;
                 gap: 0.75rem;
             }
-            
             .search-btn {
                 width: 100%;
                 padding: 1rem;
             }
-            
             .fact-box {
                 flex-direction: column;
                 gap: 1rem;
                 text-align: center;
             }
-            
             .fact-content {
                 flex-direction: column;
                 align-items: center;
                 gap: 0.75rem;
             }
-            
             .stats-grid {
                 grid-template-columns: 1fr;
             }
-            
             .stat-divider {
                 display: none;
             }
-            
             .stat-container {
                 border-right: none !important;
                 border-bottom: 1px solid rgba(255,255,255,0.05);
                 padding-bottom: 2rem;
             }
-            
             .stat-container:last-child {
                 border-bottom: none;
                 padding-bottom: 0;
             }
-            
             .year-grid {
                 grid-template-columns: repeat(3, 1fr) !important;
                 gap: 0.5rem;
             }
-            
             .year-item {
                 padding: 0.5rem !important;
             }
-            
             .chart-container {
                 height: 300px !important;
                 padding: 1rem !important;
             }
-            
             .extreme-cards {
                 grid-template-columns: 1fr !important;
             }
-            
             .page-padding {
                 padding: 1rem !important;
             }
-            
             .main-title {
                 font-size: 2rem !important;
                 line-height: 1.2;
             }
-            
             .impact-grid {
                 grid-template-columns: 1fr !important;
                 gap: 0.75rem;
             }
-            
             .modal-content {
                 max-width: 90vw;
                 padding: 2rem !important;
             }
-            
             .attribution {
                 bottom: 0.5rem !important;
                 right: 0.5rem !important;
                 font-size: 8px !important;
                 padding: 0.5rem 0.75rem !important;
             }
-            
             .badge-container {
                 flex-direction: column;
                 align-items: center;
             }
         }
         
-        /* Touch-friendly sizing */
         button, a, [onclick] {
             min-height: 44px;
             min-width: 44px;
             cursor: pointer;
         }
         
-        /* Improved scrolling on mobile */
         * {
             -webkit-overflow-scrolling: touch;
         }
         
-        /* Better card spacing on small screens */
         @media (max-width: 640px) {
             .vault-card {
                 border-radius: 1.5rem;
             }
-            
             .rounded-3xl {
                 border-radius: 1.5rem;
             }
-            
             .text-6xl {
                 font-size: 3rem;
             }
-            
             .text-5xl {
                 font-size: 2.5rem;
             }
@@ -181,9 +471,199 @@
 </head>
 <body class="min-h-screen relative overflow-x-hidden pb-20">
 
-    <div class="fixed top-0 left-0 w-full h-full pointer-events-none -z-10">
-        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-500/10 blur-[120px] rounded-full"></div>
+    <!-- SPLASH SCREEN -->
+    <div id="splash-screen" style="display: none;">
+        <div class="splash-content">
+            <h1 class="splash-logo">🗺️ EarthVault</h1>
+            <p class="text-slate-400 splash-subtitle uppercase tracking-widest font-bold">Today's Earth Vitals</p>
+            <p class="text-slate-500 splash-disclaimer uppercase tracking-wider font-semibold">Based on Statistical Models</p>
+            
+            <div class="splash-stats-grid">
+                <div class="splash-stat">
+                    <h5 class="font-black text-rose-400 uppercase tracking-widest">Forests Lost Today</h5>
+                    <div class="splash-stat-value">
+                        <p id="splash-forest" class="splash-stat-number text-rose-500 font-mono-data">0.00</p>
+                        <span class="splash-stat-unit text-slate-500">HA</span>
+                    </div>
+                </div>
+
+                <div class="splash-stat">
+                    <h5 class="font-black text-slate-400 uppercase tracking-widest">CO₂ Emitted Today</h5>
+                    <div class="splash-stat-value">
+                        <p id="splash-carbon" class="splash-stat-number text-slate-300 font-mono-data">0</p>
+                        <span class="splash-stat-unit text-slate-500">TONS</span>
+                    </div>
+                </div>
+
+                <div class="splash-stat">
+                    <h5 class="font-black text-emerald-400 uppercase tracking-widest">Renewable Power Today</h5>
+                    <div class="splash-stat-value">
+                        <p id="splash-energy" class="splash-stat-number text-emerald-400 font-mono-data">0</p>
+                        <span class="splash-stat-unit text-slate-500">MWH</span>
+                    </div>
+                </div>
+
+                <div class="splash-stat">
+                    <h5 class="font-black text-cyan-400 uppercase tracking-widest">Ocean Plastic Today</h5>
+                    <div class="splash-stat-value">
+                        <p id="splash-plastic" class="splash-stat-number text-cyan-400 font-mono-data">0</p>
+                        <span class="splash-stat-unit text-slate-500">TONS</span>
+                    </div>
+                </div>
+
+                <div class="splash-stat">
+                    <h5 class="font-black text-blue-400 uppercase tracking-widest">Population Change Today</h5>
+                    <div class="splash-stat-value">
+                        <p id="splash-population" class="splash-stat-number text-blue-400 font-mono-data">+0</p>
+                        <span class="splash-stat-unit text-slate-500">PEOPLE</span>
+                    </div>
+                </div>
+
+                <div class="splash-stat">
+                    <h5 class="font-black text-orange-400 uppercase tracking-widest">Global Temp Rise</h5>
+                    <div class="splash-stat-value">
+                        <p id="splash-temp" class="splash-stat-number text-orange-400 font-mono-data">+1.2</p>
+                        <span class="splash-stat-unit text-slate-500">°C</span>
+                    </div>
+                </div>
+            </div>
+            
+            <button onclick="enterVault()" class="splash-enter-btn">
+                Explore Real Data →
+            </button>
+        </div>
     </div>
+
+    <div class="fixed top-0 left-0 w-full h-full pointer-events-none -z-10">
+        <div id="glow-bg" class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-500/10 blur-[120px] rounded-full"></div>
+        
+        <!-- Animated gradient orbs -->
+        <div class="absolute top-[20%] right-[10%] w-[30%] h-[30%] bg-purple-500/5 blur-[100px] rounded-full animate-float-slow"></div>
+        <div class="absolute bottom-[15%] left-[15%] w-[25%] h-[25%] bg-cyan-500/5 blur-[90px] rounded-full animate-float-slower"></div>
+        
+        <!-- Particle grid overlay -->
+        <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(circle, rgba(99, 102, 241, 0.1) 1px, transparent 1px); background-size: 50px 50px;"></div>
+        
+        <!-- Canvas for particles -->
+        <canvas id="particles-canvas" class="absolute inset-0 w-full h-full opacity-30"></canvas>
+    </div>
+    
+    <style>
+        @keyframes float-slow {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(30px, -30px) scale(1.1); }
+        }
+        
+        @keyframes float-slower {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-40px, 40px) scale(1.15); }
+        }
+        
+        .animate-float-slow {
+            animation: float-slow 20s ease-in-out infinite;
+        }
+        
+        .animate-float-slower {
+            animation: float-slower 25s ease-in-out infinite;
+        }
+    </style>
+    
+    <script>
+        // Particle system
+        (function() {
+            const canvas = document.getElementById('particles-canvas');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            let animationId;
+            
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            
+            class Particle {
+                constructor() {
+                    this.reset();
+                }
+                
+                reset() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.vx = (Math.random() - 0.5) * 0.3;
+                    this.vy = (Math.random() - 0.5) * 0.3;
+                    this.radius = Math.random() * 1.5 + 0.5;
+                    this.opacity = Math.random() * 0.5 + 0.2;
+                }
+                
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    
+                    if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                    if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+                }
+                
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(99, 102, 241, ${this.opacity})`;
+                    ctx.fill();
+                }
+            }
+            
+            function init() {
+                resize();
+                particles = [];
+                for (let i = 0; i < 50; i++) {
+                    particles.push(new Particle());
+                }
+            }
+            
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                particles.forEach(particle => {
+                    particle.update();
+                    particle.draw();
+                });
+                
+                // Draw connections
+                particles.forEach((p1, i) => {
+                    particles.slice(i + 1).forEach(p2 => {
+                        const dx = p1.x - p2.x;
+                        const dy = p1.y - p2.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < 100) {
+                            ctx.beginPath();
+                            ctx.strokeStyle = `rgba(99, 102, 241, ${0.1 * (1 - distance / 100)})`;
+                            ctx.lineWidth = 0.5;
+                            ctx.moveTo(p1.x, p1.y);
+                            ctx.lineTo(p2.x, p2.y);
+                            ctx.stroke();
+                        }
+                    });
+                });
+                
+                animationId = requestAnimationFrame(animate);
+            }
+            
+            window.addEventListener('resize', resize);
+            init();
+            animate();
+            
+            // Pause animation when tab is not visible for performance
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    cancelAnimationFrame(animationId);
+                } else {
+                    animate();
+                }
+            });
+        })();
+    </script>
 
     <div id="source-attribution" class="attribution fixed bottom-4 right-4 z-50 pointer-events-none">
         <a id="attribution-link" href="https://open-meteo.com/" target="_blank" 
@@ -193,17 +673,92 @@
     </div>
 
     <nav class="glass-nav p-3 md:p-4 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-3 md:gap-4">
-            <h1 class="font-black tracking-tighter text-xl md:text-2xl uppercase italic text-white">Earth<span class="text-emerald-400">Vault</span></h1>
-            <div class="mode-buttons flex bg-slate-900/80 rounded-2xl p-1.5 gap-1 border border-white/5 w-full md:w-auto">
-                <button id="mode-weather" onclick="setMode('weather')" class="mode-btn px-5 py-2 rounded-xl text-[11px] font-extrabold transition-all bg-indigo-600 text-white shadow-lg uppercase tracking-wider">Weather</button>
-                <button id="mode-forest" onclick="setMode('forest')" class="mode-btn px-5 py-2 rounded-xl text-[11px] font-extrabold transition-all hover:bg-slate-800 text-green-400 uppercase tracking-wider">Forests</button>
-                <button id="mode-agri" onclick="setMode('agri')" class="mode-btn px-5 py-2 rounded-xl text-[11px] font-extrabold transition-all hover:bg-slate-800 text-amber-400 uppercase tracking-wider">Agri</button>
-                <button id="mode-energy" onclick="setMode('energy')" class="mode-btn px-5 py-2 rounded-xl text-[11px] font-extrabold transition-all hover:bg-slate-800 text-orange-400 uppercase tracking-wider">Energy</button>
-                <button id="mode-water" onclick="setMode('water')" class="mode-btn px-5 py-2 rounded-xl text-[11px] font-extrabold transition-all hover:bg-slate-800 text-cyan-400 uppercase tracking-wider">Water</button>
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+        <h1 class="font-black tracking-tighter text-xl md:text-2xl uppercase italic text-white">
+            Earth<span id="logo-span" class="text-emerald-400">Vault</span>
+        </h1>
+
+        <div class="relative inline-block text-left" id="menu-container">
+            <div>
+                <button type="button" onclick="toggleMenu()" id="menu-button" 
+                    class="inline-flex items-center justify-between w-44 md:w-56 rounded-xl bg-slate-900/80 px-4 py-2.5 text-xs font-extrabold text-white shadow-sm ring-1 ring-inset ring-white/10 hover:bg-slate-800 transition-all">
+                    <span id="selected-mode-text">WEATHER ARCHIVE</span>
+                    <svg class="h-5 w-5 text-slate-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
+
+            <div id="dropdown-menu" class="hidden absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-2xl bg-slate-900 border border-white/10 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none backdrop-blur-xl">
+                <div class="p-2 grid grid-cols-1 gap-1">
+                    <button onclick="selectMode('weather')" class="flex items-center gap-3 px-4 py-3 text-[11px] font-bold text-indigo-400 hover:bg-white/5 rounded-xl transition-all">
+                        <span>🌪️</span> WEATHER
+                    </button>
+                    <button onclick="selectMode('univ')" class="flex items-center gap-3 px-4 py-3 text-[11px] font-bold text-purple-400 hover:bg-white/5 rounded-xl transition-all">
+                        <span>🎓</span> UNIVERSITY
+                    </button>
+                    <button onclick="selectMode('human_span')" class="flex items-center gap-3 px-4 py-3 text-[11px] font-bold text-cyan-400 hover:bg-white/5 rounded-xl transition-all">
+    <span>⏳</span> HUMAN SPAN
+</button>
+                    <button onclick="selectMode('generations')" class="flex items-center gap-3 px-4 py-3 text-[11px] font-bold text-teal-400 hover:bg-white/5 rounded-xl transition-all">
+                        <span>🤱</span> GENERATIONS
+                    </button>
+                    <button onclick="selectMode('forest')" class="flex items-center gap-3 px-4 py-3 text-[11px] font-bold text-green-400 hover:bg-white/5 rounded-xl transition-all">
+                        <span>🌳</span> FORESTS
+                    </button>
+                    <button onclick="selectMode('agri')" class="flex items-center gap-3 px-4 py-3 text-[11px] font-bold text-amber-400 hover:bg-white/5 rounded-xl transition-all">
+                        <span>🌾</span> AGRICULTURE
+                    </button>
+                    <button onclick="selectMode('energy')" class="flex items-center gap-3 px-4 py-3 text-[11px] font-bold text-orange-400 hover:bg-white/5 rounded-xl transition-all">
+                        <span>⚡</span> ENERGY
+                    </button>
+                    <button onclick="selectMode('water')" class="flex items-center gap-3 px-4 py-3 text-[11px] font-bold text-cyan-400 hover:bg-white/5 rounded-xl transition-all">
+                        <span>💧</span> WATER
+                    </button>
+                    <button onclick="selectMode('mental')" class="flex items-center gap-3 px-4 py-3 text-[11px] font-bold text-rose-400 hover:bg-white/5 rounded-xl transition-all">
+                        <span>🧠</span> MENTAL HEALTH
+                    </button>
+                    <button onclick="selectMode('carbon')" class="flex items-center gap-3 px-4 py-3 text-[11px] font-bold text-slate-400 hover:bg-white/5 rounded-xl transition-all">
+                        <span>🏭</span> CARBON
+                    </button>
+                </div>
             </div>
         </div>
-    </nav>
+    </div>
+</nav>
+
+<script>
+    function toggleMenu() {
+        const menu = document.getElementById('dropdown-menu');
+        menu.classList.toggle('hidden');
+    }
+
+    function selectMode(mode) {
+        const labels = {
+            weather: 'WEATHER ARCHIVE',
+            univ: 'UNIVERSITY ACCESS',
+            forest: 'FOREST HERITAGE',
+            agri: 'AGRI STATUS',
+            energy: 'ENERGY & RENEWABLES',
+            water: 'WATER SAFETY',
+            human_span: 'HUMAN SPAN',
+            mental: 'MENTAL HEALTH',
+            carbon: 'CARBON EMISSIONS',
+            generations: 'GENERATIONS'
+        };
+        document.getElementById('selected-mode-text').innerText = labels[mode];
+        setMode(mode);
+        
+        // Keep the pulse container visible - only hide when user clicks "Analyze"
+        document.getElementById('dropdown-menu').classList.add('hidden');
+    }
+
+    window.addEventListener('click', function(e) {
+        if (!document.getElementById('menu-container').contains(e.target)) {
+            document.getElementById('dropdown-menu').classList.add('hidden');
+        }
+    });
+</script>
 
     <div class="page-padding max-w-7xl mx-auto p-4 md:p-6 lg:p-12">
         <header class="text-center mb-8 md:mb-12">
@@ -214,7 +769,7 @@
                 <div class="fact-content flex items-center gap-4 md:gap-5 text-left">
                     <div id="fact-icon" class="text-2xl md:text-3xl">🌪️</div>
                     <div>
-                        <h4 class="text-[10px] font-bold text-indigo-400 uppercase tracking-[0.2em] mb-1">Archive Intel</h4>
+                        <h4 id="fact-label" class="text-[10px] font-bold text-indigo-400 uppercase tracking-[0.2em] mb-1">Archive Intel</h4>
                         <p id="fact-text" class="text-xs md:text-sm text-slate-300 italic">Initiating atmospheric scan...</p>
                     </div>
                 </div>
@@ -224,11 +779,10 @@
             </div>
 
             <div class="badge-container mt-4 md:mt-6 flex flex-wrap justify-center gap-3 md:gap-4 px-4">
-                <div class="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/20 px-3 md:px-4 py-2 rounded-full text-indigo-400 text-[10px] font-bold uppercase tracking-widest">
+                <div id="active-badge" class="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/20 px-3 md:px-4 py-2 rounded-full text-indigo-400 text-[10px] font-bold uppercase tracking-widest">
                     <span class="flex h-2 w-2 rounded-full bg-indigo-500 animate-ping"></span> Archive Active
                 </div>
                 <div id="era-trend" onclick="showInfo('era')" class="hidden cursor-help inline-flex items-center gap-2 bg-slate-900/60 border border-white/5 px-3 md:px-4 py-2 rounded-full text-[10px] font-bold text-slate-300"></div>
-                <button onclick="clearCityCache()" class="text-[10px] font-bold text-slate-500 uppercase hover:text-red-400 transition-colors tracking-widest px-3 py-2">Wipe Cache 🗑️</button>
             </div>
         </header>
 
@@ -237,9 +791,41 @@
             <button onclick="mainAction()" id="searchBtn" class="search-btn bg-indigo-600 hover:bg-indigo-500 text-white px-8 md:px-10 py-3 md:py-4 rounded-2xl font-bold transition-all uppercase tracking-tighter shadow-xl shadow-indigo-600/20">Analyze</button>
         </div>
 
-        <div id="app-content" class="opacity-0 transition-all duration-700">
-            <div id="impact-row" class="impact-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5 mb-6 md:mb-8 hidden"></div>
+        <!-- LIVE PULSE CONTAINER - Always visible, updates every second -->
+        <div id="daily-pulse-container" class="vault-card rounded-[2rem] md:rounded-[3rem] p-4 md:p-10 mb-6 md:mb-8 border border-emerald-500/20 bg-emerald-500/5 relative overflow-hidden transition-all duration-500">
+            <div class="absolute top-3 md:top-4 left-4 md:left-6 text-[8px] md:text-[9px] font-black text-emerald-400 uppercase tracking-[0.3em] md:tracking-[0.4em] opacity-70">Live planetary vitals</div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-12 mt-8 md:mt-4">
+                <div class="flex flex-col items-center py-4 md:py-0">
+                    <h5 class="text-[9px] md:text-[10px] font-black text-slate-500 uppercase mb-2 tracking-widest">Forests Lost Today</h5>
+                    <div class="flex items-baseline gap-1">
+                        <p id="live-forest" class="text-2xl md:text-4xl font-black text-rose-500 font-mono-data">0.00</p>
+                        <span class="text-[9px] md:text-[10px] font-bold text-slate-500">HA</span>
+                    </div>
+                </div>
 
+                <div class="flex flex-col items-center border-y md:border-y-0 md:border-x border-white/5 py-6 md:py-0">
+                    <h5 class="text-[9px] md:text-[10px] font-black text-slate-500 uppercase mb-2 tracking-widest">CO2 Emitted Today</h5>
+                    <div class="flex items-baseline gap-1">
+                        <p id="live-carbon" class="text-2xl md:text-4xl font-black text-slate-300 font-mono-data">0</p>
+                        <span class="text-[9px] md:text-[10px] font-bold text-slate-500">TONS</span>
+                    </div>
+                </div>
+
+                <div class="flex flex-col items-center py-4 md:py-0">
+                    <h5 class="text-[9px] md:text-[10px] font-black text-slate-500 uppercase mb-2 tracking-widest">Renewable Power Today</h5>
+                    <div class="flex items-baseline gap-1">
+                        <p id="live-energy" class="text-2xl md:text-4xl font-black text-emerald-400 font-mono-data">0</p>
+                        <span class="text-[9px] md:text-[10px] font-bold text-slate-500">MWH</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- APP CONTENT - Hidden until search -->
+        <div id="app-content" class="hidden opacity-0 transition-all duration-700">
+            <div id="impact-row" class="impact-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5 mb-6 md:mb-8 hidden"></div>
+            
             <div class="stats-grid grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 mb-6 md:mb-8">
                 <div class="vault-card rounded-[2rem] md:rounded-[2.5rem] p-1 flex flex-col relative overflow-hidden">
                     <div id="top-card-label" class="absolute top-3 md:top-4 left-4 md:left-6 text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]">Temporal Delta</div>
@@ -314,68 +900,236 @@
     <script>
         let chartInstance = null;
         let currentMode = 'weather';
+        let hasEnteredVault = false; // Track if user has entered the vault
         const today = new Date();
         const currentYear = today.getFullYear();
         const monthDayToday = `${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
         
         const facts = {
             weather: ["Lightning strikes the Earth 100 times every second.", "Air near lightning is 5x hotter than the sun's surface.", "The coldest temperature recorded was -89.2°C.", "Hurricane energy equals 10,000 nuclear bombs.", "Raindrops look like hamburger buns, not teardrops."],
-            forest: ["Forests house 80% of terrestrial biodiversity.", "Oak trees support over 500 different species.", "The Amazon produces about 20% of Earth's oxygen.", "Trees use a 'Wood Wide Web' to communicate.", "25% of modern medicine comes from rainforest plants."],
-            agri: ["Agriculture consumes 70% of the world's accessible freshwater.", "Cereal yields have tripled globally since the 1960s.", "Healthy soil contains more living organisms than there are people on Earth.", "Sustainable farming can reduce carbon levels in the atmosphere."],
+            forest: ["Forests house 80% of terrestrial biodiversity.", "Oak trees support over 500 different species.", "The Amazon produces about 20% of Earth's oxygen.", "Trees use a 'Wood Wide Web' to communicate.", "25% of modern medicine comes from rainforest plants.", "Forests absorb approximately 25% of all global CO2 emissions.", "80% of all terrestrial species live in forest ecosystems."],
+            agri: ["Agriculture consumes 70% of the world's accessible freshwater.", "Cereal yields have tripled globally since the 1960s.", "Healthy soil contains more living organisms than there are people on Earth.", "Sustainable farming can reduce carbon levels in the atmosphere.", "Global average agricultural land is 38% of total land area.", "Sustainable farming turns soil into a carbon sink, helping cool the planet."],
             energy: ["Sunlight hitting Earth for 1 hour could power the world for a year.", "Solar is now the cheapest energy source in history.", "Iceland uses 100% renewable geothermal and hydro.", "One wind turbine turn can power a home for a day.", "Renewable energy creates 3x more jobs than fossil fuels."],
-            water: ["Only 0.5% of Earth's water is available fresh water.", "A child dies every 90 seconds from a water-related disease.", "Global water demand is projected to increase by 55% by 2050.", "Agriculture accounts for 70% of global freshwater withdrawals.", "Safely managed water must be free from pathogens and chemicals."]
+            water: ["Only 0.5% of Earth's water is available fresh water.", "A child dies every 90 seconds from a water-related disease.", "Global water demand is projected to increase by 55% by 2050.", "Agriculture accounts for 70% of global freshwater withdrawals.", "Safely managed water must be free from pathogens and chemicals."],
+            univ: ["University graduates are the primary drivers of global research.", "Bachelor's degree attainment correlates with higher GDP.", "Digital learning has increased tertiary access globally.", "Degree holders typically earn significantly higher lifetime wages.", "Global average tertiary enrollment is 43% gross enrollment ratio.", "Higher education access is a key indicator of economic development."],
+            human_span: ["Global life expectancy has increased by over 20 years since 1960.", "Japan consistently holds one of the highest life expectancies globally.", "Medical advancements and clean water access are the primary drivers of longevity.", "Global life expectancy was only 32 years in 1900 - it has more than doubled.", "Men typically live 4-6 years less than women due to biological and behavioral factors."],
+            generations: ["Replacement fertility is generally 2.1 children per woman.", "Global fertility has halved since 1960.", "Niger currently has the highest fertility rate in the world."],
+            mental: ["1 in 8 people worldwide live with a mental disorder.", "Mental health conditions can reduce life expectancy by up to 20 years.", "Globally, depression is a leading cause of disability.", "Most people with mental health conditions lack access to effective care."],
+            carbon: ["CO2 levels are higher today than at any point in the last 3 million years.", "The last decade was the warmest on record.", "China, USA, and India are the top 3 global emitters.", "Methane is 25x more potent than CO2 at trapping heat.", "Natural carbon sinks like forests absorb about 25% of all CO2 emissions."]
         };
 
         function shuffleFact() {
             const list = facts[currentMode];
             document.getElementById('fact-text').innerText = list[Math.floor(Math.random() * list.length)];
-            const icons = { weather: '🌪️', forest: '🌳', agri: '🌾', energy: '⚡', water: '💧' };
+            const icons = { weather: '🌪️', forest: '🌳', agri: '🌾', energy: '⚡', water: '💧', univ: '🎓', mental: '🧠', carbon: '🏭' , generations: '🤱', human_span: '⏳'};
             document.getElementById('fact-icon').innerText = icons[currentMode];
         }
 
+        // Animated Counter Function
+        function animateCounter(element, target, duration = 1000, decimals = 0) {
+            if (!element) return;
+            const start = 0;
+            const startTime = performance.now();
+            
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Easing function for smooth deceleration
+                const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+                const current = start + (target - start) * easeOutQuart;
+                
+                element.textContent = decimals > 0 ? current.toFixed(decimals) : Math.floor(current).toLocaleString();
+                
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+            
+            requestAnimationFrame(update);
+        }
+
+        // Initialize Live Pulse
+        function initLivePulse() {
+            const stats = {
+                // Annual data sources:
+                forestLossPerYear: 10000000,        // ~10M hectares/year (FAO 2020)
+                carbonPerYear: 37400000000,         // ~37.4B tons/year (Global Carbon Project 2023)
+                renewablePerYear: 8500000000,       // ~8.5B MWh/year (IEA 2023)
+                oceanPlasticPerYear: 8000000,       // ~8M tons/year (IUCN estimate)
+                netPopulationPerYear: 140000000,    // ~140M net growth/year (births - deaths, UN 2024)
+                // Global warming is a cumulative indicator, not a daily rate
+                globalTempRise: 1.2                 // Current rise above pre-industrial (°C, NOAA 2024)
+            };
+
+            const updatePulse = () => {
+                const now = new Date();
+                const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                const secondsPassedToday = (now - startOfDay) / 1000;
+
+                const forestLost = (stats.forestLossPerYear / 365 / 86400) * secondsPassedToday;
+                const carbonEmitted = (stats.carbonPerYear / 365 / 86400) * secondsPassedToday;
+                const energyGen = (stats.renewablePerYear / 365 / 86400) * secondsPassedToday;
+                const plasticAdded = (stats.oceanPlasticPerYear / 365 / 86400) * secondsPassedToday;
+                const populationChange = (stats.netPopulationPerYear / 365 / 86400) * secondsPassedToday;
+
+                // Update splash screen stats
+                const splashForest = document.getElementById('splash-forest');
+                const splashCarbon = document.getElementById('splash-carbon');
+                const splashEnergy = document.getElementById('splash-energy');
+                const splashPlastic = document.getElementById('splash-plastic');
+                const splashPopulation = document.getElementById('splash-population');
+                const splashTemp = document.getElementById('splash-temp');
+                
+                if(splashForest) splashForest.innerText = forestLost.toFixed(2);
+                if(splashCarbon) splashCarbon.innerText = Math.floor(carbonEmitted).toLocaleString();
+                if(splashEnergy) splashEnergy.innerText = Math.floor(energyGen).toLocaleString();
+                if(splashPlastic) splashPlastic.innerText = Math.floor(plasticAdded).toLocaleString();
+                if(splashPopulation) splashPopulation.innerText = '+' + Math.floor(populationChange).toLocaleString();
+                if(splashTemp) splashTemp.innerText = '+' + stats.globalTempRise.toFixed(1);
+
+                // Update main page stats (if visible)
+                const forestEl = document.getElementById('live-forest');
+                const carbonEl = document.getElementById('live-carbon');
+                const energyEl = document.getElementById('live-energy');
+                
+                if(forestEl) forestEl.innerText = forestLost.toFixed(2);
+                if(carbonEl) carbonEl.innerText = Math.floor(carbonEmitted).toLocaleString();
+                if(energyEl) energyEl.innerText = Math.floor(energyGen).toLocaleString();
+            };
+
+            setInterval(updatePulse, 1000);
+            updatePulse(); // Run once immediately
+        }
+
+        // Enter the main vault from splash screen
+        function enterVault() {
+            hasEnteredVault = true; // Set flag so splash never appears again
+            const splash = document.getElementById('splash-screen');
+            splash.classList.add('fade-out');
+            setTimeout(() => {
+                splash.remove(); // Completely remove from DOM
+            }, 600);
+            
+            // Also hide the daily pulse container since we already showed stats in splash
+            const pulseContainer = document.getElementById('daily-pulse-container');
+            if(pulseContainer) {
+                pulseContainer.classList.add('hidden');
+                pulseContainer.style.display = 'none';
+            }
+        }
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            setMode('weather'); 
+            shuffleFact();
+            initLivePulse();
+            
+            // Only show splash screen if user hasn't entered yet
+            if (!hasEnteredVault) {
+                const splashScreen = document.getElementById('splash-screen');
+                if (splashScreen) {
+                    splashScreen.style.display = 'flex';
+                }
+            }
+            
+            // Keep pulse container hidden by default - it stays hidden after splash
+            const pulseContainer = document.getElementById('daily-pulse-container');
+            if(pulseContainer) {
+                pulseContainer.classList.add('hidden');
+                pulseContainer.style.display = 'none';
+            }
+            
+            // Keep the results area hidden until a search is made
+            document.getElementById('app-content').classList.add('hidden');
+        });
+
         function setMode(mode) {
-            document.getElementById('app-content').classList.add('opacity-0');
-            document.getElementById('cityInput').value = "";
             currentMode = mode;
             
             const attrBtn = document.getElementById('attribution-link');
+            const glowBg = document.getElementById('glow-bg');
+            const logoSpan = document.getElementById('logo-span');
+            const factLabel = document.getElementById('fact-label');
+            const badge = document.getElementById('active-badge');
+            const input = document.getElementById('cityInput');
+            const searchBtn = document.getElementById('searchBtn');
+
             if (mode === 'weather') {
                 attrBtn.innerText = "Data by Open-Meteo";
                 attrBtn.href = "https://open-meteo.com/";
+                glowBg.className = "absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-500/10 blur-[120px] rounded-full";
+                logoSpan.className = "text-emerald-400";
+                factLabel.className = "text-[10px] font-bold text-indigo-400 uppercase tracking-[0.2em] mb-1";
+                badge.className = "inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/20 px-3 md:px-4 py-2 rounded-full text-indigo-400 text-[10px] font-bold uppercase tracking-widest";
+                input.className = "flex-1 bg-slate-900/90 border border-white/10 px-4 md:px-6 py-3 md:py-4 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none text-white text-base md:text-lg search-glow transition-all";
+                searchBtn.className = "search-btn bg-indigo-600 hover:bg-indigo-500 text-white px-8 md:px-10 py-3 md:py-4 rounded-2xl font-bold transition-all uppercase tracking-tighter shadow-xl shadow-indigo-600/20";
+            } else if (mode === 'univ') {
+                attrBtn.innerText = "Data by World Bank";
+                attrBtn.href = "https://data.worldbank.org/";
+                glowBg.className = "absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-500/10 blur-[120px] rounded-full";
+                logoSpan.className = "text-purple-400";
+                factLabel.className = "text-[10px] font-bold text-purple-400 uppercase tracking-[0.2em] mb-1";
+                badge.className = "inline-flex items-center gap-2 bg-purple-500/10 border border-purple-500/20 px-3 md:px-4 py-2 rounded-full text-purple-400 text-[10px] font-bold uppercase tracking-widest";
+                input.className = "flex-1 bg-slate-900/90 border border-white/10 px-4 md:px-6 py-3 md:py-4 rounded-2xl focus:ring-2 focus:ring-purple-500 outline-none text-white text-base md:text-lg search-glow transition-all";
+                searchBtn.className = "search-btn bg-purple-600 hover:bg-purple-500 text-white px-8 md:px-10 py-3 md:py-4 rounded-2xl font-bold transition-all uppercase tracking-tighter shadow-xl shadow-purple-600/20";
+            } else if (mode === 'mental') {
+                attrBtn.innerText = "Data by World Bank";
+                attrBtn.href = "https://data.worldbank.org/";
+                glowBg.className = "absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-rose-500/10 blur-[120px] rounded-full";
+                logoSpan.className = "text-rose-400";
+                factLabel.className = "text-[10px] font-bold text-rose-400 uppercase tracking-[0.2em] mb-1";
+                badge.className = "inline-flex items-center gap-2 bg-rose-500/10 border border-rose-500/20 px-3 md:px-4 py-2 rounded-full text-rose-400 text-[10px] font-bold uppercase tracking-widest";
+                input.className = "flex-1 bg-slate-900/90 border border-white/10 px-4 md:px-6 py-3 md:py-4 rounded-2xl focus:ring-2 focus:ring-rose-500 outline-none text-white text-base md:text-lg search-glow transition-all";
+                searchBtn.className = "search-btn bg-rose-600 hover:bg-rose-500 text-white px-8 md:px-10 py-3 md:py-4 rounded-2xl font-bold transition-all uppercase tracking-tighter shadow-xl shadow-rose-600/20";
+            } else if (mode === 'carbon') {
+                attrBtn.innerText = "Data by World Bank";
+                attrBtn.href = "https://data.worldbank.org/";
+                glowBg.className = "absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-slate-500/10 blur-[120px] rounded-full";
+                logoSpan.className = "text-slate-300";
+                factLabel.className = "text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-1";
+                badge.className = "inline-flex items-center gap-2 bg-slate-500/10 border border-slate-500/20 px-3 md:px-4 py-2 rounded-full text-slate-400 text-[10px] font-bold uppercase tracking-widest";
+                input.className = "flex-1 bg-slate-900/90 border border-white/10 px-4 md:px-6 py-3 md:py-4 rounded-2xl focus:ring-2 focus:ring-slate-500 outline-none text-white text-base md:text-lg search-glow transition-all";
+                searchBtn.className = "search-btn bg-slate-600 hover:bg-slate-500 text-white px-8 md:px-10 py-3 md:py-4 rounded-2xl font-bold transition-all uppercase tracking-tighter shadow-xl shadow-slate-600/20";
+            } else if (mode === 'generations') {
+                attrBtn.innerText = "Data by World Bank";
+                attrBtn.href = "https://data.worldbank.org/";
+                glowBg.className = "absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-teal-500/10 blur-[120px] rounded-full";
+                logoSpan.className = "text-teal-400";
+                factLabel.className = "text-[10px] font-bold text-teal-400 uppercase tracking-[0.2em] mb-1";
+                badge.className = "inline-flex items-center gap-2 bg-teal-500/10 border border-teal-500/20 px-3 md:px-4 py-2 rounded-full text-teal-400 text-[10px] font-bold uppercase tracking-widest";
+                input.className = "flex-1 bg-slate-900/90 border border-white/10 px-4 md:px-6 py-3 md:py-4 rounded-2xl focus:ring-2 focus:ring-teal-500 outline-none text-white text-base md:text-lg search-glow transition-all";
+                searchBtn.className = "search-btn bg-teal-600 hover:bg-teal-500 text-white px-8 md:px-10 py-3 md:py-4 rounded-2xl font-bold transition-all uppercase tracking-tighter shadow-xl shadow-teal-600/20";
             } else {
                 attrBtn.innerText = "Data by World Bank";
                 attrBtn.href = "https://data.worldbank.org/";
+                glowBg.className = "absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-emerald-500/10 blur-[120px] rounded-full";
+                logoSpan.className = "text-emerald-400";
+                factLabel.className = "text-[10px] font-bold text-emerald-400 uppercase tracking-[0.2em] mb-1";
+                badge.className = "inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-3 md:px-4 py-2 rounded-full text-emerald-400 text-[10px] font-bold uppercase tracking-widest";
+                input.className = "flex-1 bg-slate-900/90 border border-white/10 px-4 md:px-6 py-3 md:py-4 rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none text-white text-base md:text-lg search-glow transition-all";
+                searchBtn.className = "search-btn bg-emerald-600 hover:bg-emerald-500 text-white px-8 md:px-10 py-3 md:py-4 rounded-2xl font-bold transition-all uppercase tracking-tighter shadow-xl shadow-emerald-600/20";
             }
 
-            document.getElementById('stat1-label').innerText = "Today High";
-            document.getElementById('stat2-label').innerText = "Humidity";
-            document.getElementById('top-card-label').innerText = "Today vs 50y Average";
+            document.getElementById('stat1-label').innerText = mode === 'weather' ? "Today High" : "Archive Value";
+            document.getElementById('stat2-label').innerText = mode === 'weather' ? "Humidity" : "Archive Status";
+            document.getElementById('top-card-label').innerText = mode === 'weather' ? "Temporal Delta" : "Historical Insight";
             document.getElementById('dark-card-title').innerText = "Historical Vault Peaks";
             document.getElementById('ext1-label').innerText = "Record Max";
             document.getElementById('ext2-label').innerText = "Record Min";
             document.getElementById('timeline-title').innerText = "Timeline";
 
-            ['weather', 'forest', 'agri', 'energy', 'water'].forEach(m => {
-                const btn = document.getElementById(`mode-${m}`);
-                if(!btn) return;
-                let baseClass = 'mode-btn px-5 py-2 rounded-xl text-[11px] font-extrabold transition-all uppercase tracking-wider ';
-                if (mode === m) {
-                    if (m === 'energy') btn.className = baseClass + 'bg-orange-600 text-white shadow-lg shadow-orange-500/20';
-                    else if (m === 'forest') btn.className = baseClass + 'bg-green-600 text-white shadow-lg shadow-cyan-500/20';
-                    else if (m === 'water') btn.className = baseClass + 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/20';
-                    else if (m === 'agri') btn.className = baseClass + 'bg-amber-600 text-white shadow-lg shadow-amber-500/20';
-                    else btn.className = baseClass + 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20';
-                } else {
-                    btn.className = baseClass + 'hover:bg-slate-800 text-slate-400';
-                }
-            });
-
             const titles = {
                 weather: "Weather History Vault",
+                univ: "University Access Vault",
                 forest: "Forest Heritage Vault",
                 agri: "Agriculture Vault",
+                human_span: "Human Span Vault",
                 energy: "Energy & Renewables Vault",
-                water: "Water Quality & Safety Vault"
+                water: "Water Quality & Safety Vault",
+                mental: "Mental Health Vault",
+                carbon: "Carbon Emissions Vault",
+                generations: "Generations Vault"
             };
             document.getElementById('main-title').innerText = titles[mode];
             document.getElementById('cityInput').placeholder = mode === 'weather' ? "Search city..." : "Search country...";
@@ -384,16 +1138,33 @@
             shuffleFact();
         }
 
-        function clearCityCache() { localStorage.clear(); alert("Storage cleared."); }
-
         async function mainAction() {
             const query = document.getElementById('cityInput').value.trim();
             if(!query) return;
+
+            // Hide the Live Pulse after first search
+            const pulse = document.getElementById('daily-pulse-container');
+            if(pulse) {
+                pulse.classList.add('hidden');
+                pulse.style.display = 'none';
+            }
+
+            // Show the App Content (the data results)
+            const appContent = document.getElementById('app-content');
+            appContent.classList.remove('hidden');
+            setTimeout(() => appContent.classList.remove('opacity-0'), 10);
+
             const btn = document.getElementById('searchBtn');
-            btn.disabled = true; btn.innerText = 'Analyzing...';
+            btn.disabled = true; 
+            btn.innerText = 'Analyzing...';
+            
+            // Route to specific data fetchers
             if(currentMode === 'weather') await searchWeather(query);
+            else if(currentMode === 'carbon') await searchCarbon(query);
             else await searchWBData(query);
-            btn.disabled = false; btn.innerText = 'Analyze';
+            
+            btn.disabled = false; 
+            btn.innerText = 'Analyze';
         }
 
         async function searchWeather(query) {
@@ -411,6 +1182,559 @@
                     processWeatherData(weatherData, pollutionData);
                 } else { alert("City not found"); }
             } catch (e) { alert("API Busy."); }
+        }
+
+        async function searchCarbon(query) {
+            try {
+                const clRes = await fetch(`https://api.worldbank.org/v2/country?format=json&per_page=300`);
+                const cl = await clRes.json();
+                const searchName = query.toLowerCase();
+                const country = cl[1].find(c => 
+                    c.name.toLowerCase().includes(searchName) || 
+                    c.id.toLowerCase() === searchName ||
+                    (searchName === 'usa' && c.id === 'USA') ||
+                    (searchName === 'uk' && c.id === 'GBR')
+                );
+
+                if(!country) throw new Error("Country not recognized.");
+
+                const res = await fetch(`https://api.worldbank.org/v2/country/${country.id}/indicator/EN.GHG.ALL.MT.CE.AR5?format=json&per_page=100&date=1970:2025`);
+                const rawData = await res.json();
+                if (!rawData[1]) throw new Error("No data found for " + country.name);
+                
+                const data = rawData[1]
+                    .filter(d => d.value !== null)
+                    .map(d => ({ year: d.date, val: parseFloat(d.value.toFixed(2)) }))
+                    .sort((a, b) => a.year - b.year);
+
+                const latest = data[data.length - 1];
+                const sortedByVal = [...data].sort((a, b) => b.val - a.val);
+
+                document.getElementById('rec-hot-val').innerText = sortedByVal[0].val.toLocaleString() + " Mt";
+                document.getElementById('rec-hot-year').innerText = sortedByVal[0].year;
+                document.getElementById('rec-cold-val').innerText = sortedByVal[sortedByVal.length - 1].val.toLocaleString() + " Mt";
+                document.getElementById('rec-cold-year').innerText = sortedByVal[sortedByVal.length - 1].year;
+                document.getElementById('ext1-label').innerText = "Highest Emissions";
+                document.getElementById('ext2-label').innerText = "Lowest Emissions";
+
+                const data1990 = data.find(d => d.year === "1990") || data[0];
+                const safeLimit = parseFloat((data1990.val * 0.5).toFixed(2));
+                const isOver = latest.val > safeLimit;
+
+                document.getElementById('impact-row').classList.remove('hidden');
+                document.getElementById('weather-extreme-cards').classList.add('hidden');
+                document.getElementById('weather-footer').classList.add('hidden');
+                document.getElementById('impact-row').innerHTML = `
+    <div class="bg-slate-500/10 border border-slate-500/20 p-6 rounded-[2rem] text-center lg:col-span-1">
+        <h5 class="text-[10px] font-black text-slate-400 mb-2 uppercase tracking-widest">Safe Limit (Mt)</h5>
+        <p class="text-3xl font-black text-white">${safeLimit.toLocaleString()}</p>
+        <p class="text-[9px] text-slate-500 mt-2 leading-tight">
+            A sustainable "carbon budget" calculated as 50% of 1990 levels to measure reduction progress.
+        </p>
+    </div>
+    <div class="${isOver ? 'bg-rose-500/10' : 'bg-emerald-500/10'} border border-white/5 p-6 rounded-[2rem] text-center lg:col-span-2 flex flex-col justify-center">
+        <h4 class="text-[10px] font-black text-slate-500 mb-2 uppercase tracking-widest">Paris Agreement Status</h4>
+        <p class="text-2xl font-black ${isOver ? 'text-rose-400' : 'text-emerald-400'} uppercase italic">
+            ${isOver ? (latest.val - safeLimit).toLocaleString() + ' Mt ABOVE LIMIT' : 'WITHIN BUDGET'}
+        </p>
+        <p class="text-[9px] text-slate-500 mt-2 leading-tight">
+            Measures if current output aligns with the global goal of limiting warming to 1.5°C above pre-industrial levels.
+        </p>
+    </div>`;
+
+                document.getElementById('stat1-label').innerText = "Current Output";
+                document.getElementById('today-temp').innerText = latest.val.toLocaleString() + " Mt";
+                document.getElementById('comparison-tag').innerText = isOver ? "EXCESSIVE" : "SUSTAINABLE";
+                document.getElementById('comparison-tag').className = `px-3 py-1.5 rounded-xl text-[10px] font-black mt-1 ${isOver ? 'bg-rose-500/20 text-rose-400' : 'bg-emerald-500/20 text-emerald-400'}`;
+                
+                document.getElementById('stat2-label').innerText = "Budget Used";
+                document.getElementById('today-humid').innerText = Math.round((latest.val / safeLimit) * 100) + "%";
+                document.getElementById('today-humid').className = `text-4xl md:text-5xl font-black my-2 font-mono-data tracking-tighter ${isOver ? 'text-rose-400' : 'text-emerald-400'}`;
+                document.getElementById('streak-val').innerText = isOver ? "Needs 50% Reduction" : "Target Achieved";
+
+                renderYearGrid(data, ' Mt', 'carbon');
+                renderChart(data, 'Mt CO2e', '#94a3b8');
+                document.getElementById('app-content').classList.remove('opacity-0');
+            } catch (e) { alert(e.message); }
+        }
+
+        async function searchWBData(query) {
+            try {
+                const cl = await fetch(`https://api.worldbank.org/v2/country?format=json&per_page=300`).then(r => r.json());
+                const country = cl[1].find(c => c.name.toLowerCase().includes(query.toLowerCase()));
+                if(!country) throw new Error("Country not found");
+                
+                let indicators = {
+                    forest: 'AG.LND.FRST.ZS',
+                    energy: 'EG.ELC.RNEW.ZS',
+                    water: 'SH.H2O.SMDW.ZS',
+                    agri: 'AG.LND.AGRI.ZS',
+                    univ: 'SE.TER.CUAT.BA.ZS',
+                    mental: 'SH.STA.DIAB.ZS',
+                    generations: 'SP.DYN.TFRT.IN',
+                    human_span: 'SP.DYN.LE00.IN'
+                };
+
+                let ind1 = indicators[currentMode];
+                let ind2 = null;
+                let ind3 = null;
+                
+                // Fetch additional indicators based on mode
+                if (currentMode === 'energy') {
+                    ind2 = 'EG.ELC.HYRO.ZS';
+                } else if (currentMode === 'univ') {
+                    ind2 = 'SE.TER.ENRR.FE'; // Female tertiary enrollment
+                    ind3 = 'SE.TER.ENRR.MA'; // Male tertiary enrollment
+                } else if (currentMode === 'human_span') {
+                    ind2 = 'SP.DYN.LE00.FE.IN'; // Female life expectancy
+                    ind3 = 'SP.DYN.LE00.MA.IN'; // Male life expectancy
+                }
+                
+                const startYear = currentYear - 50;
+                const dateRange = `${startYear}:${currentYear}`;
+
+                const requests = [
+                    fetch(`https://api.worldbank.org/v2/country/${country.id}/indicator/${ind1}?format=json&per_page=100&date=${dateRange}`).then(r => r.json())
+                ];
+                
+                if (ind2) requests.push(fetch(`https://api.worldbank.org/v2/country/${country.id}/indicator/${ind2}?format=json&per_page=100&date=${dateRange}`).then(r => r.json()));
+                if (ind3) requests.push(fetch(`https://api.worldbank.org/v2/country/${country.id}/indicator/${ind3}?format=json&per_page=100&date=${dateRange}`).then(r => r.json()));
+                
+                const results = await Promise.all(requests);
+                processWBResults(results[0][1], results[1] ? results[1][1] : null, results[2] ? results[2][1] : null, country.name);
+            } catch (e) { alert(e.message); }
+        }
+
+        function processWBResults(percData, secondData, thirdData, name) {
+            const history = (percData || []).filter(d => d.value !== null).map(d => ({ year: d.date, val: parseFloat(d.value.toFixed(2)) })).reverse();
+            if (!history || history.length === 0) return alert("Data unavailable.");
+            const latest = history[history.length-1];
+            const growth = latest.val - history[0].val;
+            const unit = currentMode === 'generations' ? '' : '%';
+            const unitLong = currentMode === 'generations' ? ' children/woman' : '%';
+
+            document.getElementById('impact-row').classList.remove('hidden');
+            document.getElementById('weather-extreme-cards').classList.add('hidden');
+            document.getElementById('weather-footer').classList.add('hidden');
+            
+            // Add animation entrance after a brief delay
+            setTimeout(() => {
+                const cards = document.querySelectorAll('#impact-row > div');
+                cards.forEach((card, index) => {
+                    card.classList.add('stat-card', 'animate-in');
+                    card.style.animationDelay = `${index * 0.1}s`;
+                });
+            }, 50);
+
+            if(currentMode === 'energy') {
+    const renewableTotal = latest.val;
+    const globalRenewableAvg = 30.0;
+    const fossilGap = (100 - renewableTotal).toFixed(1);
+    const vsGlobal = (renewableTotal - globalRenewableAvg).toFixed(1);
+
+    document.getElementById('impact-row').innerHTML = `
+        <div class="bg-orange-500/10 border border-orange-500/20 p-6 rounded-[2rem] text-center lg:col-span-1">
+            <h5 class="text-[10px] font-black text-orange-400 mb-2 uppercase tracking-widest">Renewable Share</h5>
+            <p class="text-3xl font-black text-white">${renewableTotal}%</p>
+            <p class="text-[9px] text-slate-500 mt-2 leading-tight">
+                Percentage of electricity from solar, wind, and hydro.
+            </p>
+        </div>
+
+        <div class="bg-slate-500/10 border border-white/10 p-6 rounded-[2rem] text-center lg:col-span-1">
+            <h5 class="text-[10px] font-black text-slate-400 mb-2 uppercase tracking-widest">Fossil Gap</h5>
+            <p class="text-3xl font-black text-slate-300">${fossilGap}%</p>
+            <p class="text-[9px] text-rose-400/80 mt-2 leading-tight font-bold uppercase">
+                Remaining Coal & Gas
+            </p>
+        </div>
+
+        <div class="${vsGlobal >= 0 ? 'bg-emerald-500/10' : 'bg-rose-500/10'} border border-white/5 p-6 rounded-[2rem] text-center lg:col-span-1 flex flex-col justify-center">
+            <h5 class="text-[10px] font-black text-slate-500 mb-2 uppercase tracking-widest">vs World Average</h5>
+            <p class="text-2xl font-black ${vsGlobal >= 0 ? 'text-emerald-400' : 'text-rose-400'} uppercase italic">
+                ${Math.abs(vsGlobal)}% ${vsGlobal >= 0 ? 'Ahead' : 'Behind'}
+            </p>
+            <p class="text-[9px] text-slate-500 mt-2 leading-tight">
+                The current global renewable average is ~30%. ${vsGlobal >= 0 ? 'This region is outperforming the global trend.' : 'This region relies more on fossil fuels than the global average.'}
+            </p>
+        </div>`;
+}else if(currentMode === 'forest') {
+    const safetyThreshold = 30.0;
+    const isSafe = latest.val >= safetyThreshold;
+    
+    // Calculate forest change rate (annual % change over last 10 years)
+    const recent10Years = history.slice(-10);
+    const forestChangeRate = recent10Years.length >= 2 
+        ? (((recent10Years[recent10Years.length-1].val - recent10Years[0].val) / recent10Years[0].val) / recent10Years.length * 100).toFixed(2)
+        : '0.00';
+    
+    // Calculate recent 5-year trend
+    const recent5Years = history.slice(-5);
+    const recentTrend = recent5Years.length >= 2
+        ? ((recent5Years[recent5Years.length-1].val - recent5Years[0].val)).toFixed(2)
+        : '0.00';
+
+    document.getElementById('impact-row').innerHTML = `
+        <div class="bg-emerald-500/10 border border-emerald-500/20 p-6 rounded-[2rem] text-center">
+            <h5 class="text-[10px] font-black text-emerald-400 mb-2 uppercase tracking-widest">Ecological Safety</h5>
+            <p class="text-3xl font-black text-white">${latest.val}%</p>
+            <p class="text-[9px] text-slate-500 mt-2 leading-tight">
+                ${isSafe ? 'Above 30% climate stability threshold' : 'Below 30% threshold - erosion risk'}
+            </p>
+        </div>
+
+        <div class="bg-indigo-500/10 border border-white/5 p-6 rounded-[2rem] text-center">
+            <h5 class="text-[10px] font-black text-slate-500 mb-2 uppercase tracking-widest">Annual Change Rate</h5>
+            <p class="text-2xl font-black ${parseFloat(forestChangeRate) >= 0 ? 'text-emerald-400' : 'text-rose-400'} uppercase">
+                ${parseFloat(forestChangeRate) >= 0 ? '+' : ''}${forestChangeRate}%/yr
+            </p>
+            <p class="text-[9px] text-slate-500 mt-2 leading-tight">
+                ${parseFloat(forestChangeRate) >= 0 ? 'Reforestation in progress' : 'Forest cover declining'}
+            </p>
+        </div>
+
+        <div class="bg-slate-800/40 border border-white/5 p-6 rounded-[2rem] text-center">
+            <h5 class="text-[10px] font-black text-slate-500 mb-2 uppercase tracking-widest">5-Year Trend</h5>
+            <p class="text-2xl font-black ${parseFloat(recentTrend) >= 0 ? 'text-emerald-500' : 'text-rose-500'}">
+                ${parseFloat(recentTrend) >= 0 ? '+' : ''}${recentTrend}%
+            </p>
+            <p class="text-[9px] text-slate-500 mt-2 leading-tight">
+                Recent forest cover change
+            </p>
+        </div>`;
+}else if(currentMode === 'univ') {
+    const enrollmentGrowth = ((latest.val - history[0].val) / history[0].val * 100).toFixed(1);
+    const diff = (latest.val - 43.0).toFixed(1); 
+    const isAbove = latest.val >= 43.0;
+
+    // Get country-specific gender data
+    const femaleHistory = (secondData || []).filter(d => d.value !== null).map(d => ({ year: d.date, val: parseFloat(d.value.toFixed(2)) })).reverse();
+    const maleHistory = (thirdData || []).filter(d => d.value !== null).map(d => ({ year: d.date, val: parseFloat(d.value.toFixed(2)) })).reverse();
+    
+    let genderContent = '';
+    if (femaleHistory.length > 0 && maleHistory.length > 0) {
+        const latestFemale = femaleHistory[femaleHistory.length-1].val;
+        const latestMale = maleHistory[maleHistory.length-1].val;
+        const ratio = (latestFemale / latestMale).toFixed(2);
+        
+        genderContent = `
+        <div class="bg-indigo-500/10 border border-indigo-500/20 p-6 rounded-[2rem] text-center">
+            <h5 class="text-[10px] font-black text-indigo-400 mb-2 uppercase tracking-widest">Gender Parity Index</h5>
+            <div class="flex justify-center items-center gap-2 my-2">
+                <span class="text-2xl">👩</span>
+                <div class="h-1 w-12 bg-slate-700 rounded-full relative">
+                    <div class="absolute inset-0 bg-indigo-500 rounded-full" style="width: ${Math.min(ratio * 50, 100)}%"></div>
+                </div>
+                <span class="text-2xl">👨</span>
+            </div>
+            <p class="text-[11px] font-bold text-white uppercase">${ratio} : 1.00</p>
+            <p class="text-[9px] text-slate-500 mt-1 leading-tight">
+                Female to male enrollment ratio in ${name}
+            </p>
+        </div>`;
+    } else {
+        genderContent = `
+        <div class="bg-indigo-500/10 border border-indigo-500/20 p-6 rounded-[2rem] text-center">
+            <h5 class="text-[10px] font-black text-indigo-400 mb-2 uppercase tracking-widest">Gender Parity Index</h5>
+            <p class="text-sm text-slate-400 mt-2">Data unavailable for ${name}</p>
+        </div>`;
+    }
+    
+    document.getElementById('impact-row').innerHTML = `
+        <div class="bg-purple-500/10 border border-purple-500/20 p-6 rounded-[2rem] text-center">
+            <h5 class="text-[10px] font-black text-purple-400 mb-2 uppercase tracking-widest">Enrollment Growth</h5>
+            <p class="text-3xl font-black ${enrollmentGrowth >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${enrollmentGrowth >= 0 ? '+' : ''}${enrollmentGrowth}%</p>
+            <p class="text-[9px] text-slate-500 mt-2">Change over past ${history.length} years</p>
+        </div>
+
+        ${genderContent}
+
+        <div class="${isAbove ? 'bg-emerald-500/10' : 'bg-rose-500/10'} border border-white/5 p-6 rounded-[2rem] text-center flex flex-col justify-center">
+            <h4 class="text-[10px] font-black text-slate-500 mb-2 uppercase tracking-widest">vs Global Benchmark</h4>
+            <p class="text-xl font-black ${isAbove ? 'text-emerald-400' : 'text-rose-400'} uppercase italic">
+                ${Math.abs(diff)}% ${isAbove ? 'Above' : 'Below'}
+            </p>
+            <p class="text-[9px] text-slate-500 mt-1">Global average: 43%</p>
+        </div>`;
+} else if(currentMode === 'human_span') {
+    const totalLE = latest.val;
+    const haleEstimate = (totalLE * 0.88).toFixed(1);
+    
+    // Get country-specific gender life expectancy data
+    const femaleHistory = (secondData || []).filter(d => d.value !== null).map(d => ({ year: d.date, val: parseFloat(d.value.toFixed(2)) })).reverse();
+    const maleHistory = (thirdData || []).filter(d => d.value !== null).map(d => ({ year: d.date, val: parseFloat(d.value.toFixed(2)) })).reverse();
+    
+    let longevityContent = '';
+    if (femaleHistory.length > 0 && maleHistory.length > 0) {
+        const latestFemale = femaleHistory[femaleHistory.length-1].val;
+        const latestMale = maleHistory[maleHistory.length-1].val;
+        const gap = (latestFemale - latestMale).toFixed(1);
+        
+        longevityContent = `
+        <div class="bg-indigo-500/10 border border-white/5 p-6 rounded-[2rem] text-center">
+            <h5 class="text-[10px] font-black text-slate-500 mb-2 uppercase tracking-widest">Longevity Gap</h5>
+            <div class="flex justify-center gap-6 my-3">
+                <div class="text-center">
+                    <span class="block text-xs font-bold text-rose-400 mb-1">♀ Female</span>
+                    <span class="text-3xl font-black text-white">${latestFemale.toFixed(1)}</span>
+                    <span class="text-sm text-slate-400"> yrs</span>
+                </div>
+                <div class="text-center">
+                    <span class="block text-xs font-bold text-blue-400 mb-1">♂ Male</span>
+                    <span class="text-3xl font-black text-white">${latestMale.toFixed(1)}</span>
+                    <span class="text-sm text-slate-400"> yrs</span>
+                </div>
+            </div>
+            <p class="text-[10px] text-slate-500 mt-2">${name}: Women live <span class="font-bold text-indigo-400">${gap} years</span> longer on average</p>
+        </div>`;
+    } else {
+        longevityContent = `
+        <div class="bg-indigo-500/10 border border-white/5 p-6 rounded-[2rem] text-center">
+            <h5 class="text-[10px] font-black text-slate-500 mb-2 uppercase tracking-widest">Longevity Gap</h5>
+            <p class="text-sm text-slate-400 mt-4">Gender-specific data unavailable for ${name}</p>
+        </div>`;
+    }
+    
+    document.getElementById('impact-row').innerHTML = `
+        <div class="bg-cyan-500/10 border border-cyan-500/20 p-6 rounded-[2rem] text-center">
+            <h5 class="text-[10px] font-black text-cyan-400 mb-2 uppercase tracking-widest">Quality of Life (HALE)</h5>
+            <p class="text-4xl font-black text-white my-3">${haleEstimate} <span class="text-2xl text-slate-400">years</span></p>
+            <p class="text-[10px] text-slate-500 mt-2 leading-relaxed">
+                Healthy Life Expectancy — the years you can expect to live in full health, free from disability
+            </p>
+        </div>
+        ${longevityContent}`;
+}else if(currentMode === 'generations') {
+    const replacement = 2.1; 
+    const isAbove = latest.val >= replacement;
+    
+    document.getElementById('impact-row').innerHTML = `
+        <div class="bg-teal-500/10 border border-teal-500/20 p-6 rounded-[2rem] text-center lg:col-span-1">
+            <h5 class="text-[10px] font-black text-teal-400 mb-2 uppercase tracking-widest">Replacement Level</h5>
+            <p class="text-3xl font-black text-white">2.1</p>
+            <p class="text-[9px] text-slate-400 mt-2 leading-tight">
+                The "Stable Point." Below this, a country's native population begins to shrink and age.
+            </p>
+        </div>
+
+        <div class="bg-indigo-500/10 border border-indigo-500/20 p-6 rounded-[2rem] text-center lg:col-span-1">
+            <h5 class="text-[10px] font-black text-indigo-400 mb-2 uppercase tracking-widest">Social Focus</h5>
+            <p class="text-2xl font-black text-white uppercase italic">
+                ${isAbove ? 'Building Schools' : 'Elderly Support'}
+            </p>
+            <p class="text-[9px] text-slate-500 mt-2 leading-tight">
+                ${isAbove ? 'Priority: Pediatric health and education for a growing youth.' : 'Priority: Managing a shrinking workforce and senior care.'}
+            </p>
+        </div>
+
+        <div class="bg-slate-800/40 border border-white/5 p-6 rounded-[2rem] text-center lg:col-span-1">
+            <h5 class="text-[10px] font-black text-slate-500 mb-2 uppercase tracking-widest">Future Workforce</h5>
+            <p class="text-2xl font-black ${isAbove ? 'text-emerald-400' : 'text-rose-400'}">
+                ${isAbove ? 'Expanding' : 'Contracting'}
+            </p>
+            <p class="text-[9px] text-slate-500 mt-2 leading-tight">
+                In 20 years, this region will have ${isAbove ? 'more' : 'fewer'} young workers to drive the economy than it does today.
+            </p>
+        </div>`;
+}else if(currentMode === 'agri') {
+    const globalAgriAvg = 38.0;
+    const isAbove = latest.val >= globalAgriAvg;
+    
+    // Calculate agricultural intensity change (how efficiently land is being used)
+    const agriChangeRate = ((latest.val - history[0].val) / history[0].val * 100).toFixed(1);
+    
+    // Calculate recent 5-year trend
+    const recent5Years = history.slice(-5);
+    const recentTrend = recent5Years.length >= 2
+        ? ((recent5Years[recent5Years.length-1].val - recent5Years[0].val)).toFixed(2)
+        : '0.00';
+
+    document.getElementById('impact-row').innerHTML = `
+        <div class="bg-amber-500/10 border border-amber-500/20 p-6 rounded-[2rem] text-center">
+            <h5 class="text-[10px] font-black text-amber-400 mb-2 uppercase tracking-widest">Land Use Intensity</h5>
+            <p class="text-3xl font-black text-white">${latest.val}%</p>
+            <p class="text-[9px] text-slate-500 mt-2 leading-tight">
+                ${isAbove ? 'Above global average (38%)' : 'Below global average (38%)'}
+            </p>
+        </div>
+
+        <div class="bg-indigo-500/10 border border-white/5 p-6 rounded-[2rem] text-center">
+            <h5 class="text-[10px] font-black text-slate-500 mb-2 uppercase tracking-widest">Total Change</h5>
+            <p class="text-2xl font-black ${parseFloat(agriChangeRate) >= 0 ? 'text-amber-400' : 'text-emerald-400'} uppercase italic">
+                ${parseFloat(agriChangeRate) >= 0 ? '+' : ''}${agriChangeRate}%
+            </p>
+            <p class="text-[9px] text-slate-500 mt-2 leading-tight">
+                ${parseFloat(agriChangeRate) >= 0 ? 'Agricultural expansion' : 'Land returned to nature'}
+            </p>
+        </div>
+
+        <div class="bg-slate-800/40 border border-white/5 p-6 rounded-[2rem] text-center">
+            <h5 class="text-[10px] font-black text-slate-500 mb-2 uppercase tracking-widest">5-Year Trend</h5>
+            <p class="text-2xl font-black ${parseFloat(recentTrend) >= 0 ? 'text-amber-500' : 'text-emerald-500'}">
+                ${parseFloat(recentTrend) >= 0 ? '+' : ''}${recentTrend}%
+            </p>
+            <p class="text-[9px] text-slate-500 mt-2 leading-tight">
+                Recent agricultural land change
+            </p>
+        </div>`;
+}else if(currentMode === 'water') {
+    const waterAccess = latest.val;
+    const globalWaterAvg = 74.0;
+    const vsGlobal = (waterAccess - globalWaterAvg).toFixed(1);
+
+    document.getElementById('impact-row').innerHTML = `
+        <div class="bg-cyan-500/10 border border-cyan-500/20 p-6 rounded-[2rem] text-center lg:col-span-1">
+    <h5 class="text-[10px] font-black text-cyan-400 mb-2 uppercase tracking-widest">Water Reliability</h5>
+    <p class="text-3xl font-black text-white">${waterAccess}%</p>
+    <p class="text-[9px] text-slate-500 mt-2 leading-tight">
+        ${waterAccess > 90 ? 'Modern Utility: Reliable water is integrated into almost every home.' : 'Infrastructure Gap: Many households still rely on external or shared water sources.'}
+    </p>
+</div>
+
+        <div class="bg-indigo-500/10 border border-white/5 p-6 rounded-[2rem] text-center lg:col-span-1">
+            <h5 class="text-[10px] font-black text-slate-500 mb-2 uppercase tracking-widest">The Safety Gap</h5>
+            <p class="text-3xl font-black text-slate-300">${(100 - waterAccess).toFixed(1)}%</p>
+            <p class="text-[9px] text-rose-400/80 mt-2 leading-tight font-bold uppercase">
+                Lacking Safe Management
+            </p>
+        </div>
+
+        <div class="${vsGlobal >= 0 ? 'bg-emerald-500/10' : 'bg-rose-500/10'} border border-white/5 p-6 rounded-[2rem] text-center lg:col-span-1 flex flex-col justify-center">
+            <h5 class="text-[10px] font-black text-slate-500 mb-2 uppercase tracking-widest">vs World Average</h5>
+            <p class="text-2xl font-black ${vsGlobal >= 0 ? 'text-emerald-400' : 'text-rose-400'} uppercase italic">
+                ${Math.abs(vsGlobal)}% ${vsGlobal >= 0 ? 'Above' : 'Below'}
+            </p>
+            <p class="text-[9px] text-slate-500 mt-2 leading-tight">
+                The global average for safely managed water is ~74%. ${vsGlobal >= 0 ? 'This region exceeds the global standard for water security.' : 'This region is below the global benchmark for safe water access.'}
+            </p>
+        </div>`;
+}else if(currentMode === 'mental') {
+                let statusText = latest.val < 10 ? "Low" : (latest.val > 20 ? "High" : "Average");
+                let statusColor = latest.val < 10 ? "text-emerald-400" : (latest.val > 20 ? "text-rose-400" : "text-amber-400");
+                document.getElementById('impact-row').innerHTML = `<div class="bg-rose-500/10 border border-rose-500/20 p-6 rounded-[2rem] text-center lg:col-span-2"><h5 class="text-[10px] font-black text-rose-400 mb-2 uppercase">Mental Health Prevalence</h5><p class="text-3xl font-black">${latest.val}%</p></div><div class="bg-slate-900 border border-white/5 p-6 rounded-[2rem] text-center flex flex-col justify-center"><h5 class="text-[10px] font-black text-slate-500 mb-2 uppercase">Global Status</h5><p class="text-2xl font-black ${statusColor} uppercase italic">${statusText}</p></div>`;
+            } else {
+                document.getElementById('impact-row').innerHTML = `<div class="bg-indigo-500/10 border border-white/5 p-6 rounded-[2rem] text-center lg:col-span-3"><p class="text-2xl font-black text-indigo-400 uppercase italic">${name} Archive Active</p></div>`;
+            }
+
+            document.getElementById('today-temp').innerText = '0' + unit;
+            document.getElementById('comparison-tag').innerText = currentMode === 'generations' ? `${latest.val}${unitLong}` : `${name.toUpperCase()} REGION`;
+            document.getElementById('today-humid').innerText = '0' + unit;
+            document.getElementById('today-humid').className = `text-4xl md:text-6xl font-black my-2 font-mono-data tracking-tighter animated-number ${growth >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
+            
+            // Animate the numbers
+            setTimeout(() => {
+                const tempEl = document.getElementById('today-temp');
+                const humidEl = document.getElementById('today-humid');
+                const decimals = currentMode === 'generations' ? 1 : (unit === '%' ? 1 : 0);
+                
+                animateCounter(tempEl, latest.val, 1200, decimals);
+                animateCounter(humidEl, parseFloat(growth.toFixed(1)), 1200, 1);
+                
+                // Update text after animation
+                setTimeout(() => {
+                    tempEl.innerText = latest.val + unit;
+                    humidEl.innerText = (growth >= 0 ? '+' : '') + growth.toFixed(1) + unit;
+                }, 1200);
+            }, 300);
+
+            const sorted = [...history].sort((a,b) => b.val - a.val);
+            document.getElementById('rec-hot-val').innerText = sorted[0].val + unit;
+            document.getElementById('rec-hot-year').innerText = sorted[0].year;
+            document.getElementById('rec-cold-val').innerText = sorted[history.length-1].val + unit;
+            document.getElementById('rec-cold-year').innerText = sorted[history.length-1].year;
+            
+            if(currentMode === 'generations') {
+                document.getElementById('ext1-label').innerText = "Historic Peak";
+                document.getElementById('ext2-label').innerText = "Historic Floor";
+                document.getElementById('stat2-label').innerText = "Net Shift";
+            }
+
+            renderYearGrid(history, currentMode === 'generations' ? '' : '%', currentMode);
+            const clrs = { forest: '#10b981', energy: '#f97316', water: '#0891b2', agri: '#d97706', univ: '#9333ea', mental: '#f43f5e', generations: '#14b8a6', human_span: '#22d3ee' };
+            renderChart(history, currentMode === 'generations' ? 'Fertility Rate (Children/Woman)' : 'Value %', clrs[currentMode]);
+            document.getElementById('app-content').classList.remove('opacity-0');
+            
+        }
+
+        function renderYearGrid(data, unit, mode) {
+            const list = document.getElementById('year-list'); list.innerHTML = '';
+            const annuals = Array.isArray(data) ? data : Object.keys(data).map(y => ({ year: y, val: data[y].sum / (data[y].count || 1) }));
+            const peak = [...annuals].sort((a,b) => b.val - a.val)[0];
+            const lowest = [...annuals].sort((a,b) => a.val - b.val)[0];
+            [...annuals].reverse().forEach(item => {
+                let bg = "bg-slate-900/40", tc = "text-slate-300", bd = "", bc = "border-white/5";
+                if(item.year === peak.year) {
+                    if (mode === 'weather') { bc = "border-rose-500/50"; bg = "bg-rose-500/10"; tc = "text-rose-400"; bd = `<div class="text-[7px] font-black text-rose-500 uppercase mb-1">Peak</div>`; }
+                    else { 
+                        const peakColors = { forest: 'bg-green-600', agri: 'bg-amber-600', energy: 'bg-orange-600', water: 'bg-cyan-700', univ: 'bg-purple-600', mental: 'bg-rose-600', carbon: 'bg-slate-600' };
+                        bg = peakColors[mode] || 'bg-indigo-600';
+                        tc = "text-white"; bd = `<div class="text-[7px] font-black uppercase mb-1">Peak</div>`; 
+                    }
+                } else if(item.year === lowest.year) {
+                    if (mode === 'weather') { bc = "border-blue-500/50"; bg = "bg-blue-500/10"; tc = "text-blue-400"; bd = `<div class="text-[7px] font-black text-blue-500 uppercase mb-1">Floor</div>`; }
+                    else { bg = "bg-blue-600"; tc = "text-white"; bd = `<div class="text-[7px] font-black uppercase mb-1">Floor</div>`; }
+                }
+                list.innerHTML += `<div class="year-item ${bg} p-3 rounded-2xl border ${bc} text-center transition-all hover:scale-110 cursor-default">${bd}<div class="text-[9px] font-bold opacity-50 mb-1">${item.year}</div><div class="text-xs font-black ${tc}">${(item.val || 0).toFixed(1)}${unit}</div></div>`;
+            });
+        }
+
+        function renderChart(history, label, color) {
+            const ctx = document.getElementById('historyChart').getContext('2d');
+            if (chartInstance) chartInstance.destroy();
+            
+            const chartData = history.map(h => {
+                if (h.val !== undefined && h.val !== null) return h.val;
+                if (h.temp !== undefined && h.temp !== null) return h.temp;
+                return 0;
+            });
+            
+            let bgColor;
+            if (color && color.startsWith('#')) {
+                const r = parseInt(color.slice(1, 3), 16);
+                const g = parseInt(color.slice(3, 5), 16);
+                const b = parseInt(color.slice(5, 7), 16);
+                bgColor = `rgba(${r}, ${g}, ${b}, 0.1)`;
+            } else {
+                bgColor = 'rgba(100, 116, 139, 0.1)';
+            }
+            
+            chartInstance = new Chart(ctx, { 
+                type: 'line', 
+                data: { 
+                    labels: history.map(h => h.year), 
+                    datasets: [{ 
+                        label: label,
+                        data: chartData, 
+                        borderColor: color, 
+                        borderWidth: 3, 
+                        tension: 0.4, 
+                        fill: true, 
+                        backgroundColor: bgColor,
+                        pointBackgroundColor: color,
+                        pointBorderColor: color,
+                        pointRadius: 2,
+                        pointHoverRadius: 4
+                    }] 
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    plugins: { 
+                        legend: { display: false } 
+                    }, 
+                    scales: { 
+                        y: { 
+                            grid: { color: 'rgba(255,255,255,0.05)' }, 
+                            ticks: { color: '#64748b' },
+                            beginAtZero: false
+                        }, 
+                        x: { 
+                            grid: { display: false }, 
+                            ticks: { color: '#64748b' } 
+                        } 
+                    } 
+                } 
+            });
         }
 
         function processWeatherData(data, pollutionData) {
@@ -471,145 +1795,15 @@
             document.getElementById('app-content').classList.remove('opacity-0');
         }
 
-        async function searchWBData(query) {
-            try {
-                const cl = await fetch(`https://api.worldbank.org/v2/country?format=json&per_page=300`).then(r => r.json());
-                const country = cl[1].find(c => c.name.toLowerCase().includes(query.toLowerCase()));
-                if(!country) throw new Error("Country not found");
-                
-                let indicators = {
-                    forest: 'AG.LND.FRST.ZS',
-                    energy: 'EG.ELC.RNEW.ZS',
-                    water: 'SH.H2O.SMDW.ZS',
-                    agri: 'AG.LND.AGRI.ZS'
-                };
-
-                let ind1 = indicators[currentMode];
-                const ind2 = currentMode === 'energy' ? 'EG.ELC.HYRO.ZS' : null;
-                const [r1, r2] = await Promise.all([
-                    fetch(`https://api.worldbank.org/v2/country/${country.id}/indicator/${ind1}?format=json&per_page=100`).then(r => r.json()),
-                    ind2 ? fetch(`https://api.worldbank.org/v2/country/${country.id}/indicator/${ind2}?format=json&per_page=100`).then(r => r.json()) : Promise.resolve([null, []])
-                ]);
-                processWBResults(r1[1], r2[1], country.name);
-            } catch (e) { alert(e.message); }
-        }
-
-        function processWBResults(percData, hydroData, name) {
-            const history = (percData || []).filter(d => d.value !== null).map(d => ({ year: d.date, val: parseFloat(d.value.toFixed(2)) })).reverse();
-            if (!history || history.length === 0) {
-                alert("Data unavailable.");
-                return;
-            }
-            const latest = history[history.length-1];
-            const growth = latest.val - history[0].val;
-
-            document.getElementById('impact-row').classList.remove('hidden');
-            document.getElementById('weather-extreme-cards').classList.add('hidden');
-            document.getElementById('weather-footer').classList.add('hidden');
-            document.getElementById('timeline-title').innerText = "Historical Timeline";
-
-            if(currentMode === 'energy') {
-                const lh = hydroData && hydroData.length > 0 ? parseFloat(hydroData.find(d => d.value !== null)?.value || 0) : 0;
-                document.getElementById('impact-row').innerHTML = `<div class="bg-blue-500/10 border border-blue-500/20 p-6 rounded-[2rem] text-center"><h5 class="text-[10px] font-black text-blue-400 mb-2 text-center">Hydro Power</h5><p class="text-3xl font-black">${lh.toFixed(1)}%</p></div><div class="bg-orange-500/10 border border-orange-500/20 p-6 rounded-[2rem] text-center"><h5 class="text-[10px] font-black text-orange-400 mb-2 text-center">Solar & Wind</h5><p class="text-3xl font-black">${(latest.val - lh).toFixed(1)}%</p></div><div class="bg-slate-800/50 p-6 rounded-[2rem] text-center"><h5 class="text-[10px] font-black text-slate-500 mb-2 text-center">Fossil Gap</h5><p class="text-3xl font-black text-white">${(100 - latest.val).toFixed(1)}%</p></div>`;
-            } else if(currentMode === 'water') {
-                document.getElementById('impact-row').innerHTML = `<div class="bg-cyan-500/10 border border-cyan-500/20 p-6 rounded-[2rem] text-center lg:col-span-1 text-center"><h5 class="text-[10px] font-black text-cyan-400 mb-2 text-center">Water Safety</h5><p class="text-3xl font-black">${latest.val}%</p></div><div class="bg-rose-500/10 border border-rose-500/20 p-6 rounded-[2rem] text-center lg:col-span-2 text-center"><h5 class="text-[10px] font-black text-rose-400 mb-2 text-center">Pollution Risk</h5><p class="text-3xl font-black">${(100 - latest.val).toFixed(1)}%</p></div>`;
-            } else if(currentMode === 'agri') {
-                document.getElementById('impact-row').innerHTML = `<div class="bg-amber-500/10 border border-amber-500/20 p-6 rounded-[2rem] text-center lg:col-span-2 text-center"><h5 class="text-[10px] font-black text-amber-400 mb-2">Total Land Usage</h5><p class="text-3xl font-black">${latest.val}%</p></div><div class="bg-indigo-500/10 border border-indigo-500/20 p-6 rounded-[2rem] text-center lg:col-span-1 text-center"><h5 class="text-[10px] font-black text-indigo-400 mb-2">Data Years</h5><p class="text-3xl font-black">${history.length}</p></div>`;
-            } else {
-                document.getElementById('impact-row').innerHTML = `<div class="bg-emerald-500/10 border border-emerald-500/20 p-6 rounded-[2rem] text-center lg:col-span-2 text-center"><h5 class="text-[10px] font-black text-emerald-400 mb-2">Total Coverage</h5><p class="text-3xl font-black">${latest.val}%</p></div><div class="bg-indigo-500/10 border border-indigo-500/20 p-6 rounded-[2rem] text-center lg:col-span-1 text-center"><h5 class="text-[10px] font-black text-indigo-400 mb-2">Data Years</h5><p class="text-3xl font-black">${history.length}</p></div>`;
-            }
-
-            const lbls = { forest: `Forest Cover (${latest.year})`, energy: `Renewables (${latest.year})`, water: `Safe Water (${latest.year})`, agri: `Agri Land (${latest.year})` };
-            document.getElementById('stat1-label').innerText = lbls[currentMode];
-            document.getElementById('today-temp').innerText = latest.val + "%";
-            document.getElementById('comparison-tag').innerText = `${name.toUpperCase()} REGION`;
-            document.getElementById('stat2-label').innerText = currentMode === 'water' ? "Safety Gap" : "Net Change";
-            document.getElementById('today-humid').innerText = currentMode === 'water' ? (100 - latest.val).toFixed(1) + "%" : (growth >= 0 ? '+' : '') + growth.toFixed(1) + "%";
-            document.getElementById('today-humid').className = `text-4xl md:text-6xl font-black my-2 md:my-3 font-mono-data tracking-tighter ${currentMode === 'water' ? 'text-rose-400' : (growth >= 0 ? 'text-emerald-400' : 'text-rose-400')}`;
-            
-            document.getElementById('rec-hot-val').innerText = Math.max(...history.map(h=>h.val)) + "%";
-            document.getElementById('rec-hot-year').innerText = history.find(h=>h.val === Math.max(...history.map(h=>h.val))).year;
-            document.getElementById('rec-cold-val').innerText = Math.min(...history.map(h=>h.val)) + "%";
-            document.getElementById('rec-cold-year').innerText = history.find(h=>h.val === Math.min(...history.map(h=>h.val))).year;
-
-            renderYearGrid(history, '%', currentMode);
-            const clrs = { forest: '#10b981', energy: '#f97316', water: '#0891b2', agri: '#d97706' };
-            renderChart(history, 'Value %', clrs[currentMode]);
-            document.getElementById('app-content').classList.remove('opacity-0');
-        }
-
-        function renderYearGrid(data, unit, mode) {
-            const list = document.getElementById('year-list'); list.innerHTML = '';
-            const annuals = Array.isArray(data) ? data : Object.keys(data).map(y => ({ year: y, val: data[y].sum / (data[y].count || 1) }));
-            const peak = [...annuals].sort((a,b) => b.val - a.val)[0];
-            const lowest = [...annuals].sort((a,b) => a.val - b.val)[0];
-            [...annuals].reverse().forEach(item => {
-                let bg = "bg-slate-900/40", tc = "text-slate-300", bd = "", bc = "border-white/5";
-                if(item.year === peak.year) {
-                    if (mode === 'weather') { bc = "border-rose-500/50"; bg = "bg-rose-500/10"; tc = "text-rose-400"; bd = `<div class="text-[7px] font-black text-rose-500 uppercase mb-1">Peak</div>`; }
-                    else { bg = mode === 'forest' ? 'bg-green-600' : (mode === 'energy' ? 'bg-orange-600' : (mode === 'agri' ? 'bg-amber-600' : 'bg-cyan-700')); tc = "text-white"; bd = `<div class="text-[7px] font-black uppercase mb-1">Peak</div>`; }
-                } else if(item.year === lowest.year) {
-                    if (mode === 'weather') { bc = "border-blue-500/50"; bg = "bg-blue-500/10"; tc = "text-blue-400"; bd = `<div class="text-[7px] font-black text-blue-500 uppercase mb-1">Floor</div>`; }
-                    else { bg = "bg-blue-600"; tc = "text-white"; bd = `<div class="text-[7px] font-black uppercase mb-1">Floor</div>`; }
-                }
-                list.innerHTML += `<div class="year-item ${bg} p-3 rounded-2xl border ${bc} text-center transition-all hover:scale-110 cursor-default">${bd}<div class="text-[9px] font-bold opacity-50 mb-1">${item.year}</div><div class="text-xs font-black ${tc}">${(item.val || 0).toFixed(1)}${unit}</div></div>`;
-            });
-        }
-
-        function renderChart(history, label, color) {
-            const ctx = document.getElementById('historyChart').getContext('2d');
-            if (chartInstance) chartInstance.destroy();
-            chartInstance = new Chart(ctx, { 
-                type: 'line', 
-                data: { 
-                    labels: history.map(h => h.year), 
-                    datasets: [{ 
-                        label, 
-                        data: history.map(h => h.val || h.temp), 
-                        borderColor: color, 
-                        borderWidth: 3, 
-                        pointRadius: window.innerWidth < 768 ? 0 : 2,
-                        pointHoverRadius: window.innerWidth < 768 ? 4 : 6,
-                        tension: 0.4, 
-                        fill: true, 
-                        backgroundColor: color + '11' 
-                    }] 
-                },
-                options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false, 
-                    plugins: { 
-                        legend: { display: false },
-                        tooltip: { mode: 'index', intersect: false }
-                    }, 
-                    scales: { 
-                        y: { 
-                            grid: { color: 'rgba(255,255,255,0.05)' }, 
-                            ticks: { color: '#64748b', font: { size: window.innerWidth < 768 ? 10 : 12 } } 
-                        }, 
-                        x: { 
-                            grid: { display: false }, 
-                            ticks: { color: '#64748b', maxRotation: window.innerWidth < 768 ? 45 : 0, minRotation: window.innerWidth < 768 ? 45 : 0, font: { size: window.innerWidth < 768 ? 9 : 12 } } 
-                        } 
-                    },
-                    interaction: { mode: 'nearest', axis: 'x', intersect: false }
-                } 
-            });
-        }
-
         function closeModal() { document.getElementById('infoModal').classList.add('hidden'); }
         function showInfo(type) {
             const modal = document.getElementById('infoModal');
-            document.getElementById('modalTitle').innerText = type === 'era' ? "Era Shift" : "System Streak";
-            document.getElementById('modalBody').innerText = type === 'era' ? "Compares the first 25 years vs the last 25 years." : "Consecutive days mirroring today's intensity.";
+            if (type === 'univ-avg') {
+                document.getElementById('modalTitle').innerText = "Global Enrollment Benchmark";
+                document.getElementById('modalBody').innerHTML = `The <span class="text-purple-400 font-bold">43% Global Average</span> means that 43% of university-aged people worldwide are enrolled in higher education.`;
+            }
             modal.classList.remove('hidden');
         }
-
-        document.getElementById('cityInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') { mainAction(); }
-        });
-
-        shuffleFact();
     </script>
 </body>
 </html>
