@@ -15,6 +15,7 @@
 - 🤱 **Generations** - Fertility rates and demographic transitions
 - 🧠 **Mental Health** - Global mental health prevalence
 - 🏭 **Carbon Emissions** - CO₂ emissions and climate targets
+- 🌐 **Internet Access** - Internet access through the world
 
 ### 🎨 **Modern UI/UX**
 - ✨ Animated particle background system
