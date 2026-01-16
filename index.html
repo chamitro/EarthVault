@@ -722,6 +722,9 @@
                     <button onclick="selectMode('carbon')" class="flex items-center gap-3 px-4 py-3 text-[11px] font-bold text-slate-400 hover:bg-white/5 rounded-xl transition-all">
                         <span>🏭</span> CARBON
                     </button>
+                    <button onclick="selectMode('internet')" class="flex items-center gap-3 px-4 py-3 text-[11px] font-bold text-blue-400 hover:bg-white/5 rounded-xl transition-all">
+                        <span>🌐</span> INTERNET ACCESS
+                    </button>
                 </div>
             </div>
         </div>
@@ -745,7 +748,8 @@
             human_span: 'HUMAN SPAN',
             mental: 'MENTAL HEALTH',
             carbon: 'CARBON EMISSIONS',
-            generations: 'GENERATIONS'
+            generations: 'GENERATIONS',
+            internet: 'INTERNET ACCESS'
         };
         document.getElementById('selected-mode-text').innerText = labels[mode];
         setMode(mode);
@@ -916,13 +920,14 @@
             human_span: ["Global life expectancy has increased by over 20 years since 1960.", "Japan consistently holds one of the highest life expectancies globally.", "Medical advancements and clean water access are the primary drivers of longevity.", "Global life expectancy was only 32 years in 1900 - it has more than doubled.", "Men typically live 4-6 years less than women due to biological and behavioral factors."],
             generations: ["Replacement fertility is generally 2.1 children per woman.", "Global fertility has halved since 1960.", "Niger currently has the highest fertility rate in the world."],
             mental: ["1 in 8 people worldwide live with a mental disorder.", "Mental health conditions can reduce life expectancy by up to 20 years.", "Globally, depression is a leading cause of disability.", "Most people with mental health conditions lack access to effective care."],
-            carbon: ["CO2 levels are higher today than at any point in the last 3 million years.", "The last decade was the warmest on record.", "China, USA, and India are the top 3 global emitters.", "Methane is 25x more potent than CO2 at trapping heat.", "Natural carbon sinks like forests absorb about 25% of all CO2 emissions."]
+            carbon: ["CO2 levels are higher today than at any point in the last 3 million years.", "The last decade was the warmest on record.", "China, USA, and India are the top 3 global emitters.", "Methane is 25x more potent than CO2 at trapping heat.", "Natural carbon sinks like forests absorb about 25% of all CO2 emissions."],
+            internet: ["51% of global web traffic is now from bots, surpassing human activity for the first time (2024).", "37% of all internet traffic comes from malicious bots engaged in attacks and fraud.", "Good bots like search engine crawlers account for only 14% of web traffic.", "The travel industry faces the highest bot attacks, with 41% of traffic being malicious bots.", "APIs are now targeted by 44% of advanced bot attacks, up from 10% for traditional websites.", "Over 5.5 billion people use the internet globally - that's 67% of the world's population.", "The digital divide: Only 27% of people in least developed countries have internet access.", "Mobile internet has driven connectivity growth, with 96% of the global population covered by mobile networks."]
         };
 
         function shuffleFact() {
             const list = facts[currentMode];
             document.getElementById('fact-text').innerText = list[Math.floor(Math.random() * list.length)];
-            const icons = { weather: '🌪️', forest: '🌳', agri: '🌾', energy: '⚡', water: '💧', univ: '🎓', mental: '🧠', carbon: '🏭' , generations: '🤱', human_span: '⏳'};
+            const icons = { weather: '🌪️', forest: '🌳', agri: '🌾', energy: '⚡', water: '💧', univ: '🎓', mental: '🧠', carbon: '🏭' , generations: '🤱', human_span: '⏳', internet: '🌐'};
             document.getElementById('fact-icon').innerText = icons[currentMode];
         }
 
@@ -1101,6 +1106,15 @@
                 badge.className = "inline-flex items-center gap-2 bg-teal-500/10 border border-teal-500/20 px-3 md:px-4 py-2 rounded-full text-teal-400 text-[10px] font-bold uppercase tracking-widest";
                 input.className = "flex-1 bg-slate-900/90 border border-white/10 px-4 md:px-6 py-3 md:py-4 rounded-2xl focus:ring-2 focus:ring-teal-500 outline-none text-white text-base md:text-lg search-glow transition-all";
                 searchBtn.className = "search-btn bg-teal-600 hover:bg-teal-500 text-white px-8 md:px-10 py-3 md:py-4 rounded-2xl font-bold transition-all uppercase tracking-tighter shadow-xl shadow-teal-600/20";
+            } else if (mode === 'internet') {
+                attrBtn.innerText = "Data by World Bank & ITU";
+                attrBtn.href = "https://data.worldbank.org/";
+                glowBg.className = "absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-500/10 blur-[120px] rounded-full";
+                logoSpan.className = "text-blue-400";
+                factLabel.className = "text-[10px] font-bold text-blue-400 uppercase tracking-[0.2em] mb-1";
+                badge.className = "inline-flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 px-3 md:px-4 py-2 rounded-full text-blue-400 text-[10px] font-bold uppercase tracking-widest";
+                input.className = "flex-1 bg-slate-900/90 border border-white/10 px-4 md:px-6 py-3 md:py-4 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none text-white text-base md:text-lg search-glow transition-all";
+                searchBtn.className = "search-btn bg-blue-600 hover:bg-blue-500 text-white px-8 md:px-10 py-3 md:py-4 rounded-2xl font-bold transition-all uppercase tracking-tighter shadow-xl shadow-blue-600/20";
             } else {
                 attrBtn.innerText = "Data by World Bank";
                 attrBtn.href = "https://data.worldbank.org/";
@@ -1130,7 +1144,8 @@
                 water: "Water Quality & Safety Vault",
                 mental: "Mental Health Vault",
                 carbon: "Carbon Emissions Vault",
-                generations: "Generations Vault"
+                generations: "Generations Vault",
+                internet: "Internet Access Vault"
             };
             document.getElementById('main-title').innerText = titles[mode];
             document.getElementById('cityInput').placeholder = mode === 'weather' ? "Search city..." : "Search country...";
@@ -1273,7 +1288,8 @@
                     univ: 'SE.TER.CUAT.BA.ZS',
                     mental: 'SH.STA.DIAB.ZS',
                     generations: 'SP.DYN.TFRT.IN',
-                    human_span: 'SP.DYN.LE00.IN'
+                    human_span: 'SP.DYN.LE00.IN',
+                    internet: 'IT.NET.USER.ZS'
                 };
 
                 let ind1 = indicators[currentMode];
@@ -1289,6 +1305,9 @@
                 } else if (currentMode === 'human_span') {
                     ind2 = 'SP.DYN.LE00.FE.IN'; // Female life expectancy
                     ind3 = 'SP.DYN.LE00.MA.IN'; // Male life expectancy
+                } else if (currentMode === 'internet') {
+                    ind2 = 'IT.NET.USER.FE.ZS'; // Female internet usage
+                    ind3 = 'IT.NET.USER.MA.ZS'; // Male internet usage
                 }
                 
                 const startYear = currentYear - 50;
@@ -1609,6 +1628,77 @@
                 The global average for safely managed water is ~74%. ${vsGlobal >= 0 ? 'This region exceeds the global standard for water security.' : 'This region is below the global benchmark for safe water access.'}
             </p>
         </div>`;
+}else if(currentMode === 'internet') {
+    // Calculate emails sent today (347.3 billion emails per day in 2024)
+    const emailsPerDay = 347300000000; // 347.3 billion
+    const now = new Date();
+    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const secondsPassedToday = (now - startOfDay) / 1000;
+    const secondsInDay = 86400;
+    const emailsSentToday = Math.floor((emailsPerDay / secondsInDay) * secondsPassedToday);
+    
+    // Format the number with commas
+    const emailsFormatted = emailsSentToday.toLocaleString();
+    
+    // Get gender-specific internet data
+    const femaleHistory = (secondData || []).filter(d => d.value !== null).map(d => ({ year: d.date, val: parseFloat(d.value.toFixed(2)) })).reverse();
+    const maleHistory = (thirdData || []).filter(d => d.value !== null).map(d => ({ year: d.date, val: parseFloat(d.value.toFixed(2)) })).reverse();
+    
+    let genderContent = '';
+    if (femaleHistory.length > 0 && maleHistory.length > 0) {
+        const latestFemale = femaleHistory[femaleHistory.length-1].val;
+        const latestMale = maleHistory[maleHistory.length-1].val;
+        const gap = Math.abs(latestMale - latestFemale).toFixed(1);
+        const genderLeading = latestMale > latestFemale ? 'Male' : 'Female';
+        const genderSymbol = latestMale > latestFemale ? '♂' : '♀';
+        
+        genderContent = `
+        <div class="bg-purple-500/10 border border-purple-500/20 p-6 rounded-[2rem] text-center">
+            <h5 class="text-[10px] font-black text-purple-400 mb-2 uppercase tracking-widest">Digital Gender Gap</h5>
+            <p class="text-3xl font-black ${parseFloat(gap) < 2 ? 'text-emerald-400' : 'text-amber-400'}">${gap}%</p>
+            <p class="text-[9px] text-slate-500 mt-2 leading-tight">
+                ${name}: ${genderSymbol} ${genderLeading} access leads by ${gap}%
+            </p>
+            <p class="text-[8px] text-slate-600 mt-1">
+                ♀ ${latestFemale.toFixed(1)}% vs ♂ ${latestMale.toFixed(1)}%
+            </p>
+        </div>`;
+    } else {
+        genderContent = `
+        <div class="bg-purple-500/10 border border-purple-500/20 p-6 rounded-[2rem] text-center">
+            <h5 class="text-[10px] font-black text-purple-400 mb-2 uppercase tracking-widest">Digital Gender Gap</h5>
+            <p class="text-sm text-slate-400 mt-2">Gender data unavailable for ${name}</p>
+        </div>`;
+    }
+    
+    document.getElementById('impact-row').innerHTML = `
+        <div class="bg-blue-500/10 border border-blue-500/20 p-6 rounded-[2rem] text-center">
+            <h5 class="text-[10px] font-black text-blue-400 mb-2 uppercase tracking-widest">Emails Sent Today</h5>
+            <p class="text-2xl font-black text-white">${emailsFormatted}</p>
+            <p class="text-[9px] text-slate-500 mt-2 leading-tight">
+                ~347.3 billion emails sent daily worldwide
+            </p>
+        </div>
+
+        <div class="bg-indigo-500/10 border border-white/5 p-6 rounded-[2rem] text-center">
+            <h5 class="text-[10px] font-black text-slate-500 mb-2 uppercase tracking-widest">Web Traffic (2024)</h5>
+            <div class="flex items-center justify-center gap-4 my-2">
+                <div class="text-center">
+                    <p class="text-xl font-black text-rose-400">51%</p>
+                    <p class="text-[8px] text-slate-500 uppercase">🤖 Bots</p>
+                </div>
+                <div class="text-2xl text-slate-600">vs</div>
+                <div class="text-center">
+                    <p class="text-xl font-black text-emerald-400">49%</p>
+                    <p class="text-[8px] text-slate-500 uppercase">👥 Humans</p>
+                </div>
+            </div>
+            <p class="text-[9px] text-slate-500 mt-2 leading-tight">
+                37% malicious bots, 14% good bots
+            </p>
+        </div>
+
+        ${genderContent}`;
 }else if(currentMode === 'mental') {
                 let statusText = latest.val < 10 ? "Low" : (latest.val > 20 ? "High" : "Average");
                 let statusColor = latest.val < 10 ? "text-emerald-400" : (latest.val > 20 ? "text-rose-400" : "text-amber-400");
@@ -1651,7 +1741,7 @@
             }
 
             renderYearGrid(history, currentMode === 'generations' ? '' : '%', currentMode);
-            const clrs = { forest: '#10b981', energy: '#f97316', water: '#0891b2', agri: '#d97706', univ: '#9333ea', mental: '#f43f5e', generations: '#14b8a6', human_span: '#22d3ee' };
+            const clrs = { forest: '#10b981', energy: '#f97316', water: '#0891b2', agri: '#d97706', univ: '#9333ea', mental: '#f43f5e', generations: '#14b8a6', human_span: '#22d3ee', internet: '#3b82f6' };
             renderChart(history, currentMode === 'generations' ? 'Fertility Rate (Children/Woman)' : 'Value %', clrs[currentMode]);
             document.getElementById('app-content').classList.remove('opacity-0');
             
