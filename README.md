@@ -4,7 +4,7 @@
 
 ## ✨ Features
 
-### 📊 **10 Data Visualization Modes**
+### 📊 **11 Data Visualization Modes**
 - 🌡️ **Weather Archive** - 50+ years of historical climate data
 - 🎓 **University Access** - Global tertiary education trends with gender parity analysis
 - 🌳 **Forest Heritage** - Deforestation rates and ecological safety metrics
