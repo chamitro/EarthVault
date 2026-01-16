@@ -1798,6 +1798,8 @@
         function closeModal() { document.getElementById('infoModal').classList.add('hidden'); }
         function showInfo(type) {
             const modal = document.getElementById('infoModal');
+            document.getElementById('modalTitle').innerText = type === 'era' ? "Era Shift" : "System Streak";
+            document.getElementById('modalBody').innerText = type === 'era' ? "Compares the first 25 years vs the last 25 years." : "Consecutive days mirroring today's intensity.";
             if (type === 'univ-avg') {
                 document.getElementById('modalTitle').innerText = "Global Enrollment Benchmark";
                 document.getElementById('modalBody').innerHTML = `The <span class="text-purple-400 font-bold">43% Global Average</span> means that 43% of university-aged people worldwide are enrolled in higher education.`;
