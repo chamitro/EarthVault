@@ -65,6 +65,18 @@
             z-index: 10;
         }
         
+        /* Movie card hover */
+        .movie-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        
+        .movie-card:hover {
+            transform: translateY(-6px) scale(1.03);
+            box-shadow: 0 20px 50px rgba(251, 191, 36, 0.3);
+            border-color: rgba(251, 191, 36, 0.4);
+        }
+        
         /* Button press effect */
         button:active {
             transform: scale(0.98);
@@ -453,6 +465,25 @@
             -webkit-overflow-scrolling: touch;
         }
         
+        /* Custom scrollbar for dropdown menu */
+        #dropdown-menu::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        #dropdown-menu::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 10px;
+        }
+        
+        #dropdown-menu::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.5);
+            border-radius: 10px;
+        }
+        
+        #dropdown-menu::-webkit-scrollbar-thumb:hover {
+            background: rgba(99, 102, 241, 0.7);
+        }
+        
         @media (max-width: 640px) {
             .vault-card {
                 border-radius: 1.5rem;
@@ -690,7 +721,7 @@
                 </button>
             </div>
 
-            <div id="dropdown-menu" class="hidden absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-2xl bg-slate-900 border border-white/10 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none backdrop-blur-xl">
+            <div id="dropdown-menu" class="hidden absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-2xl bg-slate-900 border border-white/10 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none backdrop-blur-xl max-h-[70vh] overflow-y-auto">
                 <div class="p-2 grid grid-cols-1 gap-1">
                     <button onclick="selectMode('weather')" class="flex items-center gap-3 px-4 py-3 text-[11px] font-bold text-indigo-400 hover:bg-white/5 rounded-xl transition-all">
                         <span>🌪️</span> WEATHER
@@ -728,6 +759,9 @@
                     <button onclick="selectMode('music')" class="flex items-center gap-3 px-4 py-3 text-[11px] font-bold text-pink-400 hover:bg-white/5 rounded-xl transition-all">
                         <span>🎵</span> MUSIC
                     </button>
+                    <button onclick="selectMode('cinema')" class="flex items-center gap-3 px-4 py-3 text-[11px] font-bold text-amber-400 hover:bg-white/5 rounded-xl transition-all">
+                        <span>🎬</span> CINEMA
+                    </button>
                 </div>
             </div>
         </div>
@@ -753,7 +787,8 @@
             carbon: 'CARBON EMISSIONS',
             generations: 'GENERATIONS',
             internet: 'INTERNET ACCESS',
-            music: 'MUSIC CULTURE'
+            music: 'MUSIC CULTURE',
+            cinema: 'CINEMA DISCOVERY'
         };
         document.getElementById('selected-mode-text').innerText = labels[mode];
         setMode(mode);
@@ -887,6 +922,19 @@
                 </div>
             </div>
 
+            <!-- Cinema Section -->
+            <div id="cinema-section" class="hidden mb-8 md:mb-12">
+                <div class="bg-slate-900/50 p-6 md:p-8 rounded-[2rem] md:rounded-[3rem] border border-white/5">
+                    <h3 class="text-lg font-black mb-4 flex items-center gap-2">
+                        <span class="text-2xl">🎬</span>
+                        <span id="cinema-title">Trending Movies</span>
+                    </h3>
+                    <div id="movies-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"></div>
+                    
+                    <div id="cinema-stats" class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-3 hidden"></div>
+                </div>
+            </div>
+
             <div class="chart-container bg-slate-900/50 p-4 md:p-8 rounded-[2rem] md:rounded-[3rem] border border-white/5 mb-8 md:mb-12 h-[300px] md:h-[450px]">
                 <canvas id="historyChart"></canvas>
             </div>
@@ -917,6 +965,11 @@
         const LASTFM_API_KEY = '608307386d8698dc2993d48021823960'; // Replace with your actual API key
         const monthDayToday = `${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
         
+        // TMDB API Constants
+        const TMDB_API_KEY = 'c727a4ffc7284957d7389c84e80f2cdf';
+        const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
+        const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w500';
+        
         const facts = {
             weather: ["Lightning strikes the Earth 100 times every second.", "Air near lightning is 5x hotter than the sun's surface.", "The coldest temperature recorded was -89.2°C.", "Hurricane energy equals 10,000 nuclear bombs.", "Raindrops look like hamburger buns, not teardrops."],
             forest: ["Forests house 80% of terrestrial biodiversity.", "Oak trees support over 500 different species.", "The Amazon produces about 20% of Earth's oxygen.", "Trees use a 'Wood Wide Web' to communicate.", "25% of modern medicine comes from rainforest plants.", "Forests absorb approximately 25% of all global CO2 emissions.", "80% of all terrestrial species live in forest ecosystems."],
@@ -929,13 +982,14 @@
             mental: ["1 in 8 people worldwide live with a mental disorder.", "Mental health conditions can reduce life expectancy by up to 20 years.", "Globally, depression is a leading cause of disability.", "Most people with mental health conditions lack access to effective care."],
             carbon: ["CO2 levels are higher today than at any point in the last 3 million years.", "The last decade was the warmest on record.", "China, USA, and India are the top 3 global emitters.", "Methane is 25x more potent than CO2 at trapping heat.", "Natural carbon sinks like forests absorb about 25% of all CO2 emissions."],
             internet: ["51% of global web traffic is now from bots, surpassing human activity for the first time (2024).", "37% of all internet traffic comes from malicious bots engaged in attacks and fraud.", "Good bots like search engine crawlers account for only 14% of web traffic.", "The travel industry faces the highest bot attacks, with 41% of traffic being malicious bots.", "APIs are now targeted by 44% of advanced bot attacks, up from 10% for traditional websites.", "Over 5.5 billion people use the internet globally - that's 67% of the world's population.", "The digital divide: Only 27% of people in least developed countries have internet access.", "Mobile internet has driven connectivity growth, with 96% of the global population covered by mobile networks."],
-            music: ["Music streaming now accounts for 84% of the U.S. music industry revenue.", "Spotify has over 600 million active users across 180+ countries.", "K-Pop has become a $10 billion industry with global reach.", "Latin music grew 21.9% year-over-year, driven by artists like Bad Bunny and Peso Pluma.", "Country music surged 23.5% in streaming, becoming one of the fastest-growing genres.", "Hip-hop/R&B remains the most popular genre globally, accounting for ~30% of music consumption.", "Vinyl sales have been growing for 17 consecutive years, showing renewed interest in physical media.", "The global music industry generates over $28 billion annually, with streaming leading growth."]
+            music: ["Music streaming now accounts for 84% of the U.S. music industry revenue.", "Spotify has over 600 million active users across 180+ countries.", "K-Pop has become a $10 billion industry with global reach.", "Latin music grew 21.9% year-over-year, driven by artists like Bad Bunny and Peso Pluma.", "Country music surged 23.5% in streaming, becoming one of the fastest-growing genres.", "Hip-hop/R&B remains the most popular genre globally, accounting for ~30% of music consumption.", "Vinyl sales have been growing for 17 consecutive years, showing renewed interest in physical media.", "The global music industry generates over $28 billion annually, with streaming leading growth."],
+            cinema: ["The global box office generated over $33 billion in revenue in 2023.", "India produces the most films annually with over 2,000 movies per year.", "The first movie ever made was 'Roundhay Garden Scene' in 1888, just 2 seconds long.", "Avatar (2009) remains the highest-grossing film of all time with $2.9 billion.", "The average Hollywood blockbuster costs $100-200 million to produce.", "Streaming platforms now invest billions in original film content annually.", "South Korea's film industry has grown dramatically, with films like Parasite winning global awards."]
         };
 
         function shuffleFact() {
             const list = facts[currentMode];
             document.getElementById('fact-text').innerText = list[Math.floor(Math.random() * list.length)];
-            const icons = { weather: '🌪️', forest: '🌳', agri: '🌾', energy: '⚡', water: '💧', univ: '🎓', mental: '🧠', carbon: '🏭' , generations: '🤱', human_span: '⏳', internet: '🌐', music: '🎵'};
+            const icons = { weather: '🌪️', forest: '🌳', agri: '🌾', energy: '⚡', water: '💧', univ: '🎓', mental: '🧠', carbon: '🏭' , generations: '🤱', human_span: '⏳', internet: '🌐', music: '🎵', cinema: '🎬'};
             document.getElementById('fact-icon').innerText = icons[currentMode];
         }
 
@@ -1061,17 +1115,26 @@
         function setMode(mode) {
             currentMode = mode;
             
+            // Hide all app content when switching modes - show only search
+            document.getElementById('app-content').classList.add('hidden');
+            document.getElementById('app-content').classList.add('opacity-0');
+            
             const statsGrid = document.querySelector('.stats-grid');
     const weatherExtremeCards = document.getElementById('weather-extreme-cards');
     const weatherFooter = document.getElementById('weather-footer');
     const chartContainers = document.querySelectorAll('.chart-container');
     const yearListParent = document.querySelector('.bg-slate-900\\/30');
+    const cinemaSection = document.getElementById('cinema-section');
 
-    if (statsGrid) statsGrid.classList.remove('hidden');
+    if (statsGrid) {
+        statsGrid.classList.remove('hidden');
+        statsGrid.style.display = '';
+    }
     if (weatherExtremeCards) weatherExtremeCards.classList.remove('hidden');
     if (weatherFooter) weatherFooter.classList.remove('hidden');
     chartContainers.forEach(el => el.classList.remove('hidden'));
     if (yearListParent) yearListParent.classList.remove('hidden');
+    if (cinemaSection) cinemaSection.classList.add('hidden');
     // -----------------------------------------------------------
 
     const attrBtn = document.getElementById('attribution-link');
@@ -1146,6 +1209,15 @@
                 badge.className = "inline-flex items-center gap-2 bg-pink-500/10 border border-pink-500/20 px-3 md:px-4 py-2 rounded-full text-pink-400 text-[10px] font-bold uppercase tracking-widest";
                 input.className = "flex-1 bg-slate-900/90 border border-white/10 px-4 md:px-6 py-3 md:py-4 rounded-2xl focus:ring-2 focus:ring-pink-500 outline-none text-white text-base md:text-lg search-glow transition-all";
                 searchBtn.className = "search-btn bg-pink-600 hover:bg-pink-500 text-white px-8 md:px-10 py-3 md:py-4 rounded-2xl font-bold transition-all uppercase tracking-tighter shadow-xl shadow-pink-600/20";
+            } else if (mode === 'cinema') {
+                attrBtn.innerText = "Data by TMDB";
+                attrBtn.href = "https://www.themoviedb.org/";
+                glowBg.className = "absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-amber-500/10 blur-[120px] rounded-full";
+                logoSpan.className = "text-amber-400";
+                factLabel.className = "text-[10px] font-bold text-amber-400 uppercase tracking-[0.2em] mb-1";
+                badge.className = "inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 px-3 md:px-4 py-2 rounded-full text-amber-400 text-[10px] font-bold uppercase tracking-widest";
+                input.className = "flex-1 bg-slate-900/90 border border-white/10 px-4 md:px-6 py-3 md:py-4 rounded-2xl focus:ring-2 focus:ring-amber-500 outline-none text-white text-base md:text-lg search-glow transition-all";
+                searchBtn.className = "search-btn bg-amber-600 hover:bg-amber-500 text-white px-8 md:px-10 py-3 md:py-4 rounded-2xl font-bold transition-all uppercase tracking-tighter shadow-xl shadow-amber-600/20";
             } else {
                 attrBtn.innerText = "Data by World Bank";
                 attrBtn.href = "https://data.worldbank.org/";
@@ -1177,7 +1249,8 @@
                 carbon: "Carbon Emissions Vault",
                 generations: "Generations Vault",
                 internet: "Internet Access Vault",
-                music: "Music Culture Vault"
+                music: "Music Culture Vault",
+                cinema: "Cinema Discovery Vault"
             };
             document.getElementById('main-title').innerText = titles[mode];
             document.getElementById('cityInput').placeholder = mode === 'weather' ? "Search city..." : "Search country...";
@@ -1210,6 +1283,7 @@
             if(currentMode === 'weather') await searchWeather(query);
             else if(currentMode === 'carbon') await searchCarbon(query);
             else if(currentMode === 'music') await searchLastFM(query);
+            else if(currentMode === 'cinema') await searchMovies(query);
             else await searchWBData(query);
             
             btn.disabled = false; 
@@ -1273,6 +1347,7 @@
                 document.getElementById('impact-row').classList.remove('hidden');
                 document.getElementById('weather-extreme-cards').classList.add('hidden');
                 document.getElementById('weather-footer').classList.add('hidden');
+                document.getElementById('cinema-section').classList.add('hidden');
                 document.getElementById('impact-row').innerHTML = `
     <div class="bg-slate-500/10 border border-slate-500/20 p-6 rounded-[2rem] text-center lg:col-span-1">
         <h5 class="text-[10px] font-black text-slate-400 mb-2 uppercase tracking-widest">Safe Limit (Mt)</h5>
@@ -1592,8 +1667,334 @@ let statsBoxesHTML = `
     if (weatherExtremeCards) weatherExtremeCards.classList.add('hidden');
     chartContainers.forEach(el => el.classList.add('hidden'));
     if (yearListParent) yearListParent.classList.add('hidden');
+    document.getElementById('cinema-section').classList.add('hidden');
     
     document.getElementById('app-content').classList.remove('opacity-0');
+}
+
+// ========================================
+// CINEMA CACHE MANAGEMENT (Monthly Reset)
+// ========================================
+const CINEMA_CACHE_KEY = 'earthvault_cinema_cache';
+const CINEMA_CACHE_VERSION_KEY = 'earthvault_cinema_cache_version';
+
+// Get current cache month identifier (e.g., "2025-01")
+function getCurrentCacheMonth() {
+    const now = new Date();
+    return `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}`;
+}
+
+// Get cinema data from cache
+function getCinemaFromCache(country) {
+    try {
+        maintainCinemaCache(); // Check and reset if needed
+        
+        const cacheData = localStorage.getItem(CINEMA_CACHE_KEY);
+        if (!cacheData) return null;
+        
+        const cache = JSON.parse(cacheData);
+        const countryKey = country.toLowerCase().trim();
+        
+        if (cache[countryKey]) {
+            console.log(`✅ Cinema Cache HIT for ${country} (Month: ${getCurrentCacheMonth()})`);
+            return cache[countryKey].data;
+        }
+        
+        return null;
+    } catch (e) {
+        console.warn('Cinema cache read failed:', e);
+        return null;
+    }
+}
+
+// Save cinema data to cache
+function saveCinemaToCache(country, data) {
+    try {
+        let cache = {};
+        const existingCache = localStorage.getItem(CINEMA_CACHE_KEY);
+        
+        if (existingCache) {
+            cache = JSON.parse(existingCache);
+        }
+        
+        const countryKey = country.toLowerCase().trim();
+        cache[countryKey] = {
+            data: data,
+            timestamp: Date.now()
+        };
+        
+        localStorage.setItem(CINEMA_CACHE_KEY, JSON.stringify(cache));
+        console.log(`💾 Cached cinema data for ${country} (${Object.keys(cache).length} countries cached)`);
+    } catch (e) {
+        console.warn('Cinema cache save failed:', e);
+    }
+}
+
+// Check if cinema cache needs reset
+function shouldResetCinemaCache() {
+    try {
+        const storedVersion = localStorage.getItem(CINEMA_CACHE_VERSION_KEY);
+        const currentVersion = getCurrentCacheMonth();
+        return !storedVersion || storedVersion !== currentVersion;
+    } catch (e) {
+        return true;
+    }
+}
+
+// Reset cinema cache if needed
+function maintainCinemaCache() {
+    if (shouldResetCinemaCache()) {
+        try {
+            localStorage.removeItem(CINEMA_CACHE_KEY);
+            localStorage.setItem(CINEMA_CACHE_VERSION_KEY, getCurrentCacheMonth());
+            console.log('🔄 Cinema cache reset for new month:', getCurrentCacheMonth());
+        } catch (e) {
+            console.warn('Cinema cache reset failed:', e);
+        }
+    }
+}
+
+// Initialize cinema cache on page load
+maintainCinemaCache();
+
+// Cinema Functions
+// Country code mapping for TMDB API
+const countryCodeMap = {
+    'greece': 'GR', 'usa': 'US', 'united states': 'US', 'america': 'US',
+    'uk': 'GB', 'united kingdom': 'GB', 'england': 'GB', 'britain': 'GB',
+    'france': 'FR', 'germany': 'DE', 'spain': 'ES', 'italy': 'IT',
+    'japan': 'JP', 'china': 'CN', 'india': 'IN', 'south korea': 'KR', 'korea': 'KR',
+    'canada': 'CA', 'australia': 'AU', 'brazil': 'BR', 'mexico': 'MX',
+    'russia': 'RU', 'netherlands': 'NL', 'sweden': 'SE', 'norway': 'NO',
+    'denmark': 'DK', 'finland': 'FI', 'poland': 'PL', 'turkey': 'TR',
+    'argentina': 'AR', 'chile': 'CL', 'colombia': 'CO', 'peru': 'PE',
+    'egypt': 'EG', 'south africa': 'ZA', 'nigeria': 'NG', 'kenya': 'KE',
+    'thailand': 'TH', 'indonesia': 'ID', 'malaysia': 'MY', 'singapore': 'SG',
+    'philippines': 'PH', 'vietnam': 'VN', 'pakistan': 'PK', 'bangladesh': 'BD',
+    'ireland': 'IE', 'portugal': 'PT', 'belgium': 'BE', 'switzerland': 'CH',
+    'austria': 'AT', 'czech republic': 'CZ', 'hungary': 'HU', 'romania': 'RO',
+    'ukraine': 'UA', 'israel': 'IL', 'saudi arabia': 'SA', 'uae': 'AE',
+    'new zealand': 'NZ', 'taiwan': 'TW', 'hong kong': 'HK'
+};
+
+async function searchMovies(query) {
+    const cacheKey = query.toLowerCase();
+    
+    // Check cache first (with monthly reset)
+    const cachedData = getCinemaFromCache(query);
+    if (cachedData) {
+        displayMovies(cachedData, query);
+        return;
+    }
+
+    try {
+        // Get country code from mapping
+        const countryCode = countryCodeMap[cacheKey];
+        
+        if (!countryCode) {
+            // Fallback to global trending if country not found
+            const trendingUrl = `${TMDB_BASE_URL}/trending/movie/week?api_key=${TMDB_API_KEY}`;
+            const trendingResponse = await fetch(trendingUrl);
+            const trendingData = await trendingResponse.json();
+            
+            const result = {
+                movies: trendingData.results.slice(0, 20),
+                isTrending: true,
+                countryNotFound: true
+            };
+            
+            saveCinemaToCache(query, result);
+            displayMovies(result, query);
+            return;
+        }
+
+        console.log(`🎬 Fetching cinema data for ${query}... (checking primary productions only)`);
+        
+        // Fetch multiple pages if needed to get 20 PRIMARY production movies
+        const detailedMovies = [];
+        let page = 1;
+        const maxPages = 5; // Check up to 5 pages to find 20 movies
+        
+        while (detailedMovies.length < 20 && page <= maxPages) {
+            const discoverUrl = `${TMDB_BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}&sort_by=vote_average.desc&with_origin_country=${countryCode}&vote_count.gte=50&page=${page}`;
+            const discoverResponse = await fetch(discoverUrl);
+            const discoverData = await discoverResponse.json();
+            
+            if (!discoverData.results || discoverData.results.length === 0) {
+                break; // No more results
+            }
+            
+            // Check each movie to verify country is PRIMARY producer
+            for (const movie of discoverData.results) {
+                if (detailedMovies.length >= 20) break;
+                
+                try {
+                    const detailUrl = `${TMDB_BASE_URL}/movie/${movie.id}?api_key=${TMDB_API_KEY}`;
+                    const detailResponse = await fetch(detailUrl);
+                    const detailData = await detailResponse.json();
+                    
+                    // STRICT CHECK: Only accept if this country is the PRIMARY production country (first in the list)
+                    if (detailData.production_countries && 
+                        detailData.production_countries.length > 0 &&
+                        detailData.production_countries[0].iso_3166_1 === countryCode) {
+                        detailedMovies.push(movie);
+                        console.log(`✅ Found primary production: ${movie.title} (${detailedMovies.length}/20)`);
+                    }
+                    
+                    // Small delay to avoid rate limiting (100ms between requests)
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                } catch (err) {
+                    console.error('Error fetching movie details:', err);
+                }
+            }
+            
+            page++;
+        }
+        
+        let result;
+        if (detailedMovies.length === 0) {
+            // Fallback to global trending if no primary productions found
+            console.log('⚠️ No primary productions found, showing global trending');
+            const trendingUrl = `${TMDB_BASE_URL}/trending/movie/week?api_key=${TMDB_API_KEY}`;
+            const trendingResponse = await fetch(trendingUrl);
+            const trendingData = await trendingResponse.json();
+            
+            result = {
+                movies: trendingData.results.slice(0, 20),
+                isTrending: true
+            };
+        } else {
+            console.log(`✅ Found ${detailedMovies.length} primary productions from ${query}`);
+            result = {
+                movies: detailedMovies,
+                isTrending: false
+            };
+        }
+        
+        // Save to cache before displaying (lasts 1 month)
+        saveCinemaToCache(query, result);
+        displayMovies(result, query);
+        
+    } catch (error) {
+        console.error('TMDB API error:', error);
+        alert('Error fetching movie data. Please try again.');
+    }
+}
+
+function displayMovies(data, query) {
+    const moviesGrid = document.getElementById('movies-grid');
+    const cinemaTitle = document.getElementById('cinema-title');
+    const cinemaStats = document.getElementById('cinema-stats');
+    const cinemaSection = document.getElementById('cinema-section');
+    
+    if (data.countryNotFound) {
+        cinemaTitle.innerHTML = `Global Trending Movies <span class="text-sm text-slate-400">(Country "${query}" not recognized)</span>`;
+    } else if (data.isTrending) {
+        cinemaTitle.innerHTML = `Global Trending Movies <span class="text-sm text-slate-400">(No movies from ${query})</span>`;
+    } else {
+        const countryName = query.charAt(0).toUpperCase() + query.slice(1);
+        cinemaTitle.innerHTML = `Top ${data.movies.length} Highest-Rated Movies FROM ${countryName}`;
+    }
+
+    moviesGrid.innerHTML = '';
+    cinemaStats.innerHTML = '';
+
+    if (!data.movies || data.movies.length === 0) {
+        moviesGrid.innerHTML = '<div class="col-span-full text-center text-slate-400 py-8">No movies found</div>';
+        cinemaSection.classList.remove('hidden');
+        return;
+    }
+
+    data.movies.forEach((movie, index) => {
+        const posterUrl = movie.poster_path 
+            ? `${TMDB_IMAGE_BASE}${movie.poster_path}`
+            : 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="500" height="750" viewBox="0 0 500 750"%3E%3Crect fill="%231e293b" width="500" height="750"/%3E%3Ctext x="50%25" y="50%25" font-family="Arial" font-size="24" fill="%2364748b" text-anchor="middle" dominant-baseline="middle"%3ENo Image%3C/text%3E%3C/svg%3E';
+        
+        const releaseYear = movie.release_date ? movie.release_date.substring(0, 4) : 'N/A';
+        const rating = movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A';
+        const voteCount = movie.vote_count || 0;
+
+        const movieCard = `
+            <div class="movie-card vault-card rounded-2xl overflow-hidden border border-amber-500/10" style="animation-delay: ${index * 0.05}s">
+                <div class="relative aspect-[2/3] overflow-hidden">
+                    <img src="${posterUrl}" alt="${movie.title}" class="w-full h-full object-cover" loading="lazy">
+                    <div class="absolute top-2 right-2 bg-black/80 backdrop-blur-sm px-2 py-1 rounded-lg flex items-center gap-1">
+                        <span class="text-amber-400 text-xs">⭐</span>
+                        <span class="text-white text-xs font-bold">${rating}</span>
+                    </div>
+                </div>
+                <div class="p-3">
+                    <h4 class="font-bold text-sm text-white mb-1 line-clamp-2">${movie.title}</h4>
+                    <div class="flex items-center justify-between text-xs text-slate-400">
+                        <span class="font-mono-data">${releaseYear}</span>
+                        <span class="text-[10px]">${voteCount.toLocaleString()} votes</span>
+                    </div>
+                </div>
+            </div>
+        `;
+        moviesGrid.innerHTML += movieCard;
+    });
+
+    const avgRating = (data.movies.reduce((sum, m) => sum + (m.vote_average || 0), 0) / data.movies.length).toFixed(1);
+    const totalVotes = data.movies.reduce((sum, m) => sum + (m.vote_count || 0), 0);
+    const newestMovie = data.movies.reduce((newest, m) => 
+        (m.release_date > (newest.release_date || '')) ? m : newest, data.movies[0]
+    );
+    const oldestMovie = data.movies.reduce((oldest, m) => 
+        (m.release_date < (oldest.release_date || '9999')) ? m : oldest, data.movies[0]
+    );
+
+    cinemaStats.innerHTML = `
+        <div class="bg-amber-500/10 border border-amber-500/20 p-6 rounded-[2rem] text-center">
+            <h5 class="text-[10px] font-black text-amber-400 mb-2 uppercase tracking-widest">Avg Rating</h5>
+            <p class="text-3xl font-black text-white font-mono-data">${avgRating}</p>
+            <p class="text-[9px] text-slate-500 mt-2">⭐ OUT OF 10</p>
+        </div>
+        <div class="bg-emerald-500/10 border border-emerald-500/20 p-6 rounded-[2rem] text-center">
+            <h5 class="text-[10px] font-black text-emerald-400 mb-2 uppercase tracking-widest">Total Votes</h5>
+            <p class="text-2xl font-black text-white font-mono-data">${totalVotes.toLocaleString()}</p>
+            <p class="text-[9px] text-slate-500 mt-2">COMMUNITY</p>
+        </div>
+        <div class="bg-blue-500/10 border border-blue-500/20 p-6 rounded-[2rem] text-center">
+            <h5 class="text-[10px] font-black text-blue-400 mb-2 uppercase tracking-widest">Newest</h5>
+            <p class="text-xl font-black text-white font-mono-data">${newestMovie.release_date ? newestMovie.release_date.substring(0, 4) : 'N/A'}</p>
+            <p class="text-[9px] text-slate-500 mt-2 line-clamp-1">${newestMovie.title}</p>
+        </div>
+        <div class="bg-purple-500/10 border border-purple-500/20 p-6 rounded-[2rem] text-center">
+            <h5 class="text-[10px] font-black text-purple-400 mb-2 uppercase tracking-widest">Oldest</h5>
+            <p class="text-xl font-black text-white font-mono-data">${oldestMovie.release_date ? oldestMovie.release_date.substring(0, 4) : 'N/A'}</p>
+            <p class="text-[9px] text-slate-500 mt-2 line-clamp-1">${oldestMovie.title}</p>
+        </div>
+    `;
+
+    cinemaStats.classList.remove('hidden');
+    cinemaSection.classList.remove('hidden');
+    
+    // Hide other sections
+    const statsGrid = document.querySelector('.stats-grid');
+    const weatherExtremeCards = document.getElementById('weather-extreme-cards');
+    const weatherFooter = document.getElementById('weather-footer');
+    
+    if (statsGrid) {
+        statsGrid.classList.add('hidden');
+        statsGrid.style.display = 'none';
+    }
+    if (weatherExtremeCards) weatherExtremeCards.classList.add('hidden');
+    if (weatherFooter) weatherFooter.classList.add('hidden');
+    document.getElementById('impact-row').classList.add('hidden');
+    
+    const yearHistory = data.movies
+        .filter(m => m.release_date)
+        .map(m => ({
+            year: m.release_date.substring(0, 4),
+            val: m.vote_average || 0
+        }))
+        .sort((a, b) => a.year - b.year);
+
+    if (yearHistory.length > 0) {
+        renderYearGrid(yearHistory, '⭐', 'cinema');
+        renderChart(yearHistory, 'Rating', '#fbbf24');
+    }
 }
 
         async function searchWBData(query) {
@@ -1658,6 +2059,7 @@ let statsBoxesHTML = `
             document.getElementById('impact-row').classList.remove('hidden');
             document.getElementById('weather-extreme-cards').classList.add('hidden');
             document.getElementById('weather-footer').classList.add('hidden');
+            document.getElementById('cinema-section').classList.add('hidden');
             
             // Add animation entrance after a brief delay
             setTimeout(() => {
@@ -2078,8 +2480,9 @@ let statsBoxesHTML = `
                 let bg = "bg-slate-900/40", tc = "text-slate-300", bd = "", bc = "border-white/5";
                 if(item.year === peak.year) {
                     if (mode === 'weather') { bc = "border-rose-500/50"; bg = "bg-rose-500/10"; tc = "text-rose-400"; bd = `<div class="text-[7px] font-black text-rose-500 uppercase mb-1">Peak</div>`; }
+                    else if (mode === 'cinema') { bc = "border-amber-500/50"; bg = "bg-amber-500/10"; tc = "text-amber-400"; bd = `<div class="text-[7px] font-black text-amber-500 uppercase mb-1">Peak</div>`; }
                     else { 
-                        const peakColors = { forest: 'bg-green-600', agri: 'bg-amber-600', energy: 'bg-orange-600', water: 'bg-cyan-700', univ: 'bg-purple-600', mental: 'bg-rose-600', carbon: 'bg-slate-600' };
+                        const peakColors = { forest: 'bg-green-600', agri: 'bg-amber-600', energy: 'bg-orange-600', water: 'bg-cyan-700', univ: 'bg-purple-600', mental: 'bg-rose-600', carbon: 'bg-slate-600', music: 'bg-pink-600' };
                         bg = peakColors[mode] || 'bg-indigo-600';
                         tc = "text-white"; bd = `<div class="text-[7px] font-black uppercase mb-1">Peak</div>`; 
                     }
@@ -2155,6 +2558,7 @@ let statsBoxesHTML = `
             document.getElementById('weather-extreme-cards').classList.remove('hidden');
             document.getElementById('weather-footer').classList.remove('hidden');
             document.getElementById('stat2-container').classList.remove('invisible');
+            document.getElementById('cinema-section').classList.add('hidden');
             document.getElementById('timeline-title').innerText = "50-Year Annual Averages (Mean)";
 
             const dailyHistory = []; 
