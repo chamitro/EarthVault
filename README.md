@@ -2,7 +2,7 @@
 
 > **A Beautiful, Interactive Data Visualization Platform for Exploring Our Planet's Environmental & Social Metrics**
 
-## visit ->https://chamitro.github.io/EarthVault/
+## 🖥️Visit: https://chamitro.github.io/EarthVault/
 
 ## ✨ Features
 
