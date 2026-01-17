@@ -311,18 +311,6 @@ Have questions, suggestions, or want to collaborate?
 
 ---
 
-## 📊 Project Stats
-
-![GitHub stars](https://img.shields.io/github/stars/chamitro/EarthVault?style=social)
-![GitHub forks](https://img.shields.io/github/forks/chamitro/EarthVault?style=social)
-![GitHub watchers](https://img.shields.io/github/watchers/chamitro/EarthVault?style=social)
-
-![GitHub license](https://img.shields.io/github/license/chamitro/EarthVault)
-![GitHub issues](https://img.shields.io/github/issues/chamitro/EarthVault)
-![GitHub pull requests](https://img.shields.io/github/issues-pr/chamitro/EarthVault)
-
----
-
 <p align="center">
   <strong>Made with ❤️ for our planet 🌍</strong>
   <br>
