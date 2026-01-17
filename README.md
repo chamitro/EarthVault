@@ -97,6 +97,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **World Bank** for providing open access to global development data
 - **Open-Meteo** for free weather data API
+- **LastFM** for the music information API
 - **Chart.js** community for the excellent charting library
 - **Tailwind CSS** for design inspiration
 - All the open data initiatives making this project possible
