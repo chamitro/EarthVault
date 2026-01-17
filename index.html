@@ -725,6 +725,9 @@
                     <button onclick="selectMode('internet')" class="flex items-center gap-3 px-4 py-3 text-[11px] font-bold text-blue-400 hover:bg-white/5 rounded-xl transition-all">
                         <span>🌐</span> INTERNET ACCESS
                     </button>
+                    <button onclick="selectMode('music')" class="flex items-center gap-3 px-4 py-3 text-[11px] font-bold text-pink-400 hover:bg-white/5 rounded-xl transition-all">
+                        <span>🎵</span> MUSIC
+                    </button>
                 </div>
             </div>
         </div>
@@ -749,7 +752,8 @@
             mental: 'MENTAL HEALTH',
             carbon: 'CARBON EMISSIONS',
             generations: 'GENERATIONS',
-            internet: 'INTERNET ACCESS'
+            internet: 'INTERNET ACCESS',
+            music: 'MUSIC CULTURE'
         };
         document.getElementById('selected-mode-text').innerText = labels[mode];
         setMode(mode);
@@ -908,6 +912,9 @@
         let hasEnteredVault = false; // Track if user has entered the vault
         const today = new Date();
         const currentYear = today.getFullYear();
+        
+        // Last.fm API Key - Get your free key at: https://www.last.fm/api/account/create
+        const LASTFM_API_KEY = '608307386d8698dc2993d48021823960'; // Replace with your actual API key
         const monthDayToday = `${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
         
         const facts = {
@@ -921,13 +928,14 @@
             generations: ["Replacement fertility is generally 2.1 children per woman.", "Global fertility has halved since 1960.", "Niger currently has the highest fertility rate in the world."],
             mental: ["1 in 8 people worldwide live with a mental disorder.", "Mental health conditions can reduce life expectancy by up to 20 years.", "Globally, depression is a leading cause of disability.", "Most people with mental health conditions lack access to effective care."],
             carbon: ["CO2 levels are higher today than at any point in the last 3 million years.", "The last decade was the warmest on record.", "China, USA, and India are the top 3 global emitters.", "Methane is 25x more potent than CO2 at trapping heat.", "Natural carbon sinks like forests absorb about 25% of all CO2 emissions."],
-            internet: ["51% of global web traffic is now from bots, surpassing human activity for the first time (2024).", "37% of all internet traffic comes from malicious bots engaged in attacks and fraud.", "Good bots like search engine crawlers account for only 14% of web traffic.", "The travel industry faces the highest bot attacks, with 41% of traffic being malicious bots.", "APIs are now targeted by 44% of advanced bot attacks, up from 10% for traditional websites.", "Over 5.5 billion people use the internet globally - that's 67% of the world's population.", "The digital divide: Only 27% of people in least developed countries have internet access.", "Mobile internet has driven connectivity growth, with 96% of the global population covered by mobile networks."]
+            internet: ["51% of global web traffic is now from bots, surpassing human activity for the first time (2024).", "37% of all internet traffic comes from malicious bots engaged in attacks and fraud.", "Good bots like search engine crawlers account for only 14% of web traffic.", "The travel industry faces the highest bot attacks, with 41% of traffic being malicious bots.", "APIs are now targeted by 44% of advanced bot attacks, up from 10% for traditional websites.", "Over 5.5 billion people use the internet globally - that's 67% of the world's population.", "The digital divide: Only 27% of people in least developed countries have internet access.", "Mobile internet has driven connectivity growth, with 96% of the global population covered by mobile networks."],
+            music: ["Music streaming now accounts for 84% of the U.S. music industry revenue.", "Spotify has over 600 million active users across 180+ countries.", "K-Pop has become a $10 billion industry with global reach.", "Latin music grew 21.9% year-over-year, driven by artists like Bad Bunny and Peso Pluma.", "Country music surged 23.5% in streaming, becoming one of the fastest-growing genres.", "Hip-hop/R&B remains the most popular genre globally, accounting for ~30% of music consumption.", "Vinyl sales have been growing for 17 consecutive years, showing renewed interest in physical media.", "The global music industry generates over $28 billion annually, with streaming leading growth."]
         };
 
         function shuffleFact() {
             const list = facts[currentMode];
             document.getElementById('fact-text').innerText = list[Math.floor(Math.random() * list.length)];
-            const icons = { weather: '🌪️', forest: '🌳', agri: '🌾', energy: '⚡', water: '💧', univ: '🎓', mental: '🧠', carbon: '🏭' , generations: '🤱', human_span: '⏳', internet: '🌐'};
+            const icons = { weather: '🌪️', forest: '🌳', agri: '🌾', energy: '⚡', water: '💧', univ: '🎓', mental: '🧠', carbon: '🏭' , generations: '🤱', human_span: '⏳', internet: '🌐', music: '🎵'};
             document.getElementById('fact-icon').innerText = icons[currentMode];
         }
 
@@ -1115,6 +1123,15 @@
                 badge.className = "inline-flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 px-3 md:px-4 py-2 rounded-full text-blue-400 text-[10px] font-bold uppercase tracking-widest";
                 input.className = "flex-1 bg-slate-900/90 border border-white/10 px-4 md:px-6 py-3 md:py-4 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none text-white text-base md:text-lg search-glow transition-all";
                 searchBtn.className = "search-btn bg-blue-600 hover:bg-blue-500 text-white px-8 md:px-10 py-3 md:py-4 rounded-2xl font-bold transition-all uppercase tracking-tighter shadow-xl shadow-blue-600/20";
+            } else if (mode === 'music') {
+                attrBtn.innerText = "Data by Last.fm";
+                attrBtn.href = "https://www.last.fm/api";
+                glowBg.className = "absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-pink-500/10 blur-[120px] rounded-full";
+                logoSpan.className = "text-pink-400";
+                factLabel.className = "text-[10px] font-bold text-pink-400 uppercase tracking-[0.2em] mb-1";
+                badge.className = "inline-flex items-center gap-2 bg-pink-500/10 border border-pink-500/20 px-3 md:px-4 py-2 rounded-full text-pink-400 text-[10px] font-bold uppercase tracking-widest";
+                input.className = "flex-1 bg-slate-900/90 border border-white/10 px-4 md:px-6 py-3 md:py-4 rounded-2xl focus:ring-2 focus:ring-pink-500 outline-none text-white text-base md:text-lg search-glow transition-all";
+                searchBtn.className = "search-btn bg-pink-600 hover:bg-pink-500 text-white px-8 md:px-10 py-3 md:py-4 rounded-2xl font-bold transition-all uppercase tracking-tighter shadow-xl shadow-pink-600/20";
             } else {
                 attrBtn.innerText = "Data by World Bank";
                 attrBtn.href = "https://data.worldbank.org/";
@@ -1145,7 +1162,8 @@
                 mental: "Mental Health Vault",
                 carbon: "Carbon Emissions Vault",
                 generations: "Generations Vault",
-                internet: "Internet Access Vault"
+                internet: "Internet Access Vault",
+                music: "Music Culture Vault"
             };
             document.getElementById('main-title').innerText = titles[mode];
             document.getElementById('cityInput').placeholder = mode === 'weather' ? "Search city..." : "Search country...";
@@ -1177,6 +1195,7 @@
             // Route to specific data fetchers
             if(currentMode === 'weather') await searchWeather(query);
             else if(currentMode === 'carbon') await searchCarbon(query);
+            else if(currentMode === 'music') await searchLastFM(query);
             else await searchWBData(query);
             
             btn.disabled = false; 
@@ -1273,6 +1292,298 @@
                 document.getElementById('app-content').classList.remove('opacity-0');
             } catch (e) { alert(e.message); }
         }
+
+        // Add these at the top with your other variables (around line 500)
+// ========================================
+// WEEKLY CACHE SYSTEM FOR MUSIC
+// ========================================
+const MUSIC_CACHE_KEY = 'earthvault_music_cache';
+const CACHE_VERSION_KEY = 'earthvault_cache_version';
+let lastMusicAPICall = 0;
+
+// Get current cache week identifier (e.g., "2025-W03")
+function getCurrentCacheWeek() {
+    const now = new Date();
+    const yearStart = new Date(now.getFullYear(), 0, 1);
+    const weekNumber = Math.ceil((((now - yearStart) / 86400000) + yearStart.getDay() + 1) / 7);
+    return `${now.getFullYear()}-W${weekNumber.toString().padStart(2, '0')}`;
+}
+
+// Check if cache needs reset
+function shouldResetMusicCache() {
+    try {
+        const storedVersion = localStorage.getItem(CACHE_VERSION_KEY);
+        const currentVersion = getCurrentCacheWeek();
+        return !storedVersion || storedVersion !== currentVersion;
+    } catch (e) {
+        return true;
+    }
+}
+
+// Reset cache if needed
+function maintainMusicCache() {
+    if (shouldResetMusicCache()) {
+        try {
+            localStorage.removeItem(MUSIC_CACHE_KEY);
+            localStorage.setItem(CACHE_VERSION_KEY, getCurrentCacheWeek());
+            console.log('🔄 Music cache reset for new week:', getCurrentCacheWeek());
+        } catch (e) {
+            console.warn('Cache reset failed:', e);
+        }
+    }
+}
+
+// Get music data from cache
+function getMusicFromCache(country) {
+    try {
+        maintainMusicCache(); // Check and reset if needed
+        
+        const cacheData = localStorage.getItem(MUSIC_CACHE_KEY);
+        if (!cacheData) return null;
+        
+        const cache = JSON.parse(cacheData);
+        const countryKey = country.toLowerCase().trim();
+        
+        if (cache[countryKey]) {
+            console.log(`✅ Cache HIT for ${country} (Week: ${getCurrentCacheWeek()})`);
+            return cache[countryKey].data;
+        }
+        
+        return null;
+    } catch (e) {
+        console.warn('Cache read failed:', e);
+        return null;
+    }
+}
+
+// Save music data to cache
+function saveMusicToCache(country, data) {
+    try {
+        let cache = {};
+        const existingCache = localStorage.getItem(MUSIC_CACHE_KEY);
+        
+        if (existingCache) {
+            cache = JSON.parse(existingCache);
+        }
+        
+        const countryKey = country.toLowerCase().trim();
+        cache[countryKey] = {
+            data: data,
+            timestamp: Date.now()
+        };
+        
+        localStorage.setItem(MUSIC_CACHE_KEY, JSON.stringify(cache));
+        console.log(`💾 Cached music data for ${country} (${Object.keys(cache).length} countries cached)`);
+    } catch (e) {
+        console.warn('Cache save failed:', e);
+    }
+}
+
+async function searchLastFM(query) {
+    try {
+        if (LASTFM_API_KEY === 'YOUR_API_KEY_HERE') {
+            alert('Please add your Last.fm API key! Get one free at: https://www.last.fm/api/account/create');
+            return;
+        }
+        
+        // Check cache first (with weekly reset)
+        const cachedData = getMusicFromCache(query);
+        if (cachedData) {
+            displayMusicData(cachedData, query);
+            return;
+        }
+        
+        // Rate limiting: wait at least 1 second between API calls
+        const now = Date.now();
+        const timeSinceLastCall = now - lastMusicAPICall;
+        if (timeSinceLastCall < 1000) {
+            const waitTime = 1000 - timeSinceLastCall;
+            console.log('⏳ Rate limiting: waiting', waitTime, 'ms');
+            await new Promise(resolve => setTimeout(resolve, waitTime));
+        }
+        
+        // Update the button to show we're fetching
+        const btn = document.getElementById('searchBtn');
+        const originalText = btn.innerText;
+        btn.innerText = 'Fetching...';
+        
+        lastMusicAPICall = Date.now();
+        console.log(`🌐 Fetching fresh music data for ${query}...`);
+        
+        // Fetch top artists for the country
+        const url = `https://ws.audioscrobbler.com/2.0/?method=geo.gettopartists&country=${encodeURIComponent(query)}&limit=5&api_key=${LASTFM_API_KEY}&format=json`;
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        // Restore button text
+        btn.innerText = originalText;
+        
+        if (data.error) {
+            alert('Country not found or invalid. Please try another country name.');
+            return;
+        }
+        
+        const artists = data.topartists?.artist;
+        if (!artists || artists.length === 0) {
+            alert('No music data available for this country.');
+            return;
+        }
+        
+        // Store in cache before displaying
+        saveMusicToCache(query, data);
+        
+        // Display the data
+        displayMusicData(data, query);
+        
+    } catch (e) {
+        console.error(e);
+        alert('Error fetching music data: ' + e.message);
+        const btn = document.getElementById('searchBtn');
+        btn.innerText = 'Analyze';
+    }
+}
+
+// Initialize cache on page load
+maintainMusicCache();
+
+function displayMusicData(data, query) {
+    const artists = data.topartists?.artist;
+    if (!artists || artists.length === 0) {
+        alert('No music data available for this country.');
+        return;
+    }
+    
+    // Get the country name from response
+    const countryName = data.topartists['@attr']?.country || query;
+    
+    // Calculate metrics for the two stat boxes
+    // Note: API playcount is often unreliable for geo.gettopartists, so we use listeners
+    const totalListeners = artists.reduce((sum, artist) => sum + parseInt(artist.listeners || 0), 0);
+    const topArtistListeners = parseInt(artists[0]?.listeners || 0);
+    const avgListeners = totalListeners / artists.length;
+    
+    // Metric 1: Top Artist Dominance
+    // What percentage of total listeners does the #1 artist have?
+    const topArtistPercentage = totalListeners > 0 ? ((topArtistListeners / totalListeners) * 100).toFixed(1) : 0;
+    
+    // Metric 2: Market Concentration (Diversity Index)
+    // Calculate how evenly distributed the listeners are across top 5
+    // Using Herfindahl Index concept: lower = more diverse
+    let herfindahlSum = 0;
+    artists.forEach(artist => {
+        const share = parseInt(artist.listeners || 0) / totalListeners;
+        herfindahlSum += share * share;
+    });
+    // Convert to percentage (multiply by 100) and invert so higher = more diverse
+    const diversityIndex = ((1 - herfindahlSum) * 100).toFixed(1);
+    
+    // Format numbers for display
+    function formatNumber(num) {
+        if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+        if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+        return num.toString();
+    }
+    
+    // Create the two stat boxes HTML with beautiful design
+    // Just the boxes themselves, NO grid wrapper - impact-row already has the grid!
+let statsBoxesHTML = `
+    <div class="bg-pink-500/10 border border-pink-500/20 p-6 rounded-[2rem] text-center">
+        <h5 class="text-[10px] font-black text-pink-400 mb-2 uppercase tracking-widest">Top Artist</h5>
+        <p class="text-3xl font-black text-white">${artists[0]?.name || 'N/A'}</p>
+        <p class="text-[9px] text-slate-500 mt-2 leading-tight">
+            ${formatNumber(topArtistListeners)} listeners
+        </p>
+    </div>
+
+    <div class="bg-slate-800/40 border border-white/5 p-6 rounded-[2rem] text-center">
+        <h5 class="text-[10px] font-black text-slate-500 mb-2 uppercase tracking-widest">Dominance</h5>
+        <p class="text-3xl font-black text-pink-400">${topArtistPercentage}%</p>
+        <p class="text-[9px] text-slate-500 mt-2 leading-tight">
+            of top ${artists.length} listeners
+        </p>
+    </div>
+
+    <div class="bg-purple-500/10 border border-purple-500/20 p-6 rounded-[2rem] text-center">
+    <h5 class="text-[10px] font-black text-purple-400 mb-2 uppercase tracking-widest">Diversity Index</h5>
+    <p class="text-3xl font-black text-white">${diversityIndex}%</p>
+    <p class="text-[9px] text-slate-500 mt-2 leading-tight">
+        ${parseFloat(diversityIndex) > 70 ? '🎭 Diverse' : parseFloat(diversityIndex) > 50 ? '⭐ Moderate' : '👑 Star-driven'} music landscape
+    </p>
+</div>
+
+    <div class="bg-slate-800/40 border border-white/5 p-6 rounded-[2rem] text-center">
+        <h5 class="text-[10px] font-black text-slate-500 mb-2 uppercase tracking-widest">Total Reach</h5>
+        <p class="text-3xl font-black text-white">${formatNumber(totalListeners)}</p>
+        <p class="text-[9px] text-slate-500 mt-2 leading-tight">
+            combined listeners
+        </p>
+    </div>
+`;
+    
+    // Find max listeners for scaling bars
+    const maxListeners = Math.max(...artists.map(a => parseInt(a.listeners) || 0));
+    
+    // Create bar chart HTML
+    let barChartHTML = '<div class="bg-slate-900/60 p-6 md:p-8 rounded-3xl border border-white/10 col-span-full">';
+    barChartHTML += `<h3 class="text-xl md:text-2xl font-bold text-pink-400 mb-4 md:mb-6">Top 5 Artists in ${countryName} by Popularity</h3>`;
+    barChartHTML += '<div class="space-y-3 md:space-y-4">';
+    
+    artists.forEach((artist, index) => {
+        const listeners = parseInt(artist.listeners) || 0;
+        const percentage = maxListeners > 0 ? (listeners / maxListeners) * 100 : 100;
+        const marketShare = totalListeners > 0 ? ((listeners / totalListeners) * 100).toFixed(1) : 0;
+        
+        // Format the listener count
+        let formattedCount;
+        if (listeners >= 1000000) {
+            formattedCount = (listeners / 1000000).toFixed(1) + 'M';
+        } else if (listeners >= 1000) {
+            formattedCount = (listeners / 1000).toFixed(1) + 'K';
+        } else {
+            formattedCount = listeners.toString();
+        }
+        
+        barChartHTML += `
+        <div class="group">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-sm md:text-base font-bold text-white">${index + 1}. ${artist.name}</span>
+                <span class="text-xs md:text-sm text-pink-400 font-mono">${formattedCount} listeners • ${marketShare}%</span>
+            </div>
+            <div class="w-full bg-slate-800 rounded-full h-3 md:h-4 overflow-hidden">
+                <div class="bg-gradient-to-r from-pink-500 to-purple-500 h-full rounded-full transition-all duration-500 group-hover:scale-105" 
+                     style="width: ${percentage}%"></div>
+            </div>
+        </div>`;
+    });
+    
+    barChartHTML += '</div></div>';
+    
+    // Combine stats boxes and bar chart
+    const fullHTML = statsBoxesHTML + barChartHTML;
+    
+    // Show impact row and hide other elements
+    const impactRow = document.getElementById('impact-row');
+    if (impactRow) {
+        impactRow.classList.remove('hidden');
+        impactRow.innerHTML = fullHTML;
+    }
+    
+    // HIDE all the stat cards we don't need
+    const statsGrid = document.querySelector('.stats-grid');
+    const weatherExtremeCards = document.getElementById('weather-extreme-cards');
+    const weatherFooter = document.getElementById('weather-footer');
+    const chartContainers = document.querySelectorAll('.chart-container');
+    const yearListParent = document.querySelector('.bg-slate-900\\/30');
+    
+    if (statsGrid) statsGrid.classList.add('hidden');
+    if (weatherExtremeCards) weatherExtremeCards.classList.add('hidden');
+    if (weatherFooter) weatherFooter.classList.add('hidden');
+    chartContainers.forEach(el => el.classList.add('hidden'));
+    if (yearListParent) yearListParent.classList.add('hidden');
+    
+    // Show the app content
+    document.getElementById('app-content').classList.remove('opacity-0');
+}
 
         async function searchWBData(query) {
             try {
