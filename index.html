@@ -1816,7 +1816,7 @@ async function searchMovies(query) {
         const maxPages = 5; // Check up to 5 pages to find 20 movies
         
         while (detailedMovies.length < 20 && page <= maxPages) {
-            const discoverUrl = `${TMDB_BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}&sort_by=vote_average.desc&with_origin_country=${countryCode}&vote_count.gte=50&page=${page}`;
+            const discoverUrl = `${TMDB_BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}&sort_by=vote_average.desc&with_origin_country=${countryCode}&vote_count.gte=100&page=${page}`;
             const discoverResponse = await fetch(discoverUrl);
             const discoverData = await discoverResponse.json();
             
@@ -1893,7 +1893,7 @@ function displayMovies(data, query) {
         cinemaTitle.innerHTML = `Global Trending Movies <span class="text-sm text-slate-400">(No movies from ${query})</span>`;
     } else {
         const countryName = query.charAt(0).toUpperCase() + query.slice(1);
-        cinemaTitle.innerHTML = `Top ${data.movies.length} Highest-Rated Movies FROM ${countryName} <span class="text-sm text-slate-400">(min. 50 votes)</span>`;
+        cinemaTitle.innerHTML = `Top ${data.movies.length} Highest-Rated Movies FROM ${countryName} <span class="text-sm text-slate-400">(min. 100 votes)</span>`;
     }
 
     moviesGrid.innerHTML = '';
