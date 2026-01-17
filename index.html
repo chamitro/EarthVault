@@ -1893,7 +1893,7 @@ function displayMovies(data, query) {
         cinemaTitle.innerHTML = `Global Trending Movies <span class="text-sm text-slate-400">(No movies from ${query})</span>`;
     } else {
         const countryName = query.charAt(0).toUpperCase() + query.slice(1);
-        cinemaTitle.innerHTML = `Top ${data.movies.length} Highest-Rated Movies FROM ${countryName}`;
+        cinemaTitle.innerHTML = `Top ${data.movies.length} Highest-Rated Movies FROM ${countryName} <span class="text-sm text-slate-400">(min. 50 votes)</span>`;
     }
 
     moviesGrid.innerHTML = '';
