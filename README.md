@@ -4,7 +4,7 @@
 
 ## ✨ Features
 
-### 📊 **11 Data Visualization Modes**
+### 📊 **12 Data Visualization Modes**
 - 🌡️ **Weather Archive** - 50+ years of historical climate data
 - 🎓 **University Access** - Global tertiary education trends with gender parity analysis
 - 🌳 **Forest Heritage** - Deforestation rates and ecological safety metrics
@@ -16,6 +16,7 @@
 - 🧠 **Mental Health** - Global mental health prevalence
 - 🏭 **Carbon Emissions** - CO₂ emissions and climate targets
 - 🌐 **Internet Access** - Internet access through the world
+- 🎵 **Music** - Top artists per country 
 
 ### 🎨 **Modern UI/UX**
 - ✨ Animated particle background system
