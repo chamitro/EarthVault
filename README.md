@@ -45,6 +45,7 @@
 | **Chart.js** | Data visualization charts |
 | **World Bank API** | Social and environmental data |
 | **Open-Meteo API** | Weather and climate data |
+| **LastFM API** | Music Data |
 
 ## 📊 Data Sources
 
@@ -56,6 +57,7 @@
 - **Open-Meteo** - Historical weather data
   - Temperature, humidity, precipitation
   - 50+ years of climate records
+- **LastFm** - Music Data
 
 ### Statistical Models
 The splash screen displays estimated daily accumulations based on:
