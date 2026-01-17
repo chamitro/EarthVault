@@ -1061,7 +1061,21 @@
         function setMode(mode) {
             currentMode = mode;
             
-            const attrBtn = document.getElementById('attribution-link');
+            const statsGrid = document.querySelector('.stats-grid');
+    const weatherExtremeCards = document.getElementById('weather-extreme-cards');
+    const weatherFooter = document.getElementById('weather-footer');
+    const chartContainers = document.querySelectorAll('.chart-container');
+    const yearListParent = document.querySelector('.bg-slate-900\\/30');
+
+    if (statsGrid) statsGrid.classList.remove('hidden');
+    if (weatherExtremeCards) weatherExtremeCards.classList.remove('hidden');
+    if (weatherFooter) weatherFooter.classList.remove('hidden');
+    chartContainers.forEach(el => el.classList.remove('hidden'));
+    if (yearListParent) yearListParent.classList.remove('hidden');
+    // -----------------------------------------------------------
+
+    const attrBtn = document.getElementById('attribution-link');
+    
             const glowBg = document.getElementById('glow-bg');
             const logoSpan = document.getElementById('logo-span');
             const factLabel = document.getElementById('fact-label');
@@ -1411,7 +1425,7 @@ async function searchLastFM(query) {
         console.log(`🌐 Fetching fresh music data for ${query}...`);
         
         // Fetch top artists for the country
-        const url = `https://ws.audioscrobbler.com/2.0/?method=geo.gettopartists&country=${encodeURIComponent(query)}&limit=5&api_key=${LASTFM_API_KEY}&format=json`;
+        const url = `https://ws.audioscrobbler.com/2.0/?method=geo.gettopartists&country=${encodeURIComponent(query)}&limit=10&api_key=${LASTFM_API_KEY}&format=json`;
         const response = await fetch(url);
         const data = await response.json();
         
@@ -1525,7 +1539,7 @@ let statsBoxesHTML = `
     
     // Create bar chart HTML
     let barChartHTML = '<div class="bg-slate-900/60 p-6 md:p-8 rounded-3xl border border-white/10 col-span-full">';
-    barChartHTML += `<h3 class="text-xl md:text-2xl font-bold text-pink-400 mb-4 md:mb-6">Top 5 Artists in ${countryName} by Popularity</h3>`;
+    barChartHTML += `<h3 class="text-xl md:text-2xl font-bold text-pink-400 mb-4 md:mb-6">Top Artists in ${countryName} by Popularity</h3>`;
     barChartHTML += '<div class="space-y-3 md:space-y-4">';
     
     artists.forEach((artist, index) => {
@@ -1571,17 +1585,14 @@ let statsBoxesHTML = `
     // HIDE all the stat cards we don't need
     const statsGrid = document.querySelector('.stats-grid');
     const weatherExtremeCards = document.getElementById('weather-extreme-cards');
-    const weatherFooter = document.getElementById('weather-footer');
     const chartContainers = document.querySelectorAll('.chart-container');
     const yearListParent = document.querySelector('.bg-slate-900\\/30');
     
     if (statsGrid) statsGrid.classList.add('hidden');
     if (weatherExtremeCards) weatherExtremeCards.classList.add('hidden');
-    if (weatherFooter) weatherFooter.classList.add('hidden');
     chartContainers.forEach(el => el.classList.add('hidden'));
     if (yearListParent) yearListParent.classList.add('hidden');
     
-    // Show the app content
     document.getElementById('app-content').classList.remove('opacity-0');
 }
 
