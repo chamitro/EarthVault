@@ -8,49 +8,49 @@
 
 ## ✨ Features
 
-### 📊 **13 Data Visualization Modes**
+#### 📊 **20 Data Visualization Sections**
+EarthVault provides comprehensive insights across environmental, social, economic, and cultural dimensions:
 
-EarthVault provides comprehensive insights across environmental, social, and cultural dimensions:
-
-#### 🌍 **Environmental Data**
-- 🌡️ **Weather Archive** - 50+ years of historical climate data with daily temperature records
+#### 🌍 **Environmental Data (8 sections)**
+- 🌪️ **Weather Archive** - 50+ years of historical climate data with daily temperature records and extreme weather tracking
 - 🌳 **Forest Heritage** - Global deforestation rates and forest coverage trends
 - 🌾 **Agriculture** - Agricultural land use intensity and farming trends
-- ⚡ **Energy & Renewables** - Clean energy transition tracking and renewable adoption
+- ⚡ **Energy & Renewables** - Clean energy transition tracking and renewable adoption rates
 - 💧 **Water Safety** - Access to safely managed drinking water sources
-- 🏭 **Carbon Emissions** - CO₂ emissions tracking against Paris Agreement targets
+- 🏭 **Carbon Emissions** - CO₂ emissions tracking per capita and environmental impact
+- 🐾 **Endangered Species** - Threatened mammals, birds, fish, and plants (% of global threatened species)
+- ♻️ **Waste & Recycling** - Recycling rates and waste management progress (OECD countries)
 
-#### 👥 **Social & Health Metrics**
+#### 👥 **Social & Health Metrics (8 sections)**
 - 🎓 **University Access** - Global tertiary education enrollment with gender parity analysis
-- ⏳ **Human Lifespan** - Life expectancy trends and longevity gap analysis
+- ⏳ **Human Lifespan** - Life expectancy trends with male/female breakdowns
 - 🤱 **Generations** - Fertility rates and demographic transitions
-- 🧠 **Mental Health** - Global mental health prevalence and trends
+- 🧠 **Mental Health** - Mental health statistics and prevalence trends
+- ✈️ **Migration & Diaspora** - Net migration, brain drain/gain, and remittances data
+- 🏥 **Health: Public vs Private** - Healthcare spending distribution and government vs private expenditure
+- 💼 **Economy & Labor Market** - GDP per capita, unemployment rates, GINI index, labor force participation
+- 🏛️ **Education: Public vs Private** - School enrollment distribution between public and private sectors
 
-#### 🌐 **Digital & Cultural**
-- 🌐 **Internet Access** - Digital connectivity and internet penetration worldwide
-- 🎵 **Music Culture** - Top artists and tracks by country (powered by Last.fm)
-- 🎬 **Cinema Discovery** - Highest-rated films from each country (powered by TMDB)
+#### 🌐 **Digital & Cultural (4 sections)**
+- 🌐 **Internet Access** - Digital connectivity and internet penetration with gender breakdowns
+- 🎵 **Music Culture** - Top artists and streaming data by country (powered by Spotify)
+- 🎬 **Cinema Discovery** - Box office data and trending movies (powered by TMDB)
+- 📊 **Internet Trends** - Real-time trending topics from Reddit (global r/all + country subreddits)
+
 
 ### 🎨 **Modern UI/UX**
-
-- ✨ **Animated Particle Background** - Dynamic canvas-based particle system
-- 📈 **Real-time Number Counters** - Smooth easing animations for live statistics
-- 🎯 **Interactive Elements** - Hover effects, micro-interactions, and responsive feedback
-- 📱 **Fully Responsive** - Optimized for mobile, tablet, and desktop devices
-- 🌓 **Dark Mode First** - Beautiful dark theme with glassmorphism design
-- 🎭 **Smooth Transitions** - Polished animations between sections and data views
-- 📊 **Interactive Charts** - Dynamic line charts with customizable styling
-- 🗓️ **Timeline Grids** - Historical data visualization with peak/floor indicators
-
-### 🚀 **Technical Highlights**
-
-- 📡 **Multi-Source Data Integration** - Real-time data from World Bank, Open-Meteo, Last.fm, and TMDB APIs
-- 💾 **Smart Caching System** - localStorage-based caching with automatic weekly/monthly refresh
-- 🎬 **Performance Optimized** - Efficient API usage with rate limiting and caching strategies
-- 🧮 **Advanced Statistics** - Growth rates, trends, comparisons, and historical analysis
-- 🌐 **Client-Side Only** - No backend required, runs entirely in the browser
-- ⚡ **Lightweight** - Fast loading and smooth performance
-- 🎨 **Custom Scrollbars** - Styled scrollbars matching the design theme
+- ✨ **Animated Particle Background** - Dynamic canvas-based particle system creating an immersive environment
+- 📈 **Real-time Number Counters** - Smooth easing animations for live statistics and data transitions
+- 🎯 **Interactive Elements** - Hover effects, micro-interactions, and responsive feedback on all components
+- 📱 **Fully Responsive** - Optimized layouts for mobile, tablet, and desktop devices with adaptive breakpoints
+- 🌓 **Dark Mode First** - Beautiful dark slate theme with glassmorphism design and vibrant accent colors
+- 🎭 **Smooth Transitions** - Polished animations between sections, mode switches, and data view changes
+- 📊 **Interactive Charts** - Dynamic multi-line charts with Chart.js showing historical trends
+- 🗓️ **Timeline Grids** - Year-by-year historical data visualization with peak/floor indicators and color coding
+- 🎨 **Category Color Coding** - Distinct colors for each category (Green for environment, Pink for social, Blue for digital, Yellow for economy)
+- 🎲 **Rotating Fun Facts** - Educational and engaging facts for each section that refresh dynamically
+- 💡 **Contextual Notes** - Explanatory text helping users understand data meaning and significance
+- 🏷️ **Data Attribution** - Clear "Data by [Source]" labels on every section for transparency
 
 ---
 
@@ -97,6 +97,15 @@ Historical weather and climate data:
 
 **API Documentation:** [open-meteo.com](https://open-meteo.com)
 
+
+#### OECD (Organisation for Economic Co-operation and Development)
+
+Drives the Waste & Recycling Vault.
+- Recycling Rates: Municipal waste treatment data focusing on recovery vs. disposal for OECD member nations.
+- Environmental Policy: Data used to track national progress in diverting waste from landfills.
+
+**API Documentation:** [oecd.org/environment/waste](oecd.org/environment/waste)
+
 #### **Last.fm**
 Music discovery and trends:
 - Top artists by country
@@ -113,6 +122,14 @@ Cinema data and analytics:
 - Release dates and metadata
 
 **API Documentation:** [themoviedb.org/documentation/api](https://www.themoviedb.org/documentation/api)
+
+#### Reddit API
+
+Powers the Internet Trends Vault for real-time cultural discourse.
+- Global Pulse: Fetches top discussions from r/all
+- Regional Sentiment: Queries country-specific subreddits (e.g., r/greece, r/germany) to compare local interests against global trending topics.
+
+**API Documentation:** [reddit.com/dev/api](reddit.com/dev/api)
 
 ### 📈 **Statistical Models**
 
@@ -202,6 +219,9 @@ The following API keys are included in the code:
 - ✅ **Open-Meteo** - No key required (free tier)
 - ✅ **Last.fm** - Key included (free tier)
 - ✅ **TMDB** - Key included (free tier)
+- ✅ **OECD** - No key required (public API)
+- ✅ **reddit** - No key required (public API)
+
 
 For production use with high traffic, consider getting your own API keys:
 - [Last.fm API Key](https://www.last.fm/api/account/create)
