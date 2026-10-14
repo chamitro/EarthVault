@@ -42,6 +42,7 @@ EarthVault provides comprehensive insights across environmental, social, economi
 - 🕵️ **Mystery Country** - One secret country a day, the same for everyone. Six guesses; every miss unlocks a clue (region, population, forest and life expectancy, capital hint, neighbours, flag) and tells you how far off you were and in which direction. Streaks, stats and a Wordle-style share grid
 - 🌡️ **Hot or Not** - Two cities, live temperatures from Open-Meteo: which one is warmer at this moment? The answer changes through the day
 - 🚩 **Flag Flash** - Thirty seconds, four choices per flag, with distractors from the same region. Personal best and share
+- ⚔️ **Challenge a friend** - Planet Quiz, Hot or Not and Flag Flash each have a "Challenge a friend" button. It starts a seeded round (10 questions, or the same flag deck for 30 seconds), then gives you a link with your score. Your friend opens it, plays the exact same questions, and both scores appear side by side with a winner. They can send their result back and you see who won without playing again. No account and no server: everything is encoded in the link (`?vault=quiz&ch=<seed>&cs=<score>&cb=<name>`)
 
 #### 🛰️ **Live Earth (9 sections)**
 - 🌍 **Planet Right Now** - Live leaderboards across 56 cities: hottest, coldest, windiest, cleanest and most polluted air, strongest UV, plus how many are clear, raining, snowing or in night. Refreshes every 10 minutes
@@ -66,6 +67,8 @@ EarthVault provides comprehensive insights across environmental, social, economi
 
 
 ### 🎨 **Modern UI/UX**
+- ⚔️ **Challenge links** - Any game round can be shared as a link that reproduces the same questions for a friend and compares the two scores
+- 📲 **Installable app (PWA)** - Open the site on a phone and tap "Install" (Android Chrome shows the prompt, iPhone users go via Share → Add to Home Screen). EarthVault then runs full-screen from its own icon, the shell works offline, and long-pressing the icon on Android offers shortcuts to Mystery Country, Planet Quiz, Planet Right Now and Best Hour Outside. Deep links like `?vault=mystery` open a vault directly
 - 🇬🇷 **Greek interface** - An EN/ΕΛ toggle in the header and on the splash screen switches the menu, titles, descriptions, search row, tips and shared labels to Greek (auto-selected for Greek browsers, remembered between visits). Data from the sources stays in English
 - 🛂 **Country Passport** - Every country result opens with the flag, capital, region, income group and population
 - 🎲 **Surprise Me** - A dice button next to the search box picks a random place for the current vault
@@ -92,6 +95,18 @@ EarthVault provides comprehensive insights across environmental, social, economi
 - 🎲 **Rotating Fun Facts** - Educational and engaging facts for each section that refresh dynamically
 - 💡 **Contextual Notes** - Explanatory text helping users understand data meaning and significance
 - 🏷️ **Data Attribution** - Clear "Data by [Source]" labels on every section for transparency
+
+---
+
+## 📲 Install on a phone
+
+EarthVault is a Progressive Web App, so it installs from the browser with no app store:
+
+- **Android (Chrome, Edge, Samsung Internet):** open https://chamitro.github.io/EarthVault/ and tap the green **Install** button in the header, or the browser's own "Install app" prompt.
+- **iPhone / iPad (Safari):** tap **Share**, then **Add to Home Screen**.
+- **Desktop (Chrome, Edge):** click the install icon in the address bar.
+
+The pieces behind it: `manifest.json` (name, icons, theme, shortcuts), `sw.js` (network-first service worker that keeps the shell available offline; live data always goes to the network) and the icon set in `icons/`. To ship the same app on Google Play later, wrap this PWA as a Trusted Web Activity with PWABuilder or Bubblewrap; no code changes are needed.
 
 ---
 

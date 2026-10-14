@@ -11,7 +11,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>EarthVault - Explore the Planet in Data</title>
-    <meta name="description" content="EarthVault turns open data into 28 interactive vaults: climate, oceans, forests, energy, air, water, happiness, health, culture and live planetary alerts.">
+    <meta name="description" content="EarthVault turns open data into 41 interactive vaults: climate, oceans, forests, energy, air, water, happiness, health, culture, games and live planetary data.">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="EarthVault">
+    <link rel="icon" type="image/png" sizes="64x64" href="icons/favicon-64.png">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
@@ -581,6 +589,7 @@
                 <div class="bg-white/5 border border-white/10 rounded-2xl p-3"><div class="text-[8px] font-black text-violet-400 uppercase tracking-widest" data-i18n="live_kp">Kp index now</div><div id="splash-kp" class="text-xl font-black text-white font-mono-data">…</div></div>
                 <div data-i18n="live_src" class="col-span-3 text-[8px] text-slate-500 uppercase tracking-widest">Live right now · USGS, NASA EONET, NOAA</div>
             </div>
+            <button type="button" onclick="installApp()" class="install-btn hidden w-full mb-3 px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/15 border border-emerald-500/40 text-xs font-black text-emerald-300 tracking-widest transition-all">📲 Install EarthVault</button>
             <button onclick="enterVault()" data-i18n="splash_enter" class="splash-enter-btn">
                 Explore Real Data →
             </button>
@@ -771,6 +780,7 @@
         </h1>
 
         <div class="flex items-center gap-2">
+        <button type="button" onclick="installApp()" class="install-btn hidden shrink-0 px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-[10px] font-black text-white tracking-widest transition-all">📲 Install</button>
         <button type="button" onclick="toggleLang()" class="lang-btn shrink-0 px-2.5 py-2 rounded-xl bg-slate-900/80 ring-1 ring-inset ring-white/10 hover:bg-slate-800 text-[10px] font-black text-slate-300 tracking-widest transition-all" title="Αλλαγή στα Ελληνικά" aria-label="Αλλαγή στα Ελληνικά">ΕΛ</button>
         <div class="relative inline-block text-left" id="menu-container">
             <div>
@@ -1432,7 +1442,10 @@
             loadSplashLive();
             let savedMode = null;
             try { savedMode = localStorage.getItem('ev_last_mode'); } catch (e) {}
-            if (savedMode && MODE_INFO[savedMode]) selectMode(savedMode); else setMode('weather');
+            let linkMode = null; try { linkMode = new URLSearchParams(location.search).get('vault'); } catch (e) {}
+            if (linkMode && MODE_INFO[linkMode]) { readChallengeLink(); selectMode(linkMode); hasEnteredVault = true; }
+            else if (savedMode && MODE_INFO[savedMode]) selectMode(savedMode); else setMode('weather');
+            initPWA();
             shuffleFact();
             ['cityInput', 'cityInput2'].forEach(id => document.getElementById(id).addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); mainAction(); } }));
             window.addEventListener('scroll', () => document.getElementById('to-top').classList.toggle('hidden', window.scrollY < 600), { passive: true });
@@ -1458,6 +1471,7 @@
         });
 
         function setMode(mode) {
+            if (typeof CH !== 'undefined' && CH.active && CH.game !== mode) CH.active = false;
             currentMode = mode;
             
             // Hide all app content when switching modes - show only search
@@ -4039,7 +4053,7 @@ function displayMovies(data, query) {
             waste:          { desc: 'Recycling, composting and landfill rates from the OECD', examples: ['Germany', 'Japan', 'Greece'] },
             power:          { desc: 'Fossil, coal and nuclear shares of the grid, plus electricity use per person', examples: ['Poland', 'France', 'Iceland'] },
             wildlife:       { desc: 'Real wildlife photos spotted by citizen scientists, plus what lives there', examples: ['Greece', 'Costa Rica', 'Australia'] },
-            quiz:           { desc: 'Higher or lower? Guess which country wins on real planet data', examples: [] },
+            quiz:           { desc: 'Higher or lower? Guess which country wins on real planet data, then challenge a friend by link', examples: [] },
             iss:            { desc: 'Where the International Space Station is right now, live on a map', examples: [] },
             city:           { desc: 'When a city was founded, who was born there and the moments that shaped it', examples: ['Athens', 'Kyoto', 'Istanbul', 'Lisbon'] },
             mystery:        { desc: 'One secret country a day. Six guesses, a new clue after every miss', examples: [] },
@@ -4152,6 +4166,8 @@ function displayMovies(data, query) {
             document.getElementById('app-content').classList.add('hidden');
             live.classList.remove('hidden');
             live.innerHTML = `<div class="text-center py-16 text-slate-500 text-xs font-bold uppercase tracking-widest animate-pulse">${t('contacting')}</div>`;
+            if (CH.active && CH.game !== mode) CH.active = false;
+            if (CH.pending && CH.pending.game === mode) { const p = CH.pending; CH.pending = null; renderChallengeIntro(p); return; }
             const loader = { alerts: loadPlanetAlerts, space: loadSpaceWeather, quiz: loadQuiz, iss: loadISS, mystery: loadMystery, hotornot: loadHotOrNot, flags: loadFlags, rightnow: loadRightNow, asteroids: loadAsteroids, onthisday: () => loadOnThisDay() }[mode] || loadPlanetAlerts;
             loader().catch(e => {
                 console.error('Live feed failed:', e);
@@ -5017,17 +5033,18 @@ function displayMovies(data, query) {
         try { QUIZ.best = parseInt(localStorage.getItem('ev_quiz_best') || '0', 10) || 0; } catch (e) {}
         async function loadQuiz() {
             const live = document.getElementById('live-section');
-            const metric = pickRandom(COMPARE_METRICS);
+            const pick = chPick('quiz');
+            const metric = pick(COMPARE_METRICS);
             const [countries, rows] = await Promise.all([
                 wbCountries(),
                 cachedJson(`https://api.worldbank.org/v2/country/all/indicator/${metric.ind}?format=json&mrnev=1&per_page=400`, 24 * 3600 * 1000)
             ]);
             const byId = {}; countries.forEach(c => { byId[c.id] = c; });
-            const pool = (rows[1] || []).filter(r => r.value !== null && byId[r.countryiso3code]).map(r => ({ c: byId[r.countryiso3code], val: r.value, year: r.date }));
+            const pool = (rows[1] || []).filter(r => r.value !== null && byId[r.countryiso3code]).map(r => ({ c: byId[r.countryiso3code], val: r.value, year: r.date })).sort((p, q) => p.c.id < q.c.id ? -1 : p.c.id > q.c.id ? 1 : 0);
             if (pool.length < 2) throw new Error('Not enough data for this question. Try again.');
-            const a = pickRandom(pool);
-            let b = pickRandom(pool), guard = 0;
-            while ((b.c.id === a.c.id || b.val === a.val) && guard++ < 25) b = pickRandom(pool);
+            const a = pick(pool);
+            let b = pick(pool), guard = 0;
+            while ((b.c.id === a.c.id || b.val === a.val) && guard++ < 25) b = pick(pool);
             QUIZ.current = { metric, a, b, answered: false };
             renderQuiz(live);
         }
@@ -5051,15 +5068,16 @@ function displayMovies(data, query) {
             live.innerHTML = `
     <div class="vault-card rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10">
         ${quizHeader()}
-        <p class="text-center text-[10px] font-black text-pink-400 uppercase tracking-[0.3em] mb-2">Question ${QUIZ.asked + 1}</p>
+        ${chActive('quiz') ? chBanner('pink') : `<p class="text-center text-[10px] font-black text-pink-400 uppercase tracking-[0.3em] mb-2">Question ${QUIZ.asked + 1}</p>`}
         <h3 class="text-center text-xl md:text-3xl font-black text-white mb-6 md:mb-8">Which country has the higher<br><span class="text-pink-300">${metric.label}</span>?</h3>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 max-w-2xl mx-auto">${choice('a', a)}${choice('b', b)}</div>
         <div id="quiz-verdict" class="text-center mt-6 min-h-[2rem]"></div>
-        <div class="flex flex-wrap justify-center gap-3 mt-4">
+        ${chActive('quiz') ? '' : `<div class="flex flex-wrap justify-center gap-3 mt-4">
             <button type="button" onclick="runLiveMode('quiz')" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-300">Skip</button>
             <button type="button" onclick="resetQuiz()" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-300">Reset score</button>
             <button type="button" onclick="shareQuiz()" class="px-4 py-2 rounded-xl bg-pink-600/80 hover:bg-pink-500 text-xs font-bold text-white">Share score</button>
-        </div>
+            ${chButton('quiz')}
+        </div>`}
         <p class="text-center text-[10px] text-slate-500 mt-5">Latest World Bank value for each country. ${metric.higherBetter === true ? 'Higher is generally better here.' : metric.higherBetter === false ? 'Lower is generally better here.' : ''}</p>
     </div>`;
         }
@@ -5080,11 +5098,12 @@ function displayMovies(data, query) {
             const winner = q[higher], loser = q[higher === 'a' ? 'b' : 'a'];
             const ratio = loser.val !== 0 ? (winner.val / loser.val) : null;
             const verdict = document.getElementById('quiz-verdict');
-            const canExplore = MODE_INFO[q.metric.key] && !LIVE_MODES.includes(q.metric.key);
+            if (chActive('quiz')) CH.idx = QUIZ.asked;
+            const canExplore = MODE_INFO[q.metric.key] && !LIVE_MODES.includes(q.metric.key) && !chActive('quiz');
             verdict.innerHTML = `<p class="text-lg font-black ${correct ? 'text-emerald-400' : 'text-rose-400'}">${correct ? pickRandom(['Correct! 🎯', 'Nailed it! 🌍', 'Yes! 🙌', 'Spot on! ✨']) : pickRandom(['Not this time 😅', 'Close, but no 🙈', 'Nope! 🌀'])}</p>
         <p class="text-sm text-slate-300 mt-1">${winner.c.name} is higher${ratio && ratio > 1.05 ? ` - about ${ratio >= 10 ? Math.round(ratio) : ratio.toFixed(1)}× ${loser.c.name}` : ''}.</p>
         <div class="flex flex-wrap justify-center gap-3 mt-4">
-            <button type="button" onclick="runLiveMode('quiz')" class="px-5 py-2.5 rounded-xl bg-pink-600 hover:bg-pink-500 text-sm font-bold text-white">Next question →</button>
+            ${chNext('quiz', QUIZ.score, 'Next question →', 'bg-pink-600 hover:bg-pink-500')}
             ${canExplore ? `<button type="button" onclick="jumpTo('${q.metric.key}', '${winner.c.name.replace(/'/g, "\\'")}')" class="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-sm font-bold text-slate-200">Explore ${winner.c.name} →</button>` : ''}
         </div>`;
             const header = verdict.closest('.vault-card').querySelector('div');
@@ -5570,7 +5589,8 @@ function displayMovies(data, query) {
         const HOT = { score: 0, streak: 0, best: lsGet('ev_hot_best', 0), current: null };
         async function loadHotOrNot() {
             const live = document.getElementById('live-section');
-            const a = pickRandom(WORLD_CITIES); let b = pickRandom(WORLD_CITIES); while (b === a) b = pickRandom(WORLD_CITIES);
+            const pick = chPick('hotornot');
+            const a = pick(WORLD_CITIES); let b = pick(WORLD_CITIES); while (b === a) b = pick(WORLD_CITIES);
             const data = await cachedJson(`https://api.open-meteo.com/v1/forecast?latitude=${a[2]},${b[2]}&longitude=${a[3]},${b[3]}&current=temperature_2m,weather_code,is_day&timezone=auto`, 10 * 60 * 1000);
             const list = Array.isArray(data) ? data : [data];
             HOT.current = { a: Object.assign({ wx: list[0] }, { city: a }), b: Object.assign({ wx: list[1] }, { city: b }), answered: false };
@@ -5584,16 +5604,17 @@ function displayMovies(data, query) {
             live.innerHTML = `
     <div class="vault-card rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10">
         ${scoreHeader(HOT.score, HOT.streak, HOT.best, 'orange')}
-        <p class="text-center text-[10px] font-black text-orange-400 uppercase tracking-[0.3em] mb-2">Live right now</p>
+        ${chActive('hotornot') ? chBanner('orange') : '<p class="text-center text-[10px] font-black text-orange-400 uppercase tracking-[0.3em] mb-2">Live right now</p>'}
         <h3 class="text-center text-xl md:text-3xl font-black text-white mb-6 md:mb-8">Which city is <span class="text-orange-300">warmer</span> at this moment?</h3>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 max-w-2xl mx-auto">${card('a', HOT.current.a)}${card('b', HOT.current.b)}</div>
         <div id="hot-verdict" class="text-center mt-6 min-h-[2rem]"></div>
-        <div class="flex flex-wrap justify-center gap-3 mt-4"><button type="button" onclick="runLiveMode('hotornot')" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-300">Skip</button><button type="button" onclick="HOT.score=0;HOT.streak=0;runLiveMode('hotornot')" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-300">Reset score</button></div>
+        ${chActive('hotornot') ? '' : `<div class="flex flex-wrap justify-center gap-3 mt-4"><button type="button" onclick="runLiveMode('hotornot')" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-300">Skip</button><button type="button" onclick="HOT.score=0;HOT.streak=0;runLiveMode('hotornot')" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-300">Reset score</button>${chButton('hotornot')}</div>`}
         <p class="text-center text-[10px] text-slate-500 mt-5">Temperatures are live from Open-Meteo, so the answer changes through the day.</p>
     </div>`;
         }
         function answerHot(side) {
             const q = HOT.current; if (!q || q.answered) return; q.answered = true;
+            if (chActive('hotornot')) CH.idx++;
             const ta = q.a.wx.current.temperature_2m, tb = q.b.wx.current.temperature_2m;
             const warmer = ta >= tb ? 'a' : 'b', correct = side === warmer;
             if (correct) { HOT.score++; HOT.streak++; } else HOT.streak = 0;
@@ -5602,7 +5623,7 @@ function displayMovies(data, query) {
             const w = q[warmer], l = q[warmer === 'a' ? 'b' : 'a'];
             document.getElementById('hot-verdict').innerHTML = `<p class="text-lg font-black ${correct ? 'text-emerald-400' : 'text-rose-400'}">${correct ? pickRandom(['Correct! 🔥', 'Hot streak! 🌡️', 'Yes! ☀️']) : pickRandom(['Brrr, wrong 🧊', 'Not this time ❄️'])}</p>
         <p class="text-sm text-slate-300 mt-1">${w.city[0]} is ${Math.abs(ta - tb).toFixed(1)}°C warmer than ${l.city[0]} right now. ${WX_TEXT(w.wx.current.weather_code)} there, ${WX_TEXT(l.wx.current.weather_code).toLowerCase()} in ${l.city[0]}.</p>
-        <div class="flex flex-wrap justify-center gap-3 mt-4"><button type="button" onclick="runLiveMode('hotornot')" class="px-5 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-sm font-bold text-white">Next duel →</button><button type="button" onclick="jumpTo('weather', '${w.city[0].replace(/'/g, '&#39;')}')" class="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-sm font-bold text-slate-200">50 years of ${w.city[0]} weather →</button></div>`;
+        <div class="flex flex-wrap justify-center gap-3 mt-4">${chNext('hotornot', HOT.score, 'Next duel →', 'bg-orange-600 hover:bg-orange-500')}${chActive('hotornot') ? '' : `<button type="button" onclick="jumpTo('weather', '${w.city[0].replace(/'/g, '&#39;')}')" class="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-sm font-bold text-slate-200">50 years of ${w.city[0]} weather →</button>`}</div>`;
             const header = document.querySelector('#live-section .vault-card > div'); if (header) header.outerHTML = scoreHeader(HOT.score, HOT.streak, HOT.best, 'orange');
             if (correct && [3, 5, 10, 15].includes(HOT.streak)) { burst({ particleCount: 60 + HOT.streak * 10 }); showToast(`🔥 ${HOT.streak} in a row!`, 'success', 3000); }
             else if (newBest) { burst({ particleCount: 80 }); showToast(`🏆 New best streak: ${HOT.best}`, 'success', 3000); }
@@ -5614,17 +5635,19 @@ function displayMovies(data, query) {
         async function loadFlags() {
             const live = document.getElementById('live-section');
             stopFlags();
-            FLAGS.pool = (await wbCountries()).filter(c => !c.name.includes(',') && c.iso2Code && /^[A-Z]{2}$/.test(c.iso2Code) && c.id !== 'XKX');
+            FLAGS.pool = (await wbCountries()).filter(c => !c.name.includes(',') && c.iso2Code && /^[A-Z]{2}$/.test(c.iso2Code) && c.id !== 'XKX').sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
             live.innerHTML = `
     <div class="vault-card rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 text-center">
         <p class="text-[10px] font-black text-yellow-400 uppercase tracking-[0.3em] mb-2">Flag Flash</p>
+        ${chActive('flags') ? chBanner('yellow') : ''}
         <h3 class="text-xl md:text-3xl font-black text-white mb-3">How many flags can you name in 30 seconds?</h3>
         <p class="text-sm text-slate-400 mb-6">${FLAGS.pool.length} countries in the deck · Your best: <b class="text-white">${FLAGS.best}</b></p>
-        <button type="button" onclick="startFlags()" class="px-8 py-4 rounded-2xl bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-black text-lg">Start ▶</button>
+        <div class="flex flex-wrap items-center justify-center gap-3"><button type="button" onclick="startFlags()" class="px-8 py-4 rounded-2xl bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-black text-lg">Start ▶</button>${chActive('flags') ? '' : chButton('flags')}</div>
     </div>`;
         }
         function startFlags() {
             stopFlags(); FLAGS.timeLeft = 30; FLAGS.score = 0; FLAGS.asked = 0;
+            if (chActive('flags')) { CH.rng = seededRandom(chSeedKey()); CH.idx = 0; }
             nextFlag();
             FLAGS.timer = setInterval(() => {
                 if (currentMode !== 'flags' || !document.getElementById('flags-time')) return stopFlags();
@@ -5634,11 +5657,12 @@ function displayMovies(data, query) {
         }
         function nextFlag() {
             const live = document.getElementById('live-section');
-            const answer = pickRandom(FLAGS.pool);
+            const pick = chPick('flags'), rnd = chActive('flags') ? CH.rng : Math.random;
+            const answer = pick(FLAGS.pool);
             const sameRegion = FLAGS.pool.filter(c => c.region.id === answer.region.id && c.id !== answer.id);
             const others = new Set(); let guard = 0;
-            while (others.size < 3 && guard++ < 50) { const src = sameRegion.length >= 3 && Math.random() < 0.7 ? sameRegion : FLAGS.pool; const c = pickRandom(src); if (c.id !== answer.id) others.add(c); }
-            const options = [answer, ...others].sort(() => Math.random() - 0.5);
+            while (others.size < 3 && guard++ < 50) { const src = sameRegion.length >= 3 && rnd() < 0.7 ? sameRegion : FLAGS.pool; const c = pick(src); if (c.id !== answer.id) others.add(c); }
+            const options = chShuffle([answer, ...others], rnd);
             FLAGS.current = answer; FLAGS.asked++;
             live.innerHTML = `
     <div class="vault-card rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 text-center">
@@ -5660,6 +5684,7 @@ function displayMovies(data, query) {
             stopFlags();
             const live = document.getElementById('live-section');
             const newBest = FLAGS.score > FLAGS.best; if (newBest) { FLAGS.best = FLAGS.score; lsSet('ev_flags_best', FLAGS.best); burst({ particleCount: 150, spread: 100 }); }
+            if (chActive('flags')) return challengeFinish(FLAGS.score);
             const acc = FLAGS.asked > 1 ? Math.round(FLAGS.score / (FLAGS.asked - 1) * 100) : 0;
             live.innerHTML = `
     <div class="vault-card rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 text-center">
@@ -5668,6 +5693,152 @@ function displayMovies(data, query) {
         <p class="text-sm text-slate-400 mt-2">flags in 30 seconds · ${acc}% accuracy${newBest ? ' · <b class="text-yellow-300">new personal best!</b>' : ` · best ${FLAGS.best}`}</p>
         <div class="flex flex-wrap justify-center gap-3 mt-6"><button type="button" onclick="startFlags()" class="px-6 py-3 rounded-2xl bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-black">Play again</button><button type="button" onclick="(async()=>{const t='I named ${FLAGS.score} flags in 30 seconds on EarthVault Flag Flash 🚩 https://chamitro.github.io/EarthVault/'; try { if (navigator.share) await navigator.share({ text: t }); else { await navigator.clipboard.writeText(t); showToast('Copied!', 'success'); } } catch(e) {} })()" class="px-6 py-3 rounded-2xl bg-white/5 hover:bg-white/10 text-sm font-bold text-slate-200">Share</button></div>
     </div>`;
+        }
+
+        // ---- Challenge a friend: seeded rounds of Planet Quiz, Hot or Not and Flag Flash, shared by link ----
+        const CH = { active: false, pending: null, offer: null, last: null, game: null, seed: null, n: 10, idx: 0, rng: null, by: '', theirScore: null };
+        const CH_GAMES = {
+            quiz: { name: ['Planet Quiz', 'Κουίζ Πλανήτη'], n: 10, tone: 'pink', icon: '🎯' },
+            hotornot: { name: ['Hot or Not', 'Ζεστό ή Κρύο'], n: 10, tone: 'orange', icon: '🌡️' },
+            flags: { name: ['Flag Flash', 'Σημαίες Αστραπή'], n: 0, tone: 'yellow', icon: '🚩' }
+        };
+        const chActive = game => CH.active && CH.game === game;
+        const chPick = game => chActive(game) ? arr => arr[Math.floor(CH.rng() * arr.length)] : pickRandom;
+        const chShuffle = (arr, rnd) => { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+        const chSeedKey = () => `ev-ch-${CH.game}-${CH.seed}`;
+        const chStoreKey = (game, seed) => `ev_ch_${game}_${seed}`;
+        const chScore = (game, s) => CH_GAMES[game].n ? `${s}/${CH_GAMES[game].n}` : `${s} 🚩`;
+        const chName = n => escapeHtml(n || L('A friend', 'Ένας φίλος'));
+        const chGameName = game => L(CH_GAMES[game].name[0], CH_GAMES[game].name[1]);
+        const chBase = () => location.protocol.startsWith('http') ? location.origin + location.pathname.replace(/[^/]*$/, '') : 'https://chamitro.github.io/EarthVault/';
+        const chLink = (game, seed, score, name) => `${chBase()}?vault=${game}&ch=${seed}&cs=${score}&cb=${encodeURIComponent(name)}`;
+        function readChallengeLink() {
+            try {
+                const p = new URLSearchParams(location.search);
+                const game = p.get('vault'), seed = (p.get('ch') || '').toLowerCase();
+                if (!CH_GAMES[game] || !/^[a-z0-9]{3,12}$/.test(seed)) return;
+                const cs = parseInt(p.get('cs'), 10);
+                CH.pending = { game, seed, theirScore: Number.isFinite(cs) && cs >= 0 && cs < 1000 ? cs : null, by: (p.get('cb') || '').trim().slice(0, 24) };
+            } catch (e) {}
+        }
+        function challengeStart(game, opts = {}) {
+            if (!CH_GAMES[game]) return;
+            CH.active = true; CH.pending = null; CH.game = game; CH.n = CH_GAMES[game].n; CH.idx = 0;
+            CH.seed = opts.seed || Math.random().toString(36).slice(2, 8);
+            CH.by = opts.by || ''; CH.theirScore = (opts.theirScore === undefined || opts.theirScore === null) ? null : opts.theirScore;
+            CH.rng = seededRandom(chSeedKey());
+            if (game === 'quiz') { QUIZ.score = 0; QUIZ.streak = 0; QUIZ.asked = 0; }
+            if (game === 'hotornot') { HOT.score = 0; HOT.streak = 0; }
+            if (currentMode !== game) selectMode(game); else runLiveMode(game);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            if (CH.n && CH.theirScore === null) showToast(`⚔️ ${L(`Challenge round: ${CH.n} questions. Whoever gets your link plays the same ones.`, `Γύρος πρόκλησης: ${CH.n} ερωτήσεις. Όποιος πάρει τον σύνδεσμό σου παίζει τις ίδιες.`)}`, 'info', 4500);
+        }
+        function acceptChallenge() { const p = CH.offer; CH.offer = null; if (p) challengeStart(p.game, p); }
+        function chBanner(tone) {
+            const vs = CH.theirScore !== null ? ` · ${chName(CH.by)}: <b class="text-white">${chScore(CH.game, CH.theirScore)}</b>` : '';
+            const prog = CH.n ? ` · ${L('Question', 'Ερώτηση')} ${Math.min(CH.idx + 1, CH.n)}/${CH.n}` : ` · 30 ${L('seconds', 'δευτερόλεπτα')}`;
+            return `<div id="ch-banner" class="text-center text-[10px] font-black text-${tone}-300 uppercase tracking-[0.2em] mb-3 px-3 py-2 rounded-xl bg-${tone}-500/10 border border-${tone}-500/30">⚔️ ${L('Challenge', 'Πρόκληση')}${prog}${vs}</div>`;
+        }
+        function chNext(game, score, label, cls) {
+            if (chActive(game) && CH.idx >= CH.n) return `<button type="button" onclick="challengeFinish(${score})" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-sm font-bold text-white">⚔️ ${L('See the result →', 'Δες το αποτέλεσμα →')}</button>`;
+            return `<button type="button" onclick="runLiveMode('${game}')" class="px-5 py-2.5 rounded-xl ${cls} text-sm font-bold text-white">${label}</button>`;
+        }
+        const chButton = game => `<button type="button" onclick="challengeStart('${game}')" class="px-4 py-2 rounded-xl bg-indigo-600/80 hover:bg-indigo-500 text-xs font-bold text-white">⚔️ ${L('Challenge a friend', 'Προκάλεσε έναν φίλο')}</button>`;
+        function chVerdict(mine, theirs, name) {
+            if (mine > theirs) return { text: L('You win! 🏆', 'Κέρδισες! 🏆'), cls: 'text-emerald-400', win: true };
+            if (mine < theirs) return { text: L(`${name} wins 😅`, `Κερδίζει ${name} 😅`), cls: 'text-rose-400', win: false };
+            return { text: L("It's a tie 🤝", 'Ισοπαλία 🤝'), cls: 'text-amber-300', win: false };
+        }
+        const chCol = (label, game, score, tone) => `<div class="flex-1 min-w-0 bg-${tone}-500/10 border border-${tone}-500/30 rounded-3xl p-4 md:p-5"><div class="text-[10px] font-black text-${tone}-300 uppercase tracking-widest truncate">${label}</div><div class="text-3xl md:text-5xl font-black text-white font-mono-data mt-1">${chScore(game, score)}</div></div>`;
+        const chFooterButtons = game => `<div class="flex flex-wrap justify-center gap-3 mt-7">
+            <button type="button" onclick="challengeStart('${game}')" class="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-sm font-bold text-slate-200">⚔️ ${L('New challenge', 'Νέα πρόκληση')}</button>
+            <button type="button" onclick="runLiveMode('${game}')" class="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-sm font-bold text-slate-200">${L('Free play', 'Ελεύθερο παιχνίδι')}</button>
+        </div>`;
+        function challengeFinish(score) {
+            if (!CH.active) return;
+            const r = { game: CH.game, seed: CH.seed, score, theirScore: CH.theirScore, by: CH.by };
+            CH.active = false;
+            lsSet(chStoreKey(r.game, r.seed), { score, when: Date.now(), by: r.by, theirScore: r.theirScore });
+            renderChallengeResult(r);
+        }
+        function renderChallengeResult(r) {
+            const live = document.getElementById('live-section'); if (!live) return;
+            CH.last = r;
+            const g = CH_GAMES[r.game], myName = lsGet('ev_player_name', '');
+            const vs = r.theirScore !== null ? chVerdict(r.score, r.theirScore, chName(r.by)) : null;
+            if (vs && vs.win) burst({ particleCount: 160, spread: 110 }); else if (!vs && g.n && r.score >= Math.ceil(g.n * 0.7)) burst({ particleCount: 90 });
+            const scoreBlock = vs
+                ? `<div class="flex gap-3 max-w-md mx-auto">${chCol(L('You', 'Εσύ'), r.game, r.score, 'emerald')}${chCol(chName(r.by), r.game, r.theirScore, g.tone)}</div><p class="text-2xl font-black ${vs.cls} mt-5">${vs.text}</p>`
+                : `<p class="text-6xl font-black text-white font-mono-data">${chScore(r.game, r.score)}</p><p class="text-sm text-slate-400 mt-2">${g.n ? L('correct in this challenge round', 'σωστές σε αυτόν τον γύρο πρόκλησης') : L('flags in 30 seconds', 'σημαίες σε 30 δευτερόλεπτα')}</p>`;
+            const hint = vs
+                ? L('They will see who won without playing again.', 'Θα δει ποιος κέρδισε χωρίς να ξαναπαίξει.')
+                : (g.n ? L(`Your friend gets the exact same ${g.n} questions and sees both scores at the end.`, `Ο φίλος σου παίρνει ακριβώς τις ίδιες ${g.n} ερωτήσεις και βλέπει και τα δύο σκορ στο τέλος.`) : L('Your friend gets the same flags in the same order and sees both scores at the end.', 'Ο φίλος σου παίρνει τις ίδιες σημαίες με την ίδια σειρά και βλέπει και τα δύο σκορ στο τέλος.'));
+            live.innerHTML = `
+    <div class="vault-card rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 text-center">
+        <p class="text-[10px] font-black text-indigo-300 uppercase tracking-[0.3em] mb-4">⚔️ ${L('Challenge complete', 'Η πρόκληση ολοκληρώθηκε')} · ${g.icon} ${chGameName(r.game)}</p>
+        ${scoreBlock}
+        <div class="max-w-md mx-auto mt-7 text-left">
+            <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1.5" for="ch-name">${L('Your name (your friend will see it)', 'Το όνομά σου (θα το δει ο φίλος σου)')}</label>
+            <div class="flex gap-2"><input id="ch-name" maxlength="20" value="${escapeHtml(myName)}" placeholder="${L('e.g. Harry', 'π.χ. Χάρης')}" autocomplete="off" class="flex-1 min-w-0 bg-slate-900/90 border border-white/10 px-4 py-3 rounded-2xl text-white outline-none focus:ring-2 focus:ring-indigo-500 text-sm"><button type="button" onclick="shareChallenge()" class="px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-sm font-bold text-white whitespace-nowrap">📤 ${vs ? L('Send result', 'Στείλε το') : L('Send challenge', 'Στείλε την')}</button></div>
+            <p class="text-[11px] text-slate-500 mt-2">${hint}</p>
+            <div id="ch-link" class="hidden mt-3 flex gap-2"><input readonly id="ch-link-input" class="flex-1 min-w-0 bg-slate-950/80 border border-white/10 px-3 py-2 rounded-xl text-[11px] text-slate-300 outline-none"><button type="button" onclick="copyChallengeLink()" class="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold text-white">${L('Copy', 'Αντιγραφή')}</button></div>
+        </div>
+        ${chFooterButtons(r.game)}
+    </div>`;
+        }
+        function renderChallengeIntro(p) {
+            const live = document.getElementById('live-section'); if (!live) return;
+            const g = CH_GAMES[p.game];
+            const played = lsGet(chStoreKey(p.game, p.seed), null);
+            if (played && p.theirScore !== null && played.theirScore === null) {
+                // The friend answered a challenge this player started: show who won, no replay needed.
+                CH.last = { game: p.game, seed: p.seed, score: played.score, theirScore: p.theirScore, by: p.by };
+                const vs = chVerdict(played.score, p.theirScore, chName(p.by));
+                if (vs.win) burst({ particleCount: 160, spread: 110 });
+                live.innerHTML = `
+    <div class="vault-card rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 text-center">
+        <p class="text-[10px] font-black text-indigo-300 uppercase tracking-[0.3em] mb-3">⚔️ ${L('Challenge', 'Πρόκληση')} · ${g.icon} ${chGameName(p.game)}</p>
+        <h3 class="text-2xl md:text-4xl font-black text-white mb-5">${chName(p.by)} ${L('answered your challenge!', 'απάντησε στην πρόκλησή σου!')}</h3>
+        <div class="flex gap-3 max-w-md mx-auto">${chCol(L('You', 'Εσύ'), p.game, played.score, 'emerald')}${chCol(chName(p.by), p.game, p.theirScore, g.tone)}</div>
+        <p class="text-2xl font-black ${vs.cls} mt-5">${vs.text}</p>
+        ${chFooterButtons(p.game)}
+    </div>`;
+                return;
+            }
+            if (played && p.theirScore !== null) { renderChallengeResult({ game: p.game, seed: p.seed, score: played.score, theirScore: p.theirScore, by: p.by }); return; }
+            CH.offer = p;
+            live.innerHTML = `
+    <div class="vault-card rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 text-center">
+        <p class="text-[10px] font-black text-indigo-300 uppercase tracking-[0.3em] mb-3">⚔️ ${L('Challenge', 'Πρόκληση')} · ${g.icon} ${chGameName(p.game)}</p>
+        <h3 class="text-2xl md:text-4xl font-black text-white mb-3">${chName(p.by)} ${L('challenged you!', 'σε προκάλεσε!')}</h3>
+        <p class="text-sm text-slate-300 max-w-md mx-auto">${p.theirScore !== null ? L(`They scored <b class="text-white">${chScore(p.game, p.theirScore)}</b>. `, `Έκανε <b class="text-white">${chScore(p.game, p.theirScore)}</b>. `) : ''}${g.n ? L(`You get the exact same ${g.n} questions. Beat that score!`, `Παίρνεις ακριβώς τις ίδιες ${g.n} ερωτήσεις. Πέρνα το σκορ!`) : L('Same flags in the same order, 30 seconds. Beat that score!', 'Ίδιες σημαίες με την ίδια σειρά, 30 δευτερόλεπτα. Πέρνα το σκορ!')}</p>
+        ${p.game === 'hotornot' ? `<p class="text-[11px] text-slate-500 mt-3">${L('Temperatures are live, so play soon for a fair duel.', 'Οι θερμοκρασίες είναι ζωντανές, οπότε παίξε σύντομα για δίκαιη μονομαχία.')}</p>` : ''}
+        <div class="flex flex-wrap justify-center gap-3 mt-7">
+            <button type="button" onclick="acceptChallenge()" class="px-8 py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-lg">▶ ${L('Accept the challenge', 'Δέχομαι την πρόκληση')}</button>
+            <button type="button" onclick="CH.offer = null; runLiveMode('${p.game}')" class="px-5 py-4 rounded-2xl bg-white/5 hover:bg-white/10 text-sm font-bold text-slate-300">${L('Not now', 'Όχι τώρα')}</button>
+        </div>
+    </div>`;
+        }
+        async function shareChallenge() {
+            const r = CH.last; if (!r) return;
+            const inp = document.getElementById('ch-name');
+            const name = ((inp && inp.value) || '').trim().slice(0, 20) || L('A friend', 'Ένας φίλος');
+            lsSet('ev_player_name', name);
+            const g = CH_GAMES[r.game], link = chLink(r.game, r.seed, r.score, name), gname = chGameName(r.game);
+            const text = r.theirScore !== null
+                ? L(`⚔️ ${r.by || 'Hey'}, I scored ${chScore(r.game, r.score)} on your EarthVault ${gname} challenge (you had ${chScore(r.game, r.theirScore)}). See the result: ${link}`, `⚔️ ${r.by || 'Γεια'}, έκανα ${chScore(r.game, r.score)} στην πρόκλησή σου στο EarthVault ${gname} (εσύ είχες ${chScore(r.game, r.theirScore)}). Δες το αποτέλεσμα: ${link}`)
+                : L(`⚔️ I scored ${chScore(r.game, r.score)} on EarthVault ${gname}. Same ${g.n ? g.n + ' questions' : 'flags'} for you, can you beat me? ${link}`, `⚔️ Έκανα ${chScore(r.game, r.score)} στο EarthVault ${gname}. ${g.n ? 'Ίδιες ' + g.n + ' ερωτήσεις' : 'Ίδιες σημαίες'} για σένα, με περνάς; ${link}`);
+            const box = document.getElementById('ch-link'), li = document.getElementById('ch-link-input');
+            if (box && li) { box.classList.remove('hidden'); li.value = link; }
+            try {
+                if (navigator.share) { await navigator.share({ text }); return; }
+                await Promise.race([navigator.clipboard.writeText(text), new Promise((_, rej) => setTimeout(() => rej(new Error('clipboard timeout')), 1500))]);
+                showToast(L('Challenge copied. Paste it to your friend!', 'Η πρόκληση αντιγράφηκε. Στείλ\' την στον φίλο σου!'), 'success');
+            } catch (e) { if (e && e.name !== 'AbortError') showToast(L('Copy the link below and send it to your friend.', 'Αντίγραψε τον σύνδεσμο από κάτω και στείλ\' τον στον φίλο σου.'), 'info'); }
+        }
+        async function copyChallengeLink() {
+            const li = document.getElementById('ch-link-input'); if (!li) return;
+            try { await navigator.clipboard.writeText(li.value); showToast(L('Link copied!', 'Ο σύνδεσμος αντιγράφηκε!'), 'success', 2500); } catch (e) { li.select(); }
         }
 
         // ---- Planet Right Now: live extremes across 56 cities ----
@@ -5946,6 +6117,9 @@ function displayMovies(data, query) {
             err: ['Something went wrong: ', 'Κάτι πήγε στραβά: '],
             dice_toast: ['🎲 Rolling the dice: ', '🎲 Ρίχνω το ζάρι: '],
             lang_btn: ['ΕΛ', 'EN'], lang_title: ['Αλλαγή στα Ελληνικά', 'Switch to English'],
+            install: ['📲 Install', '📲 Εγκατάσταση'], install_long: ['📲 Install EarthVault on this device', '📲 Εγκατάσταση του EarthVault στη συσκευή'],
+            ios_hint: ['On iPhone or iPad: tap Share, then "Add to Home Screen" to install EarthVault.', 'Σε iPhone ή iPad: πάτα Κοινοποίηση και μετά "Προσθήκη στην οθόνη Αφετηρίας" για να εγκαταστήσεις το EarthVault.'],
+            installed: ['✅ EarthVault is installed. Find it on your home screen.', '✅ Το EarthVault εγκαταστάθηκε. Θα το βρεις στην αρχική οθόνη.'],
             // weather / ocean / generic stat labels
             s_today_high: ['Today High', 'Μέγιστη σήμερα'], s_sea_now: ['Sea Surface Now', 'Θάλασσα τώρα'], s_archive: ['Archive Value', 'Τιμή αρχείου'],
             s_humidity: ['Humidity', 'Υγρασία'], s_wave: ['Wave Height', 'Ύψος κύματος'], s_growth: ['Growth Rate', 'Ρυθμός μεταβολής'],
@@ -5965,7 +6139,7 @@ function displayMovies(data, query) {
             menu: { quiz: 'Κουίζ Πλανήτη', mystery: 'Μυστήρια Χώρα (ημερήσιο)', hotornot: 'Ζεστό ή Κρύο (ζωντανή μονομαχία)', flags: 'Σημαίες Αστραπή', rightnow: 'Ο Πλανήτης Τώρα', alerts: 'Συναγερμοί Πλανήτη', space: 'Διαστημικός Καιρός', iss: 'Διαστημικός Σταθμός', sky: 'Ο Ουρανός Απόψε', asteroids: 'Παρατηρητήριο Αστεροειδών', onthisday: 'Σαν Σήμερα στη Γη', nearby: 'Άγρια Ζωή Κοντά σου', outside: 'Καλύτερη Ώρα Έξω', weather: 'Αρχείο Καιρού', ocean: 'Παλμός Ωκεανού', forest: 'Δασική Κληρονομιά', agri: 'Γεωργία', energy: 'Ενέργεια & ΑΠΕ', water: 'Ασφάλεια Νερού', carbon: 'Εκπομπές Άνθρακα', endangered: 'Απειλούμενα Είδη', waste: 'Απορρίμματα & Ανακύκλωση', power: 'Ενεργειακό Μείγμα', air: 'Ποιότητα Αέρα', waterstress: 'Υδατική Πίεση', wildlife: 'Γκαλερί Άγριας Ζωής', human_span: 'Προσδόκιμο Ζωής', mental: 'Ψυχική Υγεία', happiness: 'Ευτυχία & Ευημερία', generations: 'Γενιές', univ: 'Πρόσβαση στο Πανεπιστήμιο', public_private: 'Εκπαίδευση: Δημόσια vs Ιδιωτική', health_private: 'Υγεία: Δημόσια vs Ιδιωτική', migration: 'Μετανάστευση & Διασπορά', economy: 'Οικονομία & Αγορά Εργασίας', internet: 'Πρόσβαση στο Διαδίκτυο', music: 'Μουσική Κουλτούρα', cinema: 'Κινηματογράφος', trends: 'Τάσεις Διαδικτύου', city: 'Ιστορίες Πόλεων', compare: 'Χώρα vs Χώρα' },
             labels: { quiz: 'ΚΟΥΙΖ ΠΛΑΝΗΤΗ', mystery: 'ΜΥΣΤΗΡΙΑ ΧΩΡΑ', hotornot: 'ΖΕΣΤΟ Ή ΚΡΥΟ', flags: 'ΣΗΜΑΙΕΣ ΑΣΤΡΑΠΗ', rightnow: 'Ο ΠΛΑΝΗΤΗΣ ΤΩΡΑ', alerts: 'ΣΥΝΑΓΕΡΜΟΙ ΠΛΑΝΗΤΗ', space: 'ΔΙΑΣΤΗΜΙΚΟΣ ΚΑΙΡΟΣ', iss: 'ΔΙΑΣΤΗΜΙΚΟΣ ΣΤΑΘΜΟΣ', sky: 'Ο ΟΥΡΑΝΟΣ ΑΠΟΨΕ', asteroids: 'ΑΣΤΕΡΟΕΙΔΕΙΣ', onthisday: 'ΣΑΝ ΣΗΜΕΡΑ', nearby: 'ΑΓΡΙΑ ΖΩΗ ΚΟΝΤΑ ΣΟΥ', outside: 'ΚΑΛΥΤΕΡΗ ΩΡΑ ΕΞΩ', weather: 'ΑΡΧΕΙΟ ΚΑΙΡΟΥ', ocean: 'ΠΑΛΜΟΣ ΩΚΕΑΝΟΥ', forest: 'ΔΑΣΙΚΗ ΚΛΗΡΟΝΟΜΙΑ', agri: 'ΓΕΩΡΓΙΑ', energy: 'ΕΝΕΡΓΕΙΑ & ΑΠΕ', water: 'ΑΣΦΑΛΕΙΑ ΝΕΡΟΥ', carbon: 'ΕΚΠΟΜΠΕΣ ΑΝΘΡΑΚΑ', endangered: 'ΑΠΕΙΛΟΥΜΕΝΑ ΕΙΔΗ', waste: 'ΑΠΟΡΡΙΜΜΑΤΑ & ΑΝΑΚΥΚΛΩΣΗ', power: 'ΕΝΕΡΓΕΙΑΚΟ ΜΕΙΓΜΑ', air: 'ΠΟΙΟΤΗΤΑ ΑΕΡΑ', waterstress: 'ΥΔΑΤΙΚΗ ΠΙΕΣΗ', wildlife: 'ΓΚΑΛΕΡΙ ΑΓΡΙΑΣ ΖΩΗΣ', human_span: 'ΠΡΟΣΔΟΚΙΜΟ ΖΩΗΣ', mental: 'ΨΥΧΙΚΗ ΥΓΕΙΑ', happiness: 'ΕΥΤΥΧΙΑ & ΕΥΗΜΕΡΙΑ', generations: 'ΓΕΝΙΕΣ', univ: 'ΠΑΝΕΠΙΣΤΗΜΙΟ', public_private: 'ΕΚΠΑΙΔΕΥΣΗ: ΔΗΜΟΣΙΑ vs ΙΔΙΩΤΙΚΗ', health_private: 'ΥΓΕΙΑ: ΔΗΜΟΣΙΑ vs ΙΔΙΩΤΙΚΗ', migration: 'ΜΕΤΑΝΑΣΤΕΥΣΗ & ΔΙΑΣΠΟΡΑ', economy: 'ΟΙΚΟΝΟΜΙΑ & ΕΡΓΑΣΙΑ', internet: 'ΠΡΟΣΒΑΣΗ ΣΤΟ ΔΙΑΔΙΚΤΥΟ', music: 'ΜΟΥΣΙΚΗ ΚΟΥΛΤΟΥΡΑ', cinema: 'ΚΙΝΗΜΑΤΟΓΡΑΦΟΣ', trends: 'ΤΑΣΕΙΣ ΔΙΑΔΙΚΤΥΟΥ', city: 'ΙΣΤΟΡΙΕΣ ΠΟΛΕΩΝ', compare: 'ΧΩΡΑ VS ΧΩΡΑ' },
             titles: { weather: 'Ιστορία του Καιρού', ocean: 'Παλμός του Ωκεανού', univ: 'Πρόσβαση στο Πανεπιστήμιο', forest: 'Δασική Κληρονομιά', agri: 'Γεωργία', human_span: 'Προσδόκιμο Ζωής', energy: 'Ενέργεια & Ανανεώσιμες', water: 'Ποιότητα & Ασφάλεια Νερού', mental: 'Ψυχική Υγεία', happiness: 'Ευτυχία & Ευημερία', carbon: 'Εκπομπές Άνθρακα', generations: 'Γενιές', internet: 'Πρόσβαση στο Διαδίκτυο', music: 'Μουσική Κουλτούρα', cinema: 'Ανακάλυψη Κινηματογράφου', endangered: 'Απειλούμενα Είδη', migration: 'Μετανάστευση & Διασπορά', public_private: 'Εκπαίδευση: Δημόσια vs Ιδιωτική', health_private: 'Υγεία: Δημόσια vs Ιδιωτική', economy: 'Οικονομία & Αγορά Εργασίας', trends: 'Τάσεις του Διαδικτύου', waste: 'Απορρίμματα & Ανακύκλωση', power: 'Ενεργειακό Μείγμα', air: 'Ποιότητα Αέρα', waterstress: 'Υδατική Πίεση', alerts: 'Συναγερμοί Πλανήτη', space: 'Διαστημικός Καιρός', compare: 'Χώρα εναντίον Χώρας', wildlife: 'Γκαλερί Άγριας Ζωής', quiz: 'Κουίζ Πλανήτη', iss: 'Εντοπισμός Διαστημικού Σταθμού', city: 'Ιστορίες Πόλεων', mystery: 'Μυστήρια Χώρα', hotornot: 'Ζεστό ή Κρύο', flags: 'Σημαίες Αστραπή', rightnow: 'Ο Πλανήτης Τώρα', sky: 'Ο Ουρανός Απόψε', asteroids: 'Παρατηρητήριο Αστεροειδών', onthisday: 'Σαν Σήμερα στη Γη', nearby: 'Άγρια Ζωή Κοντά σου', outside: 'Καλύτερη Ώρα Έξω' },
-            desc: { weather: '50 χρόνια ημερήσιας ιστορίας θερμοκρασίας για κάθε πόλη', ocean: 'Ζωντανή θερμοκρασία θάλασσας και θαλάσσιοι καύσωνες για κάθε παράκτια πόλη', forest: 'Δασοκάλυψη και τάσεις αποψίλωσης ανά χώρα', agri: 'Ποσοστό γης που χρησιμοποιείται για καλλιέργειες, ανά χώρα', energy: 'Μερίδιο ανανεώσιμων και υδροηλεκτρικών στην ηλεκτρική ενέργεια ανά χώρα', water: 'Πρόσβαση σε ασφαλές πόσιμο νερό ανά χώρα', carbon: 'Εκπομπές αερίων του θερμοκηπίου σε σχέση με προϋπολογισμό άνθρακα με βάση το 1990', endangered: 'Απειλούμενα θηλαστικά, πουλιά, ψάρια και φυτά ανά χώρα', waste: 'Ποσοστά ανακύκλωσης, κομποστοποίησης και ταφής από τον ΟΟΣΑ', power: 'Μερίδια ορυκτών, άνθρακα και πυρηνικών στο δίκτυο, συν κατανάλωση ρεύματος ανά άτομο', wildlife: 'Αληθινές φωτογραφίες άγριας ζωής από πολίτες-επιστήμονες, και τι ζει εκεί', quiz: 'Περισσότερο ή λιγότερο; Μάντεψε ποια χώρα κερδίζει με αληθινά δεδομένα του πλανήτη', iss: 'Πού βρίσκεται ο Διεθνής Διαστημικός Σταθμός αυτή τη στιγμή, ζωντανά στον χάρτη', city: 'Πότε ιδρύθηκε μια πόλη, ποιοι γεννήθηκαν εκεί και οι στιγμές που τη διαμόρφωσαν', mystery: 'Μία μυστική χώρα κάθε μέρα. Έξι προσπάθειες, νέα ένδειξη μετά από κάθε λάθος', hotornot: 'Δύο πόλεις, ζωντανές θερμοκρασίες: ποια είναι πιο ζεστή αυτή τη στιγμή;', flags: 'Τριάντα δευτερόλεπτα, τέσσερις επιλογές ανά σημαία. Πόσες θα αναγνωρίσεις;', rightnow: 'Οι πιο ζεστές, κρύες, ανεμώδεις και καθαρές πόλεις της Γης αυτό το λεπτό', sky: 'Ηλιοβασίλεμα, ώρα σκότους, φεγγάρι, σύννεφα και πιθανότητα σέλας για κάθε πόλη απόψε', asteroids: 'Κάθε αστεροειδής που περνά κοντά στη Γη αυτή την εβδομάδα, με μέγεθος και απόσταση', onthisday: 'Σεισμοί, αποστολές, εκλείψεις και ανακαλύψεις που έγιναν σαν σήμερα', nearby: 'Τι εντόπισαν οι άνθρωποι στη φύση σε ακτίνα 40 χλμ. από κάθε πόλη αυτόν τον μήνα', outside: 'Οι επόμενες 48 ώρες βαθμολογημένες για περπάτημα, τρέξιμο ή πικνίκ: καιρός, αέρας, UV και γύρη μαζί', air: 'Ετήσια έκθεση σε PM2.5 συν ζωντανή μέτρηση στην πρωτεύουσα', waterstress: 'Πόσο από το ανανεώσιμο γλυκό νερό αντλεί μια χώρα κάθε χρόνο', human_span: 'Προσδόκιμο ζωής, με τη διαφορά ανάμεσα σε γυναίκες και άνδρες', mental: 'Θνησιμότητα από αυτοκτονίες ανά 100.000 κατοίκους, ανά φύλο', happiness: 'Βαθμολογίες της Παγκόσμιας Έκθεσης Ευτυχίας με κατάταξη, ώρες εργασίας και ασφάλεια', generations: 'Δείκτες γονιμότητας και η δημογραφική μετάβαση', univ: 'Πανεπιστημιακή εκπαίδευση, με τον διαχωρισμό ανά φύλο', public_private: 'Εγγραφές σε δημόσια και ιδιωτικά σχολεία και δαπάνες για την εκπαίδευση', health_private: 'Ποιος πληρώνει την υγεία: κράτος, ιδιώτες και από την τσέπη', migration: 'Καθαρή μετανάστευση, μεταναστευτικός πληθυσμός και εμβάσματα', economy: 'ΑΕΠ κατά κεφαλήν, ανεργία, ανισότητα και συμμετοχή στην εργασία', internet: 'Πρόσβαση στο διαδίκτυο, με ανάλυση ανά φύλο', music: 'Οι πιο δημοφιλείς καλλιτέχνες και τραγούδια ανά χώρα', cinema: 'Οι ταινίες με την υψηλότερη βαθμολογία που γυρίστηκαν σε μια χώρα', trends: 'Για τι μιλάει το Reddit, παγκόσμια και σε μια χώρα', alerts: 'Πυρκαγιές, καταιγίδες, παγόβουνα και σεισμοί που συμβαίνουν αυτή τη στιγμή', space: 'Γεωμαγνητικές καταιγίδες, πιθανότητα σέλας και ηλιακή δραστηριότητα, ζωντανά από τη NOAA', compare: 'Βάλε δύο χώρες δίπλα-δίπλα σε οποιονδήποτε δείκτη' }
+            desc: { weather: '50 χρόνια ημερήσιας ιστορίας θερμοκρασίας για κάθε πόλη', ocean: 'Ζωντανή θερμοκρασία θάλασσας και θαλάσσιοι καύσωνες για κάθε παράκτια πόλη', forest: 'Δασοκάλυψη και τάσεις αποψίλωσης ανά χώρα', agri: 'Ποσοστό γης που χρησιμοποιείται για καλλιέργειες, ανά χώρα', energy: 'Μερίδιο ανανεώσιμων και υδροηλεκτρικών στην ηλεκτρική ενέργεια ανά χώρα', water: 'Πρόσβαση σε ασφαλές πόσιμο νερό ανά χώρα', carbon: 'Εκπομπές αερίων του θερμοκηπίου σε σχέση με προϋπολογισμό άνθρακα με βάση το 1990', endangered: 'Απειλούμενα θηλαστικά, πουλιά, ψάρια και φυτά ανά χώρα', waste: 'Ποσοστά ανακύκλωσης, κομποστοποίησης και ταφής από τον ΟΟΣΑ', power: 'Μερίδια ορυκτών, άνθρακα και πυρηνικών στο δίκτυο, συν κατανάλωση ρεύματος ανά άτομο', wildlife: 'Αληθινές φωτογραφίες άγριας ζωής από πολίτες-επιστήμονες, και τι ζει εκεί', quiz: 'Περισσότερο ή λιγότερο; Μάντεψε ποια χώρα κερδίζει με αληθινά δεδομένα του πλανήτη και προκάλεσε έναν φίλο με σύνδεσμο', iss: 'Πού βρίσκεται ο Διεθνής Διαστημικός Σταθμός αυτή τη στιγμή, ζωντανά στον χάρτη', city: 'Πότε ιδρύθηκε μια πόλη, ποιοι γεννήθηκαν εκεί και οι στιγμές που τη διαμόρφωσαν', mystery: 'Μία μυστική χώρα κάθε μέρα. Έξι προσπάθειες, νέα ένδειξη μετά από κάθε λάθος', hotornot: 'Δύο πόλεις, ζωντανές θερμοκρασίες: ποια είναι πιο ζεστή αυτή τη στιγμή;', flags: 'Τριάντα δευτερόλεπτα, τέσσερις επιλογές ανά σημαία. Πόσες θα αναγνωρίσεις;', rightnow: 'Οι πιο ζεστές, κρύες, ανεμώδεις και καθαρές πόλεις της Γης αυτό το λεπτό', sky: 'Ηλιοβασίλεμα, ώρα σκότους, φεγγάρι, σύννεφα και πιθανότητα σέλας για κάθε πόλη απόψε', asteroids: 'Κάθε αστεροειδής που περνά κοντά στη Γη αυτή την εβδομάδα, με μέγεθος και απόσταση', onthisday: 'Σεισμοί, αποστολές, εκλείψεις και ανακαλύψεις που έγιναν σαν σήμερα', nearby: 'Τι εντόπισαν οι άνθρωποι στη φύση σε ακτίνα 40 χλμ. από κάθε πόλη αυτόν τον μήνα', outside: 'Οι επόμενες 48 ώρες βαθμολογημένες για περπάτημα, τρέξιμο ή πικνίκ: καιρός, αέρας, UV και γύρη μαζί', air: 'Ετήσια έκθεση σε PM2.5 συν ζωντανή μέτρηση στην πρωτεύουσα', waterstress: 'Πόσο από το ανανεώσιμο γλυκό νερό αντλεί μια χώρα κάθε χρόνο', human_span: 'Προσδόκιμο ζωής, με τη διαφορά ανάμεσα σε γυναίκες και άνδρες', mental: 'Θνησιμότητα από αυτοκτονίες ανά 100.000 κατοίκους, ανά φύλο', happiness: 'Βαθμολογίες της Παγκόσμιας Έκθεσης Ευτυχίας με κατάταξη, ώρες εργασίας και ασφάλεια', generations: 'Δείκτες γονιμότητας και η δημογραφική μετάβαση', univ: 'Πανεπιστημιακή εκπαίδευση, με τον διαχωρισμό ανά φύλο', public_private: 'Εγγραφές σε δημόσια και ιδιωτικά σχολεία και δαπάνες για την εκπαίδευση', health_private: 'Ποιος πληρώνει την υγεία: κράτος, ιδιώτες και από την τσέπη', migration: 'Καθαρή μετανάστευση, μεταναστευτικός πληθυσμός και εμβάσματα', economy: 'ΑΕΠ κατά κεφαλήν, ανεργία, ανισότητα και συμμετοχή στην εργασία', internet: 'Πρόσβαση στο διαδίκτυο, με ανάλυση ανά φύλο', music: 'Οι πιο δημοφιλείς καλλιτέχνες και τραγούδια ανά χώρα', cinema: 'Οι ταινίες με την υψηλότερη βαθμολογία που γυρίστηκαν σε μια χώρα', trends: 'Για τι μιλάει το Reddit, παγκόσμια και σε μια χώρα', alerts: 'Πυρκαγιές, καταιγίδες, παγόβουνα και σεισμοί που συμβαίνουν αυτή τη στιγμή', space: 'Γεωμαγνητικές καταιγίδες, πιθανότητα σέλας και ηλιακή δραστηριότητα, ζωντανά από τη NOAA', compare: 'Βάλε δύο χώρες δίπλα-δίπλα σε οποιονδήποτε δείκτη' }
         };
         function t(key) { const e = UI[key]; if (!e) return key; return (LANG === 'el' && e[1]) ? e[1] : e[0]; }
         function trv(group, mode, fallback) { return (LANG === 'el' && GR[group] && GR[group][mode]) ? GR[group][mode] : fallback; }
@@ -5990,6 +6164,7 @@ function displayMovies(data, query) {
                 tn.textContent = ' ' + trv('menu', b.dataset.vault, b.dataset.en);
             });
             document.querySelectorAll('.lang-btn').forEach(b => { b.textContent = t('lang_btn'); b.title = t('lang_title'); b.setAttribute('aria-label', t('lang_title')); });
+            document.querySelectorAll('.install-btn').forEach(b => { b.textContent = b.closest('#splash-screen') ? t('install_long') : t('install'); });
             if (typeof currentMode !== 'undefined' && currentMode && document.getElementById('main-title') && typeof applyModeText === 'function') {
                 applyModeText(currentMode);
                 const sel = document.getElementById('selected-mode-text');
@@ -6143,6 +6318,30 @@ function displayMovies(data, query) {
                 });
             } catch (e) { console.warn('Chart failed', e); }
             if (window.innerWidth < 768) setTimeout(() => live.scrollIntoView({ behavior: 'smooth', block: 'start' }), 150);
+        }
+
+        // ======================= PWA: service worker, install button, deep links =======================
+        let installPrompt = null;
+        const isStandalone = () => (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
+        const isIOS = () => /iPhone|iPad|iPod/i.test(navigator.userAgent) && !window.MSStream;
+        function showInstallButtons(show) { document.querySelectorAll('.install-btn').forEach(b => b.classList.toggle('hidden', !show)); }
+        function initPWA() {
+            if (location.protocol.startsWith('http') && 'serviceWorker' in navigator) {
+                navigator.serviceWorker.register('sw.js').catch(e => console.warn('Service worker not registered:', e.message));
+            }
+            if (isStandalone()) return;
+            window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installPrompt = e; showInstallButtons(true); });
+            window.addEventListener('appinstalled', () => { installPrompt = null; showInstallButtons(false); showToast(t('installed'), 'success', 6000); try { burst(); } catch (e) {} });
+            if (isIOS()) showInstallButtons(true); // Safari has no prompt event; the button explains the Share menu route
+        }
+        async function installApp() {
+            if (installPrompt) {
+                installPrompt.prompt();
+                try { const choice = await installPrompt.userChoice; if (choice && choice.outcome === 'accepted') showInstallButtons(false); } catch (e) {}
+                installPrompt = null;
+                return;
+            }
+            showToast(t('ios_hint'), 'info', 9000);
         }
 
         function showInfo(type) {

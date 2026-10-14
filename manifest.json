@@ -1,17 +1,27 @@
 {
-  "name": "Weather History Vault",
-  "short_name": "WeatherVault",
-  "start_url": "/weatherhistoryvault/index.html",
-  "scope": "/weatherhistoryvault/",
+  "name": "EarthVault - Explore the Planet in Data",
+  "short_name": "EarthVault",
+  "description": "41 interactive vaults of live and historical planet data: weather, oceans, forests, air, space, wildlife, games and more.",
+  "id": "./",
+  "start_url": "./?source=pwa",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#4f46e5",
+  "orientation": "any",
+  "background_color": "#020617",
+  "theme_color": "#0f172a",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["education", "weather", "utilities"],
   "icons": [
-    {
-      "src": "https://raw.githubusercontent.com/chamitro/weatherhistoryvault/main/icon.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Mystery Country", "short_name": "Mystery", "description": "Today's daily country puzzle", "url": "./?vault=mystery", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Planet Quiz", "short_name": "Quiz", "description": "Higher or lower on real planet data", "url": "./?vault=quiz", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Planet Right Now", "short_name": "Right Now", "description": "Live leaderboards across 56 cities", "url": "./?vault=rightnow", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Best Hour Outside", "short_name": "Outside", "description": "When to go out in your city", "url": "./?vault=outside", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] }
   ]
 }
