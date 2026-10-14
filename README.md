@@ -8,7 +8,7 @@
 
 ## ✨ Features
 
-#### 📊 **32 Data Visualization Sections**
+#### 📊 **41 Data Visualization Sections**
 EarthVault provides comprehensive insights across environmental, social, economic, and cultural dimensions:
 
 #### 🌍 **Environmental Data (13 sections)**
@@ -37,12 +37,25 @@ EarthVault provides comprehensive insights across environmental, social, economi
 - 💼 **Economy & Labor Market** - GDP per capita, unemployment rates, GINI index, labor force participation
 - 🏛️ **Education: Public vs Private** - School enrollment distribution between public and private sectors
 
-#### 🛰️ **Live & Tools (5 sections)**
+#### 🎮 **Games (4 sections)**
+- 🎯 **Planet Quiz** - Higher-or-lower game on live World Bank data: guess which country wins, keep a streak, celebrate milestones with confetti, share your score and jump straight into the winning country's vault
+- 🕵️ **Mystery Country** - One secret country a day, the same for everyone. Six guesses; every miss unlocks a clue (region, population, forest and life expectancy, capital hint, neighbours, flag) and tells you how far off you were and in which direction. Streaks, stats and a Wordle-style share grid
+- 🌡️ **Hot or Not** - Two cities, live temperatures from Open-Meteo: which one is warmer at this moment? The answer changes through the day
+- 🚩 **Flag Flash** - Thirty seconds, four choices per flag, with distractors from the same region. Personal best and share
+
+#### 🛰️ **Live Earth (9 sections)**
+- 🌍 **Planet Right Now** - Live leaderboards across 56 cities: hottest, coldest, windiest, cleanest and most polluted air, strongest UV, plus how many are clear, raining, snowing or in night. Refreshes every 10 minutes
 - 🛰️ **Planet Alerts** - Wildfires, storms, icebergs and volcanoes from NASA EONET plus the last 24 hours of M4.5+ earthquakes from USGS, no search needed
 - ☀️ **Space Weather** - NOAA geomagnetic, radio and radiation scales, Kp history and forecast, aurora outlook, solar wind and the latest bulletins
-- ⚖️ **Country vs Country** - Any two countries side by side on 16 World Bank metrics, with a two-line history chart and a plain-language verdict
-- 🎯 **Planet Quiz** - Higher-or-lower game on live World Bank data: guess which country wins, keep a streak, celebrate milestones with confetti, share your score and jump straight into the winning country's vault
 - 🚀 **Space Station Tracker** - The ISS on a world map, refreshed every 5 seconds, with speed, altitude, daylight and the country or ocean it is flying over
+- 🌌 **Sky Tonight** - For any city: sunset and golden hour, when the sky is fully dark, moon phase and illumination, cloud cover now, aurora chance from NOAA's live forecast, sunrise and UV tomorrow, and a plain verdict on stargazing conditions
+- ☄️ **Asteroid Watch** - Every near-Earth object passing this week from NASA's NeoWs: size compared to everyday objects, speed, miss distance in lunar distances, hazard flag
+- 📅 **On This Day on Earth** - Wikipedia's events for today, with planet, nature and space moments highlighted, and a random-day button
+- 🐾 **Wildlife Near You** - iNaturalist sightings within 40 km of any city in the last 30 days: most-seen species and the latest photos
+- 🏃 **Best Hour Outside** - The next 48 hours for any city scored 0-100 for being outdoors, blending feels-like temperature, rain chance, wind, UV, European air-quality index and pollen. Shows the best two-hour window today and tomorrow, the hour to avoid, a 48-hour score chart, and the best hour for a walk, run, ride or picnic
+
+#### 🧰 **Tools (1 section)**
+- ⚖️ **Country vs Country** - Any two countries side by side on 16 World Bank metrics, with a two-line history chart and a plain-language verdict
 
 #### 🌐 **Digital & Cultural (5 sections)**
 - 🌐 **Internet Access** - Digital connectivity and internet penetration with gender breakdowns
@@ -53,13 +66,17 @@ EarthVault provides comprehensive insights across environmental, social, economi
 
 
 ### 🎨 **Modern UI/UX**
+- 🇬🇷 **Greek interface** - An EN/ΕΛ toggle in the header and on the splash screen switches the menu, titles, descriptions, search row, tips and shared labels to Greek (auto-selected for Greek browsers, remembered between visits). Data from the sources stays in English
 - 🛂 **Country Passport** - Every country result opens with the flag, capital, region, income group and population
 - 🎲 **Surprise Me** - A dice button next to the search box picks a random place for the current vault
 - 📸 **Share Cards** - One click turns any result into a shareable 1200×630 image (native share sheet on phones, download on desktop)
-- 🧭 **Explorer Progress** - A counter in the header tracks how many of the 32 vaults you have opened, with milestone celebrations
+- 🧭 **Explorer Progress** - A counter in the header tracks how many of the 41 vaults you have opened, with milestone celebrations
 - 🛰️ **Earth Today** - The splash screen shows the latest full-disc photo of Earth from NASA's EPIC camera
 - 💡 **First-visit Tips** - A dismissable three-step guide; press `/` anywhere to jump to the search box
-- 🔎 **Vault Finder** - Type to filter the 32 vaults in the menu; the last vault you used is remembered
+- 🌊 **Tides in Ocean Pulse** - Current tide height and the next high or low water for any coastal city
+- 🌼 **Pollen & UV in Air Quality** - The live capital reading now includes UV and pollen levels (Europe)
+- 🛰️ **Live splash counters** - Earthquakes in the last 24 hours, wildfires burning now and the current Kp index, next to the statistical daily estimates
+- 🔎 **Vault Finder** - Type to filter the 41 vaults in the menu; the last vault you used is remembered
 - 💬 **Friendly Feedback** - Non-blocking toasts replace browser alerts; empty or failed searches never leave stale data on screen
 - 🧭 **Guided Search** - Every vault shows a one-line description and "Try" example chips; Enter submits, and results scroll into view on phones
 - 📱 **Phone-first Checks** - Verified at 390px: no horizontal overflow, 44px tap targets in the menu, 3-column timeline grid
@@ -199,6 +216,22 @@ Power City Stories. The city is geocoded with Open-Meteo, matched to its Wikiped
 
 No key required. **API Documentation:** [en.wikipedia.org/api/rest_v1](https://en.wikipedia.org/api/rest_v1/) · [query.wikidata.org](https://query.wikidata.org/)
 
+#### **Open-Meteo (live, many cities at once)**
+
+Planet Right Now and Hot or Not request current conditions for dozens of coordinates in a single call. Sky Tonight uses the daily sunrise/sunset/UV fields plus current cloud cover; twilight times come from sunrise-sunset.org and the aurora probability from NOAA's OVATION grid. Ocean Pulse reads `sea_level_height_msl` from the Marine API for tides.
+
+#### **NASA NeoWs**
+
+Asteroid Watch uses the Near-Earth Object feed with NASA's public `DEMO_KEY`, which allows about 30 requests per hour per visitor. Results are cached for 6 hours in the session. For heavy traffic, register a free key at api.nasa.gov and replace `DEMO_KEY`.
+
+#### **iNaturalist**
+
+Wildlife Near You queries recent observations and species counts around a coordinate. No key required.
+
+#### **Open-Meteo hourly forecasts**
+
+Best Hour Outside combines the forecast API (hourly temperature, apparent temperature, precipitation probability, wind, UV, weather code, daylight) with the air-quality API (hourly European AQI and five pollen types, Europe only) for three days. No key required.
+
 #### **NASA EPIC**
 
 Provides the latest natural-colour image of Earth from the DSCOVR satellite for the splash screen. No key required.
@@ -327,7 +360,8 @@ The following API keys are included in the code:
 - ✅ **TMDB** - Key included (free tier)
 - ✅ **OECD** - No key required (public API)
 - ✅ **reddit** - No key required (public API)
-- ✅ **Our World in Data, NASA EONET, USGS, NOAA SWPC, NASA EPIC, GBIF, Where the ISS at?, BigDataCloud, Wikipedia, Wikidata** - No key required (public APIs with open CORS)
+- ✅ **Our World in Data, NASA EONET, USGS, NOAA SWPC, NASA EPIC, GBIF, iNaturalist, Where the ISS at?, BigDataCloud, Wikipedia, Wikidata, sunrise-sunset.org** - No key required (public APIs with open CORS)
+- ⚠️ **NASA NeoWs** - Uses the public DEMO_KEY (rate limited per visitor); swap in a free key for production
 
 
 For production use with high traffic, consider getting your own API keys:

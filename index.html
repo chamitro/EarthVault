@@ -15,10 +15,10 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;800&family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;800&family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
+            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; 
             background-color: #0f172a; 
             color: #f1f5f9; 
             -webkit-font-smoothing: antialiased;
@@ -520,53 +520,54 @@
     <div id="splash-screen" style="display: none;">
         <div class="splash-content">
             <div id="splash-earth-wrap" class="mb-6"><div class="text-6xl">🌍</div></div>
-            <h1 class="text-3xl font-bold text-red-900 text-indigo-950 mb-4 uppercase italic">Live on <span class="text-emerald-500">EarthVault</span></h1>
-            <p class="text-slate-400 splash-subtitle uppercase tracking-widest font-bold">Today's Earth Vitals</p>
-            <p class="text-slate-500 splash-disclaimer uppercase tracking-wider font-semibold">Based on Statistical Models</p>
+            <div class="flex justify-end -mb-2"><button type="button" onclick="toggleLang()" class="lang-btn px-2.5 py-1 rounded-full bg-white/5 hover:bg-white/15 border border-white/10 text-[10px] font-black text-slate-300 tracking-widest">ΕΛ</button></div>
+            <h1 data-i18n-html="splash_title" class="text-3xl font-bold text-red-900 text-indigo-950 mb-4 uppercase italic">Live on <span class="text-emerald-500">EarthVault</span></h1>
+            <p data-i18n="splash_sub" class="text-slate-400 splash-subtitle uppercase tracking-widest font-bold">Today's Earth Vitals</p>
+            <p data-i18n="splash_disc" class="text-slate-500 splash-disclaimer uppercase tracking-wider font-semibold">Based on Statistical Models</p>
             
             <div class="splash-stats-grid">
                 <div class="splash-stat">
-                    <h5 class="font-black text-rose-400 uppercase tracking-widest">Forests Lost Today</h5>
+                    <h5 class="font-black text-rose-400 uppercase tracking-widest" data-i18n="k_forest">Forests Lost Today</h5>
                     <div class="splash-stat-value">
                         <p id="splash-forest" class="splash-stat-number text-rose-500 font-mono-data">0.00</p>
-                        <span class="splash-stat-unit text-slate-500">HA</span>
+                        <span class="splash-stat-unit text-slate-500" data-i18n="u_ha">HA</span>
                     </div>
                 </div>
 
                 <div class="splash-stat">
-                    <h5 class="font-black text-slate-400 uppercase tracking-widest">CO₂ Emitted Today</h5>
+                    <h5 class="font-black text-slate-400 uppercase tracking-widest" data-i18n="k_co2">CO₂ Emitted Today</h5>
                     <div class="splash-stat-value">
                         <p id="splash-carbon" class="splash-stat-number text-slate-300 font-mono-data">0</p>
-                        <span class="splash-stat-unit text-slate-500">TONS</span>
+                        <span class="splash-stat-unit text-slate-500" data-i18n="u_tons">TONS</span>
                     </div>
                 </div>
 
                 <div class="splash-stat">
-                    <h5 class="font-black text-emerald-400 uppercase tracking-widest">Renewable Power Today</h5>
+                    <h5 class="font-black text-emerald-400 uppercase tracking-widest" data-i18n="k_energy">Renewable Power Today</h5>
                     <div class="splash-stat-value">
                         <p id="splash-energy" class="splash-stat-number text-emerald-400 font-mono-data">0</p>
-                        <span class="splash-stat-unit text-slate-500">MWH</span>
+                        <span class="splash-stat-unit text-slate-500" data-i18n="u_mwh">MWH</span>
                     </div>
                 </div>
 
                 <div class="splash-stat">
-                    <h5 class="font-black text-cyan-400 uppercase tracking-widest">Ocean Plastic Today</h5>
+                    <h5 class="font-black text-cyan-400 uppercase tracking-widest" data-i18n="k_plastic">Ocean Plastic Today</h5>
                     <div class="splash-stat-value">
                         <p id="splash-plastic" class="splash-stat-number text-cyan-400 font-mono-data">0</p>
-                        <span class="splash-stat-unit text-slate-500">TONS</span>
+                        <span class="splash-stat-unit text-slate-500" data-i18n="u_tons">TONS</span>
                     </div>
                 </div>
 
                 <div class="splash-stat">
-                    <h5 class="font-black text-blue-400 uppercase tracking-widest">Population Change Today</h5>
+                    <h5 class="font-black text-blue-400 uppercase tracking-widest" data-i18n="k_pop">Population Change Today</h5>
                     <div class="splash-stat-value">
                         <p id="splash-population" class="splash-stat-number text-blue-400 font-mono-data">+0</p>
-                        <span class="splash-stat-unit text-slate-500">PEOPLE</span>
+                        <span class="splash-stat-unit text-slate-500" data-i18n="u_people">PEOPLE</span>
                     </div>
                 </div>
 
                 <div class="splash-stat">
-                    <h5 class="font-black text-orange-400 uppercase tracking-widest">Global Temp Rise</h5>
+                    <h5 class="font-black text-orange-400 uppercase tracking-widest" data-i18n="k_temp">Global Temp Rise</h5>
                     <div class="splash-stat-value">
                         <p id="splash-temp" class="splash-stat-number text-orange-400 font-mono-data">+1.2</p>
                         <span class="splash-stat-unit text-slate-500">°C</span>
@@ -574,7 +575,13 @@
                 </div>
             </div>
             
-            <button onclick="enterVault()" class="splash-enter-btn">
+            <div id="splash-live" class="grid grid-cols-3 gap-2 mb-5 text-center">
+                <div class="bg-white/5 border border-white/10 rounded-2xl p-3"><div class="text-[8px] font-black text-rose-400 uppercase tracking-widest" data-i18n="live_quakes">Quakes M4.5+ · 24h</div><div id="splash-quakes" class="text-xl font-black text-white font-mono-data">…</div></div>
+                <div class="bg-white/5 border border-white/10 rounded-2xl p-3"><div class="text-[8px] font-black text-orange-400 uppercase tracking-widest" data-i18n="live_fires">Wildfires burning</div><div id="splash-fires" class="text-xl font-black text-white font-mono-data">…</div></div>
+                <div class="bg-white/5 border border-white/10 rounded-2xl p-3"><div class="text-[8px] font-black text-violet-400 uppercase tracking-widest" data-i18n="live_kp">Kp index now</div><div id="splash-kp" class="text-xl font-black text-white font-mono-data">…</div></div>
+                <div data-i18n="live_src" class="col-span-3 text-[8px] text-slate-500 uppercase tracking-widest">Live right now · USGS, NASA EONET, NOAA</div>
+            </div>
+            <button onclick="enterVault()" data-i18n="splash_enter" class="splash-enter-btn">
                 Explore Real Data →
             </button>
         </div>
@@ -763,9 +770,11 @@
             <span id="explorer-pill" class="hidden ml-2 align-middle text-[10px] font-bold text-slate-400 bg-white/5 border border-white/10 rounded-full px-2 py-1 not-italic tracking-normal"></span>
         </h1>
 
+        <div class="flex items-center gap-2">
+        <button type="button" onclick="toggleLang()" class="lang-btn shrink-0 px-2.5 py-2 rounded-xl bg-slate-900/80 ring-1 ring-inset ring-white/10 hover:bg-slate-800 text-[10px] font-black text-slate-300 tracking-widest transition-all" title="Αλλαγή στα Ελληνικά" aria-label="Αλλαγή στα Ελληνικά">ΕΛ</button>
         <div class="relative inline-block text-left" id="menu-container">
             <div>
-                <button type="button" onclick="toggleMenu()" id="menu-button" aria-haspopup="menu" aria-expanded="false" aria-label="Choose a vault" 
+                <button type="button" onclick="toggleMenu()" id="menu-button" aria-haspopup="menu" aria-expanded="false" aria-label="Choose a vault" data-i18n-aria="menu_aria" 
                     class="inline-flex items-center justify-between w-44 md:w-56 rounded-xl bg-slate-900/80 px-4 py-2.5 text-xs font-extrabold text-white shadow-sm ring-1 ring-inset ring-white/10 hover:bg-slate-800 transition-all">
                     <span id="selected-mode-text">WEATHER ARCHIVE</span>
                     <svg class="h-5 w-5 text-slate-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -776,12 +785,67 @@
 
             <div id="dropdown-menu" role="menu" class="hidden absolute right-0 z-10 mt-2 w-80 max-w-[calc(100vw-1.5rem)] origin-top-right rounded-2xl bg-slate-900 border border-white/10 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none backdrop-blur-xl max-h-[70vh] overflow-y-auto">
                 <div class="p-3">
-                    <input id="vault-filter" type="search" placeholder="Find a vault... (e.g. ocean, happiness)" autocomplete="off" oninput="filterVaults(this.value)" class="w-full mb-3 bg-slate-950/80 border border-white/10 rounded-xl px-3 py-2.5 text-xs text-white outline-none focus:ring-2 focus:ring-indigo-500">
-                    <p id="vault-filter-empty" class="hidden text-[10px] text-slate-500 text-center py-3">No vault matches that.</p>
+                    <input id="vault-filter" type="search" data-i18n-placeholder="filter_ph" placeholder="Find a vault... (e.g. ocean, happiness)" autocomplete="off" oninput="filterVaults(this.value)" class="w-full mb-3 bg-slate-950/80 border border-white/10 rounded-xl px-3 py-2.5 text-xs text-white outline-none focus:ring-2 focus:ring-indigo-500">
+                    <p id="vault-filter-empty" data-i18n="filter_empty" class="hidden text-[10px] text-slate-500 text-center py-3">No vault matches that.</p>
+                    <!-- Games Category -->
+                    <div class="mb-4">
+                        <div class="px-4 py-2.5 bg-pink-500/10 border border-pink-500/30 rounded-xl mb-2">
+                            <div class="text-[10px] font-black text-pink-400 uppercase tracking-widest" data-i18n="cat_games">🎮 Games</div>
+                        </div>
+                        <div class="grid grid-cols-1 gap-1 pl-2">
+                            <button data-vault="quiz" role="menuitem" onclick="selectMode('quiz')" class="flex items-center gap-3 px-4 py-2.5 text-[10px] font-bold text-slate-300 hover:text-pink-400 hover:bg-white/5 rounded-xl transition-all">
+                                <span>🎯</span> Planet Quiz
+                            </button>
+                            <button data-vault="mystery" role="menuitem" onclick="selectMode('mystery')" class="flex items-center gap-3 px-4 py-2.5 text-[10px] font-bold text-slate-300 hover:text-emerald-400 hover:bg-white/5 rounded-xl transition-all">
+                                <span>🕵️</span> Mystery Country (daily)
+                            </button>
+                            <button data-vault="hotornot" role="menuitem" onclick="selectMode('hotornot')" class="flex items-center gap-3 px-4 py-2.5 text-[10px] font-bold text-slate-300 hover:text-orange-400 hover:bg-white/5 rounded-xl transition-all">
+                                <span>🌡️</span> Hot or Not (live duel)
+                            </button>
+                            <button data-vault="flags" role="menuitem" onclick="selectMode('flags')" class="flex items-center gap-3 px-4 py-2.5 text-[10px] font-bold text-slate-300 hover:text-yellow-400 hover:bg-white/5 rounded-xl transition-all">
+                                <span>🚩</span> Flag Flash (30 s)
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Live Earth Category -->
+                    <div class="mb-4">
+                        <div class="px-4 py-2.5 bg-rose-500/10 border border-rose-500/30 rounded-xl mb-2">
+                            <div class="text-[10px] font-black text-rose-400 uppercase tracking-widest" data-i18n="cat_live">🛰️ Live Earth</div>
+                        </div>
+                        <div class="grid grid-cols-1 gap-1 pl-2">
+                            <button data-vault="rightnow" role="menuitem" onclick="selectMode('rightnow')" class="flex items-center gap-3 px-4 py-2.5 text-[10px] font-bold text-slate-300 hover:text-cyan-400 hover:bg-white/5 rounded-xl transition-all">
+                                <span>🌍</span> Planet Right Now
+                            </button>
+                            <button data-vault="alerts" role="menuitem" onclick="selectMode('alerts')" class="flex items-center gap-3 px-4 py-2.5 text-[10px] font-bold text-slate-300 hover:text-rose-400 hover:bg-white/5 rounded-xl transition-all">
+                                <span>🛰️</span> Planet Alerts
+                            </button>
+                            <button data-vault="space" role="menuitem" onclick="selectMode('space')" class="flex items-center gap-3 px-4 py-2.5 text-[10px] font-bold text-slate-300 hover:text-violet-400 hover:bg-white/5 rounded-xl transition-all">
+                                <span>☀️</span> Space Weather
+                            </button>
+                            <button data-vault="iss" role="menuitem" onclick="selectMode('iss')" class="flex items-center gap-3 px-4 py-2.5 text-[10px] font-bold text-slate-300 hover:text-sky-400 hover:bg-white/5 rounded-xl transition-all">
+                                <span>🚀</span> Space Station
+                            </button>
+                            <button data-vault="sky" role="menuitem" onclick="selectMode('sky')" class="flex items-center gap-3 px-4 py-2.5 text-[10px] font-bold text-slate-300 hover:text-indigo-400 hover:bg-white/5 rounded-xl transition-all">
+                                <span>🌌</span> Sky Tonight
+                            </button>
+                            <button data-vault="asteroids" role="menuitem" onclick="selectMode('asteroids')" class="flex items-center gap-3 px-4 py-2.5 text-[10px] font-bold text-slate-300 hover:text-slate-400 hover:bg-white/5 rounded-xl transition-all">
+                                <span>☄️</span> Asteroid Watch
+                            </button>
+                            <button data-vault="onthisday" role="menuitem" onclick="selectMode('onthisday')" class="flex items-center gap-3 px-4 py-2.5 text-[10px] font-bold text-slate-300 hover:text-emerald-400 hover:bg-white/5 rounded-xl transition-all">
+                                <span>📅</span> On This Day on Earth
+                            </button>
+                            <button data-vault="nearby" role="menuitem" onclick="selectMode('nearby')" class="flex items-center gap-3 px-4 py-2.5 text-[10px] font-bold text-slate-300 hover:text-green-400 hover:bg-white/5 rounded-xl transition-all">
+                                <span>🐾</span> Wildlife Near You
+                            </button>
+                            <button data-vault="outside" role="menuitem" onclick="selectMode('outside')" class="flex items-center gap-3 px-4 py-2.5 text-[10px] font-bold text-slate-300 hover:text-lime-400 hover:bg-white/5 rounded-xl transition-all">
+                                <span>🏃</span> Best Hour Outside
+                            </button>
+                        </div>
+                    </div>
                     <!-- Environmental Data Category -->
                     <div class="mb-4">
                         <div class="px-4 py-2.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl mb-2">
-                            <div class="text-[10px] font-black text-emerald-400 uppercase tracking-widest">🌍 Environmental Data</div>
+                            <div class="text-[10px] font-black text-emerald-400 uppercase tracking-widest" data-i18n="cat_env">🌍 Environmental Data</div>
                         </div>
                         <div class="grid grid-cols-1 gap-1 pl-2">
                             <button data-vault="weather" role="menuitem" onclick="selectMode('weather')" class="flex items-center gap-3 px-4 py-2.5 text-[10px] font-bold text-slate-300 hover:text-indigo-400 hover:bg-white/5 rounded-xl transition-all">
@@ -829,7 +893,7 @@
                     <!-- Social & Health Category -->
                     <div class="mb-4">
                         <div class="px-4 py-2.5 bg-pink-500/10 border border-pink-500/30 rounded-xl mb-2">
-                            <div class="text-[10px] font-black text-pink-400 uppercase tracking-widest">👥 Social & Health</div>
+                            <div class="text-[10px] font-black text-pink-400 uppercase tracking-widest" data-i18n="cat_social">👥 Social & Health</div>
                         </div>
                         <div class="grid grid-cols-1 gap-1 pl-2">
                             <button data-vault="human_span" role="menuitem" onclick="selectMode('human_span')" class="flex items-center gap-3 px-4 py-2.5 text-[10px] font-bold text-slate-300 hover:text-cyan-400 hover:bg-white/5 rounded-xl transition-all">
@@ -865,7 +929,7 @@
                     <!-- Digital & Cultural Category -->
                     <div>
                         <div class="px-4 py-2.5 bg-blue-500/10 border border-blue-500/30 rounded-xl mb-2">
-                            <div class="text-[10px] font-black text-blue-400 uppercase tracking-widest">🌐 Digital & Cultural</div>
+                            <div class="text-[10px] font-black text-blue-400 uppercase tracking-widest" data-i18n="cat_digital">🌐 Digital & Cultural</div>
                         </div>
                         <div class="grid grid-cols-1 gap-1 pl-2">
                             <button data-vault="internet" role="menuitem" onclick="selectMode('internet')" class="flex items-center gap-3 px-4 py-2.5 text-[10px] font-bold text-slate-300 hover:text-blue-400 hover:bg-white/5 rounded-xl transition-all">
@@ -886,31 +950,20 @@
                         </div>
                     </div>
 
-                    <!-- Live & Tools Category -->
+                    <!-- Tools Category -->
                     <div class="mb-2">
-                        <div class="px-4 py-2.5 bg-rose-500/10 border border-rose-500/30 rounded-xl mb-2">
-                            <div class="text-[10px] font-black text-rose-400 uppercase tracking-widest">🛰️ Live & Tools</div>
+                        <div class="px-4 py-2.5 bg-indigo-500/10 border border-indigo-500/30 rounded-xl mb-2">
+                            <div class="text-[10px] font-black text-indigo-400 uppercase tracking-widest" data-i18n="cat_tools">🧰 Tools</div>
                         </div>
                         <div class="grid grid-cols-1 gap-1 pl-2">
-                            <button data-vault="alerts" role="menuitem" onclick="selectMode('alerts')" class="flex items-center gap-3 px-4 py-2.5 text-[10px] font-bold text-slate-300 hover:text-rose-400 hover:bg-white/5 rounded-xl transition-all">
-                                <span>🛰️</span> Planet Alerts (live)
-                            </button>
-                            <button data-vault="space" role="menuitem" onclick="selectMode('space')" class="flex items-center gap-3 px-4 py-2.5 text-[10px] font-bold text-slate-300 hover:text-violet-400 hover:bg-white/5 rounded-xl transition-all">
-                                <span>☀️</span> Space Weather (live)
-                            </button>
                             <button data-vault="compare" role="menuitem" onclick="selectMode('compare')" class="flex items-center gap-3 px-4 py-2.5 text-[10px] font-bold text-slate-300 hover:text-indigo-400 hover:bg-white/5 rounded-xl transition-all">
                                 <span>⚖️</span> Country vs Country
-                            </button>
-                            <button data-vault="quiz" role="menuitem" onclick="selectMode('quiz')" class="flex items-center gap-3 px-4 py-2.5 text-[10px] font-bold text-slate-300 hover:text-pink-400 hover:bg-white/5 rounded-xl transition-all">
-                                <span>🎯</span> Planet Quiz (game)
-                            </button>
-                            <button data-vault="iss" role="menuitem" onclick="selectMode('iss')" class="flex items-center gap-3 px-4 py-2.5 text-[10px] font-bold text-slate-300 hover:text-sky-400 hover:bg-white/5 rounded-xl transition-all">
-                                <span>🚀</span> Space Station (live)
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
         </div>
     </div>
 </nav>
@@ -939,8 +992,7 @@
     }
     document.addEventListener('keydown', e => { if (e.key === 'Escape') document.getElementById('dropdown-menu').classList.add('hidden'); });
 
-    function selectMode(mode) {
-        const labels = {
+    const MODE_LABELS = {
             weather: 'WEATHER ARCHIVE',
             ocean: 'OCEAN PULSE',
             univ: 'UNIVERSITY ACCESS',
@@ -972,9 +1024,19 @@
             wildlife: 'WILDLIFE GALLERY',
             quiz: 'PLANET QUIZ',
             iss: 'SPACE STATION',
-            city: 'CITY STORIES'
+            city: 'CITY STORIES',
+            mystery: 'MYSTERY COUNTRY',
+            hotornot: 'HOT OR NOT',
+            flags: 'FLAG FLASH',
+            rightnow: 'PLANET RIGHT NOW',
+            sky: 'SKY TONIGHT',
+            asteroids: 'ASTEROID WATCH',
+            onthisday: 'ON THIS DAY',
+            nearby: 'WILDLIFE NEAR YOU',
+            outside: 'BEST HOUR OUTSIDE'
         };
-        document.getElementById('selected-mode-text').innerText = labels[mode];
+    function selectMode(mode) {
+        document.getElementById('selected-mode-text').innerText = trv('labels', mode, MODE_LABELS[mode]);
         setMode(mode);
         try { localStorage.setItem('ev_last_mode', mode); } catch (e) {}
         if (typeof trackVisit === 'function') trackVisit(mode);
@@ -1010,7 +1072,7 @@
                 <div class="fact-content flex items-center gap-4 md:gap-5 text-left">
                     <div id="fact-icon" class="text-2xl md:text-3xl">🌪️</div>
                     <div>
-                        <h4 id="fact-label" class="text-[10px] font-bold text-indigo-400 uppercase tracking-[0.2em] mb-1">Archive Intel</h4>
+                        <h4 id="fact-label" data-i18n="fact_label" class="text-[10px] font-bold text-indigo-400 uppercase tracking-[0.2em] mb-1">Archive Intel</h4>
                         <p id="fact-text" class="text-xs md:text-sm text-slate-300 italic">Initiating atmospheric scan...</p>
                     </div>
                 </div>
@@ -1021,7 +1083,7 @@
 
             <div class="badge-container mt-4 md:mt-6 flex flex-wrap justify-center gap-3 md:gap-4 px-4">
                 <div id="active-badge" class="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/20 px-3 md:px-4 py-2 rounded-full text-indigo-400 text-[10px] font-bold uppercase tracking-widest">
-                    <span class="flex h-2 w-2 rounded-full bg-indigo-500 animate-ping"></span> Archive Active
+                    <span class="flex h-2 w-2 rounded-full bg-indigo-500 animate-ping"></span> <span data-i18n="badge_active">Archive Active</span>
                 </div>
                 <div id="era-trend" onclick="showInfo('era')" class="hidden cursor-help inline-flex items-center gap-2 bg-slate-900/60 border border-white/5 px-3 md:px-4 py-2 rounded-full text-[10px] font-bold text-slate-300"></div>
             </div>
@@ -1029,8 +1091,8 @@
 
         <div class="search-container flex flex-col md:flex-row gap-3 mb-8 md:mb-12 justify-center max-w-3xl mx-auto px-4">
             <input type="text" id="cityInput" placeholder="Search region..." class="flex-1 bg-slate-900/90 border border-white/10 px-4 md:px-6 py-3 md:py-4 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none text-white text-base md:text-lg search-glow transition-all">
-            <button type="button" id="randomBtn" onclick="surpriseMe()" title="Surprise me with a random place" aria-label="Random place" class="bg-slate-900/90 border border-white/10 rounded-2xl px-4 text-2xl hover:bg-slate-800 hover:scale-105 transition-all">🎲</button>
-            <input type="text" id="cityInput2" placeholder="Second country..." class="hidden flex-1 bg-slate-900/90 border border-white/10 px-4 md:px-6 py-3 md:py-4 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none text-white text-base md:text-lg search-glow transition-all">
+            <button type="button" id="randomBtn" onclick="surpriseMe()" data-i18n-title="dice_title" title="Surprise me with a random place" aria-label="Random place" class="bg-slate-900/90 border border-white/10 rounded-2xl px-4 text-2xl hover:bg-slate-800 hover:scale-105 transition-all">🎲</button>
+            <input type="text" id="cityInput2" data-i18n-placeholder="ph_second" placeholder="Second country..." class="hidden flex-1 bg-slate-900/90 border border-white/10 px-4 md:px-6 py-3 md:py-4 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none text-white text-base md:text-lg search-glow transition-all">
             <select id="compareMetric" aria-label="Metric to compare" class="hidden bg-slate-900/90 border border-white/10 px-4 py-3 md:py-4 rounded-2xl text-white text-sm font-bold outline-none"></select>
             <button onclick="mainAction()" id="searchBtn" class="search-btn bg-indigo-600 hover:bg-indigo-500 text-white px-8 md:px-10 py-3 md:py-4 rounded-2xl font-bold transition-all uppercase tracking-tighter shadow-xl shadow-indigo-600/20">Analyze</button>
         </div>
@@ -1039,13 +1101,13 @@
 
         <div id="tips-card" class="hidden vault-card rounded-[2rem] p-5 md:p-6 mb-8 relative">
             <button type="button" onclick="dismissTips()" aria-label="Dismiss tips" class="absolute top-3 right-4 text-slate-500 hover:text-white text-lg leading-none">×</button>
-            <div class="text-[10px] font-black text-emerald-400 uppercase tracking-[0.3em] mb-3">New here? Three things to try</div>
+            <div data-i18n="tips_head" class="text-[10px] font-black text-emerald-400 uppercase tracking-[0.3em] mb-3">New here? Three things to try</div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm text-slate-300">
-                <div class="bg-white/5 rounded-2xl p-4"><span class="text-xl">🗂️</span><p class="mt-2"><b class="text-white">Pick a vault</b> from the menu above - weather, oceans, wildlife, happiness and 27 more.</p></div>
-                <div class="bg-white/5 rounded-2xl p-4"><span class="text-xl">🎲</span><p class="mt-2"><b class="text-white">Feeling lucky?</b> Hit the dice for a random place, or press <kbd class="px-1.5 py-0.5 rounded bg-white/10 text-xs">/</kbd> to jump to the search box.</p></div>
-                <div class="bg-white/5 rounded-2xl p-4"><span class="text-xl">🎯</span><p class="mt-2"><b class="text-white">Play the Planet Quiz</b> and track the Space Station live under <i>Live &amp; Tools</i>. Every result has a Share button.</p></div>
+                <div class="bg-white/5 rounded-2xl p-4"><span class="text-xl">🗂️</span><p class="mt-2" data-i18n-html="tips_1"><b class="text-white">Pick a vault</b> from the menu above - weather, oceans, wildlife, happiness and 35 more.</p></div>
+                <div class="bg-white/5 rounded-2xl p-4"><span class="text-xl">🎲</span><p class="mt-2" data-i18n-html="tips_2"><b class="text-white">Feeling lucky?</b> Hit the dice for a random place, or press <kbd class="px-1.5 py-0.5 rounded bg-white/10 text-xs">/</kbd> to jump to the search box.</p></div>
+                <div class="bg-white/5 rounded-2xl p-4"><span class="text-xl">🎯</span><p class="mt-2" data-i18n-html="tips_3"><b class="text-white">Play</b> the daily Mystery Country or Flag Flash under <i>Games</i>, and watch the planet live under <i>Live Earth</i>. Every result has a Share button.</p></div>
             </div>
-            <div class="text-right mt-3"><button type="button" onclick="dismissTips()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white">Got it</button></div>
+            <div class="text-right mt-3"><button type="button" onclick="dismissTips()" data-i18n="tips_ok" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white">Got it</button></div>
         </div>
 
         <!-- LIVE MODES (Planet Alerts, Space Weather) render here -->
@@ -1053,30 +1115,30 @@
 
         <!-- LIVE PULSE CONTAINER - Always visible, updates every second -->
         <div id="daily-pulse-container" class="vault-card rounded-[2rem] md:rounded-[3rem] p-4 md:p-10 mb-6 md:mb-8 border border-emerald-500/20 bg-emerald-500/5 relative overflow-hidden transition-all duration-500">
-            <div class="absolute top-3 md:top-4 left-4 md:left-6 text-[8px] md:text-[9px] font-black text-emerald-400 uppercase tracking-[0.3em] md:tracking-[0.4em] opacity-70">Live planetary vitals</div>
+            <div class="absolute top-3 md:top-4 left-4 md:left-6 text-[8px] md:text-[9px] font-black text-emerald-400 uppercase tracking-[0.3em] md:tracking-[0.4em] opacity-70" data-i18n="pulse_live">Live planetary vitals</div>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-12 mt-8 md:mt-4">
                 <div class="flex flex-col items-center py-4 md:py-0">
-                    <h5 class="text-[9px] md:text-[10px] font-black text-slate-500 uppercase mb-2 tracking-widest">Forests Lost Today</h5>
+                    <h5 class="text-[9px] md:text-[10px] font-black text-slate-500 uppercase mb-2 tracking-widest" data-i18n="k_forest">Forests Lost Today</h5>
                     <div class="flex items-baseline gap-1">
                         <p id="live-forest" class="text-2xl md:text-4xl font-black text-rose-500 font-mono-data">0.00</p>
-                        <span class="text-[9px] md:text-[10px] font-bold text-slate-500">HA</span>
+                        <span class="text-[9px] md:text-[10px] font-bold text-slate-500" data-i18n="u_ha">HA</span>
                     </div>
                 </div>
 
                 <div class="flex flex-col items-center border-y md:border-y-0 md:border-x border-white/5 py-6 md:py-0">
-                    <h5 class="text-[9px] md:text-[10px] font-black text-slate-500 uppercase mb-2 tracking-widest">CO2 Emitted Today</h5>
+                    <h5 class="text-[9px] md:text-[10px] font-black text-slate-500 uppercase mb-2 tracking-widest" data-i18n="k_co2">CO2 Emitted Today</h5>
                     <div class="flex items-baseline gap-1">
                         <p id="live-carbon" class="text-2xl md:text-4xl font-black text-slate-300 font-mono-data">0</p>
-                        <span class="text-[9px] md:text-[10px] font-bold text-slate-500">TONS</span>
+                        <span class="text-[9px] md:text-[10px] font-bold text-slate-500" data-i18n="u_tons">TONS</span>
                     </div>
                 </div>
 
                 <div class="flex flex-col items-center py-4 md:py-0">
-                    <h5 class="text-[9px] md:text-[10px] font-black text-slate-500 uppercase mb-2 tracking-widest">Renewable Power Today</h5>
+                    <h5 class="text-[9px] md:text-[10px] font-black text-slate-500 uppercase mb-2 tracking-widest" data-i18n="k_energy">Renewable Power Today</h5>
                     <div class="flex items-baseline gap-1">
                         <p id="live-energy" class="text-2xl md:text-4xl font-black text-emerald-400 font-mono-data">0</p>
-                        <span class="text-[9px] md:text-[10px] font-bold text-slate-500">MWH</span>
+                        <span class="text-[9px] md:text-[10px] font-bold text-slate-500" data-i18n="u_mwh">MWH</span>
                     </div>
                 </div>
             </div>
@@ -1085,7 +1147,7 @@
         <!-- APP CONTENT - Hidden until search -->
         <div id="app-content" class="hidden opacity-0 transition-all duration-700">
             <div id="passport-card" class="hidden vault-card rounded-[2rem] p-4 md:p-5 mb-5 md:mb-6 flex flex-wrap items-center gap-4 md:gap-6"></div>
-            <div id="share-row" class="flex justify-end mb-3"><button type="button" onclick="shareCard()" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-slate-200 transition-all">📸 Share this result</button></div>
+            <div id="share-row" class="flex justify-end mb-3"><button type="button" onclick="shareCard()" data-i18n="share_btn" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-slate-200 transition-all">📸 Share this result</button></div>
             <div id="impact-row" class="impact-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5 mb-6 md:mb-8 hidden"></div>
             
             <div class="stats-grid grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 mb-6 md:mb-8">
@@ -1243,6 +1305,15 @@
             compare: ["Pick any two countries and one metric to see who leads and how the gap has moved over time.", "GDP per capita and life expectancy are strongly linked, but outliers like Costa Rica punch above their income.", "Country comparisons use the same World Bank series as the single-country vaults."],
             wildlife: ["Citizen scientists have logged over 3 billion wildlife observations on GBIF - most of them with a phone camera.", "Insects make up about 80% of all known animal species, yet birds dominate photo records because they are easier to spot.", "A single iNaturalist photo can confirm a species in a country where it had never been recorded before.", "Costa Rica holds about 5% of the world's biodiversity on just 0.03% of its land."],
             quiz: ["Luxembourg's GDP per person is more than 100 times that of Burundi.", "Iceland generates almost 100% of its electricity from renewable sources.", "Niger has the world's highest fertility rate at nearly 6 children per woman.", "Monaco has the longest life expectancy on Earth, at about 86 years.", "Suriname is the most forested country in the world - over 90% of its land is forest."],
+            mystery: ["There are 195 countries, but only about 50 have a coastline on two oceans.", "Vatican City is the smallest country on Earth - you can walk across it in 20 minutes.", "Canada has more lakes than the rest of the world combined.", "Only two countries have a square flag: Switzerland and Vatican City."],
+            hotornot: ["The hottest air temperature ever recorded was 56.7°C in Death Valley, 1913.", "The coldest was -89.2°C at Vostok Station, Antarctica, in 1983.", "Deserts can swing 40°C between midday and midnight.", "Oymyakon, Russia, is the coldest permanently inhabited place on Earth."],
+            flags: ["Nepal has the only national flag that is not a rectangle.", "Red is the most common colour in national flags; purple is the rarest.", "Denmark's flag is the oldest continuously used national flag, from 1219.", "Cyprus and Kosovo are the only countries with their own map on the flag."],
+            rightnow: ["At any moment about 2,000 thunderstorms are active somewhere on Earth.", "Lightning strikes the planet about 44 times every second.", "The windiest place on Earth is Commonwealth Bay, Antarctica, averaging 80 km/h.", "Somewhere on Earth it is always raining - about 500,000 km² at any time."],
+            sky: ["On a dark night you can see about 2,500 stars with the naked eye.", "The aurora can appear green, red, purple and even blue depending on altitude.", "The Moon moves about 3.8 cm farther from Earth every year.", "Astronomical twilight ends when the Sun is 18° below the horizon."],
+            asteroids: ["About 100 tonnes of space dust and rock hit Earth every day.", "The Chelyabinsk meteor of 2013 was only about 20 m wide - and still injured 1,500 people.", "NASA's DART mission nudged an asteroid's orbit in 2022 - the first planetary defence test.", "A lunar distance (LD) is 384,400 km; anything closer than 1 LD is a very near miss."],
+            onthisday: ["The 1883 Krakatoa eruption was heard 4,800 km away.", "The first photo of Earth from space was taken in 1946 by a captured V-2 rocket.", "In 1815 Mount Tambora caused the 'year without a summer'.", "The deepest ocean dive, 10,935 m, happened in 2019."],
+            outside: ["The 'feels like' temperature adds wind chill and humidity to the real reading - it can differ by 10°C.", "UV is strongest within two hours of solar noon, not at the hottest time of day.", "Pollen counts peak in the morning and again at dusk, when the air settles.", "Ozone, the main summer pollutant, builds up through the afternoon and falls after sunset."],
+            nearby: ["iNaturalist users have logged over 200 million observations.", "A single hectare of rainforest can hold more ant species than all of Britain.", "Urban foxes, parakeets and peregrine falcons now thrive in many big cities.", "Citizen scientists discover new species every year - sometimes in their own gardens."],
             city: ["Damascus and Jericho both claim to be the oldest continuously inhabited cities on Earth, with roots over 10,000 years old.", "Tokyo's metropolitan area holds about 37 million people - more than all of Canada.", "Istanbul is the only major city that sits on two continents.", "Rome has been called the Eternal City for over 2,000 years - the nickname dates to the poet Tibullus.", "La Paz in Bolivia is the highest capital city in the world at about 3,650 metres."],
             iss: ["The ISS travels at about 28,000 km/h and laps the planet every 92 minutes.", "Astronauts on the ISS see 16 sunrises and 16 sunsets every day.", "The ISS is the most expensive single object ever built, at well over $100 billion.", "You can spot the ISS with the naked eye - it looks like a bright star moving steadily across the sky.", "More than 270 people from over 20 countries have visited the ISS since 2000."],
             waste: ["Recycling 1 ton of paper saves 17 trees and 7,000 gallons of water.", "Aluminum cans can be recycled infinitely - a recycled can is back on store shelves in just 60 days.", "Germany recycles 67% of its waste using strict sorting laws and deposit return systems.", "Plastic takes 500-1000 years to decompose, but can be recycled into new products in weeks.", "South Korea fines citizens for improper waste sorting - their recycling rate jumped to 59%.", "If global recycling increased by 10%, it would equal planting 250 million trees annually.", "Sweden imports waste from other countries to fuel its waste-to-energy plants - they ran out of their own trash!"]
@@ -1254,7 +1325,7 @@
             
             const list = facts[currentMode] || facts.weather;
             document.getElementById('fact-text').innerText = list[Math.floor(Math.random() * list.length)];
-            const icons = { weather: '🌪️', ocean: '🌊', forest: '🌳', agri: '🌾', energy: '⚡', water: '💧', univ: '🎓', mental: '🧠', happiness: '😊', carbon: '🏭' , generations: '🤱', human_span: '⏳', internet: '🌐', music: '🎵', cinema: '🎬', endangered: '🐾', migration: '✈️', public_private: '🏛️', health_private: '🏥', economy: '💼', trends: '📊', waste: '♻️', power: '🔌', air: '🌫️', waterstress: '🏜️', alerts: '🛰️', space: '☀️', compare: '⚖️', wildlife: '🦋', quiz: '🎯', iss: '🚀', city: '🏙️'};
+            const icons = { weather: '🌪️', ocean: '🌊', forest: '🌳', agri: '🌾', energy: '⚡', water: '💧', univ: '🎓', mental: '🧠', happiness: '😊', carbon: '🏭' , generations: '🤱', human_span: '⏳', internet: '🌐', music: '🎵', cinema: '🎬', endangered: '🐾', migration: '✈️', public_private: '🏛️', health_private: '🏥', economy: '💼', trends: '📊', waste: '♻️', power: '🔌', air: '🌫️', waterstress: '🏜️', alerts: '🛰️', space: '☀️', compare: '⚖️', wildlife: '🦋', quiz: '🎯', iss: '🚀', city: '🏙️', mystery: '🕵️', hotornot: '🌡️', flags: '🚩', rightnow: '🌍', sky: '🌌', asteroids: '☄️', onthisday: '📅', nearby: '🐾', outside: '🏃'};
             document.getElementById('fact-icon').innerText = icons[currentMode];
         }
 
@@ -1354,9 +1425,11 @@
 
         // Initialize on page load
         window.addEventListener('DOMContentLoaded', () => {
+            applyLang();
             fillCompareMetrics();
             initTips();
             loadSplashEarth();
+            loadSplashLive();
             let savedMode = null;
             try { savedMode = localStorage.getItem('ev_last_mode'); } catch (e) {}
             if (savedMode && MODE_INFO[savedMode]) selectMode(savedMode); else setMode('weather');
@@ -1416,6 +1489,9 @@
     document.querySelector('.search-container').classList.toggle('is-compare', isCompareMode);
     const passport = document.getElementById('passport-card'); if (passport) passport.classList.add('hidden');
     if (typeof stopISS === 'function') stopISS();
+    if (typeof stopFlags === 'function') stopFlags();
+    if (typeof stopRightNow === 'function') stopRightNow();
+    const tideSlot = document.getElementById('tide-slot'); if (tideSlot) tideSlot.remove();
     document.getElementById('cityInput2').classList.toggle('hidden', !isCompareMode);
     document.getElementById('compareMetric').classList.toggle('hidden', !isCompareMode);
     document.getElementById('impact-row').className = 'impact-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5 mb-6 md:mb-8 hidden';
@@ -1601,61 +1677,7 @@
                 searchBtn.className = "search-btn bg-emerald-600 hover:bg-emerald-500 text-white px-8 md:px-10 py-3 md:py-4 rounded-2xl font-bold transition-all uppercase tracking-tighter shadow-xl shadow-emerald-600/20";
             }
 
-            const isOcean = mode === 'ocean';
-            document.getElementById('stat1-label').innerText = mode === 'weather' ? "Today High" : isOcean ? "Sea Surface Now" : "Archive Value";
-            document.getElementById('stat2-label').innerText = mode === 'weather' ? "Humidity" : isOcean ? "Wave Height" : "Growth Rate";
-            document.getElementById('top-card-label').innerText = mode === 'weather' ? "Temporal Delta" : isOcean ? "Marine Delta" : "Historical Insight";
-            document.getElementById('dark-card-title').innerText = isOcean ? "Marine Record Book" : "Historical Vault Peaks";
-            document.getElementById('ext1-label').innerText = isOcean ? "Record Warm" : "Record Max";
-            document.getElementById('ext2-label').innerText = isOcean ? "Record Cool" : "Record Min";
-            document.getElementById('timeline-title').innerText = "Timeline";
-            document.getElementById('extreme-heat-title').innerText = isOcean ? "Marine Heatwave Days" : "Extreme Heat";
-            document.getElementById('extreme-heat-desc').innerText = isOcean ? "Days above the 90th percentile (last 12 months)" : "Days hit 30°C+ (This Date over 50y)";
-            document.getElementById('frost-title').innerText = isOcean ? "Cool Anomaly Days" : "Historical Frost";
-            document.getElementById('frost-desc').innerText = isOcean ? "Days below the 10th percentile (last 12 months)" : "Days hit sub-zero (This Date over 50y)";
-            document.getElementById('avg-label').innerText = isOcean ? "Record Avg: " : "Day Avg: ";
-            document.getElementById('pollution-label').innerText = isOcean ? "Current: " : "Pollution: ";
-            document.querySelectorAll('.rec-prefix').forEach(el => el.innerText = isOcean ? "On " : "Year ");
-
-            const titles = {
-                weather: "Weather History Vault",
-                ocean: "Ocean Pulse Vault",
-                univ: "University Access Vault",
-                forest: "Forest Heritage Vault",
-                agri: "Agriculture Vault",
-                human_span: "Human Span Vault",
-                energy: "Energy & Renewables Vault",
-                water: "Water Quality & Safety Vault",
-                mental: "Mental Health Vault",
-                happiness: "Happiness & Wellbeing Vault",
-                carbon: "Carbon Emissions Vault",
-                generations: "Generations Vault",
-                internet: "Internet Access Vault",
-                music: "Music Culture Vault",
-                cinema: "Cinema Discovery Vault",
-                endangered: "Endangered Species Vault",
-                migration: "Migration & Diaspora Vault",
-                public_private: "Education: Public vs Private Vault",
-                health_private: "Health: Public vs Private Vault",
-                economy: "Economy & Labor Market Vault",
-                trends: "Internet Trends Vault",
-                waste: "Waste & Recycling Vault",
-                power: "Power Mix Vault",
-                air: "Air Quality Vault",
-                waterstress: "Water Stress Vault",
-                alerts: "Planet Alerts",
-                space: "Space Weather Vault",
-                compare: "Country vs Country",
-                wildlife: "Wildlife Gallery",
-                quiz: "Planet Quiz",
-                iss: "Space Station Tracker",
-                city: "City Stories"
-            };
-            document.getElementById('main-title').innerText = titles[mode];
-            document.getElementById('main-subtitle').innerText = (MODE_INFO[mode] && MODE_INFO[mode].desc) || 'Global Environmental Terminal';
-            document.getElementById('searchBtn').innerText = mode === 'compare' ? 'Compare' : 'Analyze';
-            renderExampleChips(mode);
-            document.getElementById('cityInput').placeholder = mode === 'weather' || mode === 'city' ? "Search city..." : mode === 'ocean' ? "Search coastal city..." : mode === 'compare' ? "First country..." : "Search country...";
+            applyModeText(mode);
             
             document.getElementById('era-trend').classList.add('hidden'); // re-shown by the weather/ocean processors after a search
             shuffleFact();
@@ -1665,7 +1687,7 @@
             const input = document.getElementById('cityInput');
             const query = input.value.trim();
             if (!query) {
-                showToast(currentMode === 'compare' ? 'Type two countries to compare.' : 'Type a place to explore first.', 'info');
+                showToast(currentMode === 'compare' ? t('toast_two') : t('toast_place'), 'info');
                 input.focus();
                 return;
             }
@@ -1678,7 +1700,7 @@
 
             const btn = document.getElementById('searchBtn');
             btn.disabled = true;
-            btn.innerHTML = '<span class="inline-block w-3 h-3 mr-2 rounded-full border-2 border-white/40 border-t-white animate-spin align-middle"></span>Working';
+            btn.innerHTML = '<span class="inline-block w-3 h-3 mr-2 rounded-full border-2 border-white/40 border-t-white animate-spin align-middle"></span>' + t('working');
 
             try {
                 if (currentMode === 'weather') await searchWeather(query);
@@ -1688,14 +1710,17 @@
                 else if (currentMode === 'cinema') await searchMovies(query);
                 else if (currentMode === 'happiness') await searchHappiness(query);
                 else if (currentMode === 'city') await searchCity(query);
+                else if (currentMode === 'sky') await searchSky(query);
+                else if (currentMode === 'nearby') await searchNearby(query);
+                else if (currentMode === 'outside') await searchOutside(query);
                 else if (currentMode === 'compare') await searchCompare(query);
                 else await searchWBData(query);
             } catch (e) {
                 console.error('Search failed:', e);
-                try { showToast('Something went wrong: ' + (e && e.message ? e.message : e), 'error', 9000); } catch (_) {}
+                try { showToast(t('err') + (e && e.message ? e.message : e), 'error', 9000); } catch (_) {}
             } finally {
                 btn.disabled = false;
-                btn.innerText = currentMode === 'compare' ? 'Compare' : 'Analyze';
+                btn.innerText = currentMode === 'compare' ? t('compare') : t('analyze');
                 if (appContent.classList.contains('opacity-0')) {
                     appContent.classList.add('hidden');   // nothing rendered (not found, no data): keep the page clean
                 } else if (window.innerWidth < 768) {
@@ -4017,6 +4042,15 @@ function displayMovies(data, query) {
             quiz:           { desc: 'Higher or lower? Guess which country wins on real planet data', examples: [] },
             iss:            { desc: 'Where the International Space Station is right now, live on a map', examples: [] },
             city:           { desc: 'When a city was founded, who was born there and the moments that shaped it', examples: ['Athens', 'Kyoto', 'Istanbul', 'Lisbon'] },
+            mystery:        { desc: 'One secret country a day. Six guesses, a new clue after every miss', examples: [] },
+            hotornot:       { desc: 'Two cities, live temperatures: which one is warmer right now?', examples: [] },
+            flags:          { desc: 'Thirty seconds, four choices per flag. How many can you name?', examples: [] },
+            rightnow:       { desc: 'Hottest, coldest, windiest and cleanest cities on Earth at this minute', examples: [] },
+            sky:            { desc: 'Sunset, dark-sky time, moon, clouds and aurora chance for any city tonight', examples: ['Athens', 'Tromsø', 'Reykjavik', 'Santiago'] },
+            asteroids:      { desc: 'Every asteroid passing Earth this week, with size and miss distance', examples: [] },
+            onthisday:      { desc: 'Earthquakes, expeditions, eclipses and discoveries that happened on today\'s date', examples: [] },
+            nearby:         { desc: 'What people spotted in the wild within 40 km of any city this month', examples: ['Athens', 'Berlin', 'Sydney', 'Cape Town'] },
+            outside:        { desc: 'The next 48 hours scored for a walk, run or picnic: weather, air, UV and pollen combined', examples: ['Athens', 'London', 'Tokyo', 'Melbourne'] },
             air:            { desc: 'Annual PM2.5 exposure plus a live reading in the capital', examples: ['India', 'Greece', 'Canada'] },
             waterstress:    { desc: 'How much renewable freshwater a country withdraws each year', examples: ['Egypt', 'Spain', 'Brazil'] },
             human_span:     { desc: 'Life expectancy, with the gap between women and men', examples: ['Japan', 'Greece', 'Nigeria'] },
@@ -4042,7 +4076,7 @@ function displayMovies(data, query) {
             const info = MODE_INFO[mode];
             if (!info || !info.examples || LIVE_MODES.includes(mode)) { box.innerHTML = ''; box.classList.add('hidden'); return; }
             box.classList.remove('hidden');
-            box.innerHTML = `<span class="text-[10px] text-slate-500 uppercase tracking-widest self-center mr-1">Try</span>` + info.examples.map(ex => {
+            box.innerHTML = `<span class="text-[10px] text-slate-500 uppercase tracking-widest self-center mr-1">${t('try')}</span>` + info.examples.map(ex => {
                 const label = Array.isArray(ex) ? `${ex[0]} vs ${ex[1]}` : ex;
                 const data = Array.isArray(ex) ? ex.join('|') : ex;
                 return `<button type="button" data-example="${data}" onclick="useExample(this.dataset.example)" class="chip px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-slate-300 hover:text-white">${label}</button>`;
@@ -4056,7 +4090,7 @@ function displayMovies(data, query) {
         }
 
         // ======================= LIVE MODES (no search): Planet Alerts & Space Weather =======================
-        const LIVE_MODES = ['alerts', 'space', 'quiz', 'iss'];
+        const LIVE_MODES = ['alerts', 'space', 'quiz', 'iss', 'mystery', 'hotornot', 'flags', 'rightnow', 'asteroids', 'onthisday'];
         const MODE_THEMES = {
             alerts:      { color: 'rose',   attr: 'Data by NASA EONET & USGS', href: 'https://eonet.gsfc.nasa.gov/' },
             space:       { color: 'violet', attr: 'Data by NOAA SWPC', href: 'https://www.swpc.noaa.gov/' },
@@ -4067,7 +4101,16 @@ function displayMovies(data, query) {
             wildlife:    { color: 'green',  attr: 'Data by GBIF & iNaturalist', href: 'https://www.gbif.org/' },
             quiz:        { color: 'pink',   attr: 'Data by World Bank', href: 'https://data.worldbank.org/' },
             iss:         { color: 'sky',    attr: 'Data by Where the ISS at?', href: 'https://wheretheiss.at/' },
-            city:        { color: 'orange', attr: 'Data by Wikipedia & Wikidata', href: 'https://www.wikidata.org/' }
+            city:        { color: 'orange', attr: 'Data by Wikipedia & Wikidata', href: 'https://www.wikidata.org/' },
+            mystery:     { color: 'emerald', attr: 'Data by World Bank & Wikidata', href: 'https://data.worldbank.org/' },
+            hotornot:    { color: 'orange', attr: 'Data by Open-Meteo', href: 'https://open-meteo.com/' },
+            flags:       { color: 'yellow', attr: 'Data by World Bank', href: 'https://data.worldbank.org/' },
+            rightnow:    { color: 'cyan',   attr: 'Data by Open-Meteo', href: 'https://open-meteo.com/' },
+            sky:         { color: 'indigo', attr: 'Data by Open-Meteo & NOAA SWPC', href: 'https://www.swpc.noaa.gov/' },
+            asteroids:   { color: 'slate',  attr: 'Data by NASA NeoWs', href: 'https://api.nasa.gov/' },
+            onthisday:   { color: 'emerald', attr: 'Data by Wikipedia', href: 'https://en.wikipedia.org/' },
+            nearby:      { color: 'green',  attr: 'Data by iNaturalist', href: 'https://www.inaturalist.org/' },
+            outside:     { color: 'lime',   attr: 'Data by Open-Meteo', href: 'https://open-meteo.com/' }
         };
         const liveCache = {};
         async function cachedJson(url, ttlMs = 10 * 60 * 1000) {
@@ -4108,15 +4151,15 @@ function displayMovies(data, query) {
             if (pulse) { pulse.classList.add('hidden'); pulse.style.display = 'none'; }
             document.getElementById('app-content').classList.add('hidden');
             live.classList.remove('hidden');
-            live.innerHTML = `<div class="text-center py-16 text-slate-500 text-xs font-bold uppercase tracking-widest animate-pulse">Contacting satellites...</div>`;
-            const loader = { alerts: loadPlanetAlerts, space: loadSpaceWeather, quiz: loadQuiz, iss: loadISS }[mode] || loadPlanetAlerts;
+            live.innerHTML = `<div class="text-center py-16 text-slate-500 text-xs font-bold uppercase tracking-widest animate-pulse">${t('contacting')}</div>`;
+            const loader = { alerts: loadPlanetAlerts, space: loadSpaceWeather, quiz: loadQuiz, iss: loadISS, mystery: loadMystery, hotornot: loadHotOrNot, flags: loadFlags, rightnow: loadRightNow, asteroids: loadAsteroids, onthisday: () => loadOnThisDay() }[mode] || loadPlanetAlerts;
             loader().catch(e => {
                 console.error('Live feed failed:', e);
-                live.innerHTML = `<div class="vault-card rounded-[2rem] p-8 text-center"><p class="text-rose-400 font-bold mb-2">Live feed unavailable</p><p class="text-slate-500 text-xs">${e.message}</p><button onclick="runLiveMode('${mode}')" class="mt-4 px-5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold">Retry</button></div>`;
+                live.innerHTML = `<div class="vault-card rounded-[2rem] p-8 text-center"><p class="text-rose-400 font-bold mb-2">${t('feed_fail')}</p><p class="text-slate-500 text-xs">${e.message}</p><button onclick="runLiveMode('${mode}')" class="mt-4 px-5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold">${t('retry')}</button></div>`;
             });
         }
         function liveFooter(mode) {
-            return `<div class="flex items-center justify-center gap-3 mt-5 text-[10px] text-slate-500 uppercase tracking-widest"><span>Updated ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span><button onclick="Object.keys(liveCache).forEach(k => delete liveCache[k]); runLiveMode('${mode}')" class="px-3 py-1 rounded-full bg-white/5 hover:bg-white/10 font-bold">Refresh</button></div>`;
+            return `<div class="flex items-center justify-center gap-3 mt-5 text-[10px] text-slate-500 uppercase tracking-widest"><span>${t('updated')} ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span><button onclick="Object.keys(liveCache).forEach(k => delete liveCache[k]); runLiveMode('${mode}')" class="px-3 py-1 rounded-full bg-white/5 hover:bg-white/10 font-bold">${t('refresh')}</button></div>`;
         }
         const EONET_ICONS = { 'Wildfires': '🔥', 'Severe Storms': '🌀', 'Volcanoes': '🌋', 'Sea and Lake Ice': '🧊', 'Floods': '🌊', 'Earthquakes': '🌍', 'Drought': '🏜️', 'Dust and Haze': '🌫️', 'Landslides': '⛰️', 'Snow': '❄️', 'Temperature Extremes': '🌡️', 'Water Color': '🟢', 'Manmade': '🏭' };
 
@@ -4325,13 +4368,16 @@ function displayMovies(data, query) {
             // Live reading for the capital (fills the middle card when ready)
             try {
                 if (!country?.latitude || !country?.longitude) throw new Error('no coordinates');
-                const live = await fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${country.latitude}&longitude=${country.longitude}&current=pm2_5,us_aqi`).then(r => r.json());
+                const live = await fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${country.latitude}&longitude=${country.longitude}&current=pm2_5,us_aqi,uv_index,grass_pollen,birch_pollen,olive_pollen,ragweed_pollen,alder_pollen`).then(r => r.json());
                 const pm = live?.current?.pm2_5;
                 const card = document.getElementById('air-live-card');
                 if (!card || pm === null || pm === undefined) throw new Error('no reading');
                 const [liveText, liveTone] = pm25Category(pm);
                 card.className = `bg-${liveTone}-500/10 border border-${liveTone}-500/20 p-6 rounded-[2rem] text-center lg:col-span-1`;
-                card.innerHTML = `<h5 class="text-[10px] font-black text-${liveTone}-400 mb-2 uppercase tracking-widest">Right now in ${capital}</h5><p class="text-3xl font-black text-white">${pm.toFixed(1)} <span class="text-sm text-slate-500">µg/m³</span></p><p class="text-[9px] text-slate-500 mt-2 leading-tight">${liveText}${live.current.us_aqi !== undefined ? ' · US AQI ' + live.current.us_aqi : ''}. Hourly PM2.5 from Open-Meteo.</p>`;
+                const pollens = [['grass', live.current.grass_pollen], ['birch', live.current.birch_pollen], ['olive', live.current.olive_pollen], ['ragweed', live.current.ragweed_pollen], ['alder', live.current.alder_pollen]].filter(p => p[1] !== null && p[1] !== undefined).sort((a, b) => b[1] - a[1]);
+                const pollenTxt = pollens.length ? ` · Pollen: ${pollens[0][1] >= 50 ? 'high' : pollens[0][1] >= 20 ? 'moderate' : 'low'}${pollens[0][1] >= 20 ? ' (' + pollens[0][0] + ')' : ''}` : '';
+                const uvTxt = live.current.uv_index !== null && live.current.uv_index !== undefined ? ` · UV ${live.current.uv_index.toFixed(0)}` : '';
+                card.innerHTML = `<h5 class="text-[10px] font-black text-${liveTone}-400 mb-2 uppercase tracking-widest">Right now in ${capital}</h5><p class="text-3xl font-black text-white">${pm.toFixed(1)} <span class="text-sm text-slate-500">µg/m³</span></p><p class="text-[9px] text-slate-500 mt-2 leading-tight">${liveText}${live.current.us_aqi !== undefined ? ' · US AQI ' + live.current.us_aqi : ''}${uvTxt}${pollenTxt}. Live from Open-Meteo.</p>`;
             } catch (e) {
                 const card = document.getElementById('air-live-card');
                 if (card) card.innerHTML = `<h5 class="text-[10px] font-black text-teal-400 mb-2 uppercase tracking-widest">Right now in ${capital}</h5><p class="text-3xl font-black text-white">--</p><p class="text-[9px] text-slate-500 mt-2 leading-tight">Live reading unavailable.</p>`;
@@ -4787,6 +4833,7 @@ function displayMovies(data, query) {
                     return;
                 }
                 processOceanData(data, country ? `${name}, ${country}` : name);
+                loadTide(latitude, longitude);
             } catch (e) {
                 console.error('Ocean fetch failed:', e);
                 showToast("API Busy.");
@@ -4920,9 +4967,9 @@ function displayMovies(data, query) {
         <div><div class="text-lg md:text-xl font-black text-white leading-tight">${country.name}</div><div class="text-[10px] text-slate-500 uppercase tracking-widest">${country.region.value}</div></div>
     </div>
     <div class="flex flex-wrap gap-5 md:gap-8 md:ml-auto">
-        <div>${cell('Capital', country.capitalCity || '—')}</div>
-        <div>${cell('Income group', (country.incomeLevel && country.incomeLevel.value ? country.incomeLevel.value : '—').replace(' income', ''))}</div>
-        <div id="passport-pop">${cell('Population', '…')}</div>
+        <div>${cell(t('capital'), country.capitalCity || '—')}</div>
+        <div>${cell(t('income'), (country.incomeLevel && country.incomeLevel.value ? country.incomeLevel.value : '—').replace(' income', ''))}</div>
+        <div id="passport-pop">${cell(t('population'), '…')}</div>
     </div>`;
             card.classList.remove('hidden');
             try {
@@ -4930,8 +4977,8 @@ function displayMovies(data, query) {
                 const row = pop[1] && pop[1][0];
                 const slot = document.getElementById('passport-pop');
                 if (!slot || card.dataset.id !== country.id) return;
-                slot.innerHTML = (row && row.value) ? cell('Population', `${fmtPop(row.value)} <span class="text-[10px] text-slate-500 font-normal">(${row.date})</span>`) : cell('Population', '—');
-            } catch (e) { const slot = document.getElementById('passport-pop'); if (slot) slot.innerHTML = cell('Population', '—'); }
+                slot.innerHTML = (row && row.value) ? cell(t('population'), `${fmtPop(row.value)} <span class="text-[10px] text-slate-500 font-normal">(${row.date})</span>`) : cell(t('population'), '—');
+            } catch (e) { const slot = document.getElementById('passport-pop'); if (slot) slot.innerHTML = cell(t('population'), '—'); }
         }
 
         // ---- Surprise me (random place for the current vault) ----
@@ -4942,7 +4989,7 @@ function displayMovies(data, query) {
             const btn = document.getElementById('randomBtn');
             if (btn) { btn.classList.remove('spin-once'); void btn.offsetWidth; btn.classList.add('spin-once'); }
             let pick;
-            if (currentMode === 'weather' || currentMode === 'city') pick = pickRandom(SURPRISE_CITIES);
+            if (['weather', 'city', 'sky', 'nearby', 'outside'].includes(currentMode)) pick = pickRandom(SURPRISE_CITIES);
             else if (currentMode === 'ocean') pick = pickRandom(SURPRISE_COASTAL);
             else if (['happiness', 'music', 'cinema', 'trends', 'carbon', 'waste'].includes(currentMode)) pick = pickRandom(SURPRISE_SIMPLE);
             else {
@@ -4954,7 +5001,7 @@ function displayMovies(data, query) {
                 document.getElementById('cityInput2').value = second;
             }
             document.getElementById('cityInput').value = pick;
-            showToast(`🎲 Rolling the dice: ${pick}${currentMode === 'compare' ? ' vs ' + document.getElementById('cityInput2').value : ''}`, 'info', 2500);
+            showToast(`${t('dice_toast')}${pick}${currentMode === 'compare' ? ' vs ' + document.getElementById('cityInput2').value : ''}`, 'info', 2500);
             mainAction();
         }
         function jumpTo(mode, name) {
@@ -5401,6 +5448,700 @@ function displayMovies(data, query) {
             </div>
         </div>
     </div>`;
+            if (window.innerWidth < 768) setTimeout(() => live.scrollIntoView({ behavior: 'smooth', block: 'start' }), 150);
+        }
+
+        // ======================= GAMES & LIVE EARTH =======================
+        const WORLD_CITIES = [
+            ['Athens', 'GR', 37.98, 23.72], ['London', 'GB', 51.51, -0.13], ['Paris', 'FR', 48.86, 2.35], ['Berlin', 'DE', 52.52, 13.41], ['Madrid', 'ES', 40.42, -3.70],
+            ['Rome', 'IT', 41.90, 12.50], ['Lisbon', 'PT', 38.72, -9.14], ['Oslo', 'NO', 59.91, 10.75], ['Stockholm', 'SE', 59.33, 18.07], ['Helsinki', 'FI', 60.17, 24.94],
+            ['Reykjavik', 'IS', 64.15, -21.94], ['Warsaw', 'PL', 52.23, 21.01], ['Istanbul', 'TR', 41.01, 28.98], ['Moscow', 'RU', 55.76, 37.62], ['Cairo', 'EG', 30.04, 31.24],
+            ['Nairobi', 'KE', -1.29, 36.82], ['Lagos', 'NG', 6.52, 3.38], ['Cape Town', 'ZA', -33.92, 18.42], ['Marrakech', 'MA', 31.63, -8.01], ['Addis Ababa', 'ET', 9.03, 38.74],
+            ['Dubai', 'AE', 25.20, 55.27], ['Riyadh', 'SA', 24.71, 46.68], ['Tehran', 'IR', 35.69, 51.39], ['Mumbai', 'IN', 19.08, 72.88], ['New Delhi', 'IN', 28.61, 77.21],
+            ['Bangkok', 'TH', 13.76, 100.50], ['Singapore', 'SG', 1.35, 103.82], ['Jakarta', 'ID', -6.21, 106.85], ['Manila', 'PH', 14.60, 120.98], ['Hong Kong', 'HK', 22.32, 114.17],
+            ['Beijing', 'CN', 39.90, 116.40], ['Shanghai', 'CN', 31.23, 121.47], ['Seoul', 'KR', 37.57, 126.98], ['Tokyo', 'JP', 35.68, 139.69], ['Sydney', 'AU', -33.87, 151.21],
+            ['Auckland', 'NZ', -36.85, 174.76], ['Honolulu', 'US', 21.31, -157.86], ['Anchorage', 'US', 61.22, -149.90], ['Vancouver', 'CA', 49.28, -123.12], ['Toronto', 'CA', 43.65, -79.38],
+            ['New York', 'US', 40.71, -74.01], ['Miami', 'US', 25.76, -80.19], ['Los Angeles', 'US', 34.05, -118.24], ['Mexico City', 'MX', 19.43, -99.13], ['Havana', 'CU', 23.11, -82.37],
+            ['Bogotá', 'CO', 4.71, -74.07], ['Lima', 'PE', -12.05, -77.04], ['Rio de Janeiro', 'BR', -22.91, -43.17], ['Buenos Aires', 'AR', -34.60, -58.38], ['Santiago', 'CL', -33.45, -70.67],
+            ['Ulaanbaatar', 'MN', 47.89, 106.91], ['Almaty', 'KZ', 43.24, 76.89], ['Kathmandu', 'NP', 27.72, 85.32], ['Nuuk', 'GL', 64.18, -51.72], ['Ushuaia', 'AR', -54.80, -68.30], ['Dakar', 'SN', 14.72, -17.47]
+        ];
+        const WX_EMOJI = code => code === 0 ? '☀️' : code <= 2 ? '🌤️' : code === 3 ? '☁️' : code <= 48 ? '🌫️' : code <= 57 ? '🌦️' : code <= 67 ? '🌧️' : code <= 77 ? '🌨️' : code <= 82 ? '🌧️' : code <= 86 ? '🌨️' : '⛈️';
+        const WX_TEXT = code => code === 0 ? 'Clear' : code <= 2 ? 'Partly cloudy' : code === 3 ? 'Overcast' : code <= 48 ? 'Fog' : code <= 57 ? 'Drizzle' : code <= 67 ? 'Rain' : code <= 77 ? 'Snow' : code <= 82 ? 'Showers' : code <= 86 ? 'Snow showers' : 'Thunderstorm';
+        const haversine = (a, b) => { const R = 6371, dLat = (b.lat - a.lat) * Math.PI / 180, dLon = (b.lon - a.lon) * Math.PI / 180; const h = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * Math.PI / 180) * Math.cos(b.lat * Math.PI / 180) * Math.sin(dLon / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(h)); };
+        const bearingArrow = (a, b) => { const dLon = (b.lon - a.lon) * Math.PI / 180, y = Math.sin(dLon) * Math.cos(b.lat * Math.PI / 180), x = Math.cos(a.lat * Math.PI / 180) * Math.sin(b.lat * Math.PI / 180) - Math.sin(a.lat * Math.PI / 180) * Math.cos(b.lat * Math.PI / 180) * Math.cos(dLon); const deg = (Math.atan2(y, x) * 180 / Math.PI + 360) % 360; return ['⬆️', '↗️', '➡️', '↘️', '⬇️', '↙️', '⬅️', '↖️'][Math.round(deg / 45) % 8]; };
+        const seededRandom = seedStr => { let h = 1779033703 ^ seedStr.length; for (let i = 0; i < seedStr.length; i++) { h = Math.imul(h ^ seedStr.charCodeAt(i), 3432918353); h = (h << 13) | (h >>> 19); } return () => { h = Math.imul(h ^ (h >>> 16), 2246822507); h = Math.imul(h ^ (h >>> 13), 3266489909); h ^= h >>> 16; return (h >>> 0) / 4294967296; }; };
+        const localDateKey = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+        const lsGet = (k, fallback) => { try { const v = JSON.parse(localStorage.getItem(k)); return v === null || v === undefined ? fallback : v; } catch (e) { return fallback; } };
+        const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+        const wbLatestMap = async ind => { const rows = await cachedJson(`https://api.worldbank.org/v2/country/all/indicator/${ind}?format=json&mrnev=1&per_page=400`, 24 * 3600 * 1000); const m = {}; (rows[1] || []).forEach(r => { if (r.value !== null) m[r.countryiso3code] = { val: r.value, year: r.date }; }); return m; };
+        function moonPhase(date = new Date()) {
+            const synodic = 29.530588853, ref = Date.UTC(2000, 0, 6, 18, 14);
+            const phase = (((date.getTime() - ref) / 86400000) % synodic + synodic) % synodic / synodic;
+            const illumination = Math.round((1 - Math.cos(2 * Math.PI * phase)) / 2 * 100);
+            const idx = Math.round(phase * 8) % 8;
+            return { phase, illumination, name: ['New moon', 'Waxing crescent', 'First quarter', 'Waxing gibbous', 'Full moon', 'Waning gibbous', 'Last quarter', 'Waning crescent'][idx], emoji: ['🌑', '🌒', '🌓', '🌔', '🌕', '🌖', '🌗', '🌘'][idx] };
+        }
+        const scoreHeader = (score, streak, best, tone) => `<div class="flex flex-wrap items-center justify-center gap-3 mb-5 text-[10px] font-black uppercase tracking-widest">
+        <span class="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-slate-300">Score <span class="text-white">${score}</span></span>
+        <span class="px-3 py-1.5 rounded-full bg-orange-500/10 border border-orange-500/30 text-orange-300">🔥 Streak ${streak}</span>
+        <span class="px-3 py-1.5 rounded-full bg-${tone}-500/10 border border-${tone}-500/30 text-${tone}-300">🏆 Best ${best}</span>
+    </div>`;
+
+        // ---- Mystery Country: one puzzle a day, clues unlock with every miss ----
+        const MYSTERY = { data: null };
+        async function loadMystery() {
+            const live = document.getElementById('live-section');
+            const [countries, pop, forest, life] = await Promise.all([wbCountries(), wbLatestMap('SP.POP.TOTL'), wbLatestMap('AG.LND.FRST.ZS'), wbLatestMap('SP.DYN.LE00.IN')]);
+            const pool = countries.filter(c => pop[c.id] && pop[c.id].val >= 1e6 && c.latitude && c.longitude && c.capitalCity).sort((a, b) => a.id.localeCompare(b.id));
+            const dateKey = localDateKey();
+            const rng = seededRandom('earthvault-mystery-' + dateKey);
+            const answer = pool[Math.floor(rng() * pool.length)];
+            let neighbours = [];
+            try {
+                const q = `SELECT ?nLabel WHERE { ?c wdt:P298 "${answer.id}"; wdt:P47 ?n . SERVICE wikibase:label { bd:serviceParam wikibase:language "en". } } LIMIT 12`;
+                const res = await cachedJson(SPARQL(q), 24 * 3600 * 1000);
+                neighbours = (res.results.bindings || []).map(b => b.nLabel.value).filter(n => !/^Q\d+$/.test(n));
+            } catch (e) {}
+            const fmtPop = v => v >= 1e9 ? (v / 1e9).toFixed(1) + ' billion' : v >= 1e6 ? Math.round(v / 1e6) + ' million' : Math.round(v / 1000) + ' thousand';
+            const cap = answer.capitalCity;
+            const clues = [
+                `🗺️ It is in <b>${answer.region.value}</b> and the World Bank calls it a <b>${(answer.incomeLevel && answer.incomeLevel.value ? answer.incomeLevel.value : 'n/a').toLowerCase()}</b> economy.`,
+                `👥 About <b>${fmtPop(pop[answer.id].val)}</b> people live there (${pop[answer.id].year}).`,
+                `🌳 Forest covers <b>${forest[answer.id] ? forest[answer.id].val.toFixed(0) + '%' : 'an unknown share'}</b> of its land and life expectancy is <b>${life[answer.id] ? life[answer.id].val.toFixed(0) + ' years' : 'unknown'}</b>.`,
+                `🏛️ Its capital starts with <b>${cap[0]}</b> and has <b>${cap.replace(/[^A-Za-z]/g, '').length} letters</b>.`,
+                neighbours.length ? `🧭 It shares a border with <b>${neighbours.slice(0, 5).join(', ')}</b>${neighbours.length > 5 ? ' and more' : ''}.` : `🏝️ It has <b>no land borders</b> - an island nation.`,
+                `🚩 Its flag: <span class="text-3xl align-middle">${flagEmoji(answer.iso2Code)}</span>`
+            ];
+            MYSTERY.data = { dateKey, answer, pool, clues };
+            renderMystery();
+        }
+        function mysteryState() { const d = MYSTERY.data; return lsGet('ev_mystery_' + d.dateKey, { guesses: [], done: false, won: false }); }
+        function renderMystery() {
+            const live = document.getElementById('live-section'), d = MYSTERY.data, st = mysteryState();
+            const stats = lsGet('ev_mystery_stats', { played: 0, won: 0, streak: 0, best: 0 });
+            const shown = Math.min(d.clues.length, st.guesses.length + 1);
+            const guessRow = g => `<div class="flex items-center justify-between gap-3 bg-white/5 border ${g.correct ? 'border-emerald-400/60' : 'border-white/10'} rounded-2xl px-4 py-2.5"><span class="text-sm font-bold text-white">${g.square} ${escapeHtml(g.name)}</span><span class="text-[11px] text-slate-400">${g.correct ? 'Correct!' : `${g.km.toLocaleString()} km away ${g.arrow}`}</span></div>`;
+            live.innerHTML = `
+    <div class="vault-card rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10">
+        <div class="flex flex-wrap items-center justify-center gap-3 mb-5 text-[10px] font-black uppercase tracking-widest">
+            <span class="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-slate-300">Puzzle of ${d.dateKey}</span>
+            <span class="px-3 py-1.5 rounded-full bg-orange-500/10 border border-orange-500/30 text-orange-300">🔥 Streak ${stats.streak}</span>
+            <span class="px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300">🏆 Won ${stats.won}/${stats.played}</span>
+        </div>
+        <h3 class="text-center text-xl md:text-3xl font-black text-white mb-1">Which country is this?</h3>
+        <p class="text-center text-[11px] text-slate-500 mb-6">Six guesses. Every miss unlocks a new clue and tells you how far off you were. Same puzzle for everyone today.</p>
+        <ol class="space-y-2 max-w-2xl mx-auto mb-6">${d.clues.slice(0, shown).map((c, i) => `<li class="bg-emerald-500/5 border border-emerald-500/20 rounded-2xl px-4 py-3 text-sm text-slate-200"><span class="text-[9px] font-black text-emerald-400 uppercase tracking-widest mr-2">Clue ${i + 1}</span>${c}</li>`).join('')}${st.done ? '' : `<li class="text-[10px] text-slate-500 px-4">${d.clues.length - shown} more clue${d.clues.length - shown === 1 ? '' : 's'} locked</li>`}</ol>
+        ${st.done ? `<div class="text-center mb-6"><p class="text-2xl font-black ${st.won ? 'text-emerald-400' : 'text-rose-400'}">${st.won ? `You got it in ${st.guesses.length}! 🎉` : 'Out of guesses 😅'}</p><p class="text-lg text-white mt-1">${flagEmoji(d.answer.iso2Code)} ${escapeHtml(d.answer.name)}</p><div class="flex flex-wrap justify-center gap-3 mt-4"><button type="button" onclick="shareMystery()" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-sm font-bold text-white">Share result</button><button type="button" onclick="jumpTo('forest', '${escapeHtml(d.answer.name).replace(/'/g, '&#39;')}')" class="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-sm font-bold text-slate-200">Explore ${escapeHtml(d.answer.name)} →</button></div><p class="text-[10px] text-slate-500 mt-4">A new country arrives at midnight.</p></div>` :
+        `<div class="max-w-xl mx-auto flex gap-2 mb-5"><input id="mystery-input" list="mystery-list" placeholder="Type a country..." autocomplete="off" class="flex-1 min-w-0 bg-slate-900/90 border border-white/10 px-4 py-3 rounded-2xl text-white outline-none focus:ring-2 focus:ring-emerald-500"><datalist id="mystery-list">${d.pool.map(c => `<option value="${escapeHtml(c.name)}">`).join('')}</datalist><button type="button" onclick="guessMystery()" class="px-5 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-sm font-bold text-white whitespace-nowrap">Guess</button></div>`}
+        <div class="space-y-2 max-w-xl mx-auto">${st.guesses.map(guessRow).join('')}</div>
+        <p class="text-center text-[10px] text-slate-500 mt-5">Clues come from live World Bank data and Wikidata. Distances are between capital cities.</p>
+    </div>`;
+            const inp = document.getElementById('mystery-input');
+            if (inp) { inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); guessMystery(); } }); if (window.innerWidth >= 768) inp.focus(); }
+        }
+        function guessMystery() {
+            const d = MYSTERY.data, st = mysteryState(); if (!d || st.done) return;
+            const inp = document.getElementById('mystery-input'), q = (inp.value || '').trim().toLowerCase(); if (!q) return;
+            const guess = d.pool.find(c => c.name.toLowerCase() === q) || d.pool.find(c => c.name.toLowerCase().includes(q));
+            if (!guess) { showToast('That country is not in today\'s list - try another spelling.'); return; }
+            if (st.guesses.some(g => g.id === guess.id)) { showToast('You already tried that one.'); return; }
+            const correct = guess.id === d.answer.id;
+            const km = correct ? 0 : Math.round(haversine({ lat: +guess.latitude, lon: +guess.longitude }, { lat: +d.answer.latitude, lon: +d.answer.longitude }));
+            const square = correct ? '🟩' : km < 1000 ? '🟧' : km < 3000 ? '🟨' : '🟥';
+            st.guesses.push({ id: guess.id, name: guess.name, correct, km, square, arrow: correct ? '' : bearingArrow({ lat: +guess.latitude, lon: +guess.longitude }, { lat: +d.answer.latitude, lon: +d.answer.longitude }) });
+            if (correct || st.guesses.length >= 6) {
+                st.done = true; st.won = correct;
+                const stats = lsGet('ev_mystery_stats', { played: 0, won: 0, streak: 0, best: 0, last: '' });
+                stats.played++; if (correct) { stats.won++; stats.streak++; stats.best = Math.max(stats.best, stats.streak); } else stats.streak = 0;
+                stats.last = d.dateKey; lsSet('ev_mystery_stats', stats);
+                if (correct) { burst({ particleCount: 150, spread: 90 }); showToast(`🎉 ${d.answer.name}! Solved in ${st.guesses.length}.`, 'success', 4000); }
+            } else showToast(`${km.toLocaleString()} km off - clue ${st.guesses.length + 1} unlocked.`, 'info', 2500);
+            lsSet('ev_mystery_' + d.dateKey, st);
+            renderMystery();
+        }
+        async function shareMystery() {
+            const d = MYSTERY.data, st = mysteryState();
+            const text = `EarthVault Mystery Country ${d.dateKey} ${st.won ? st.guesses.length : 'X'}/6\n${st.guesses.map(g => g.square).join('')}\nhttps://chamitro.github.io/EarthVault/`;
+            try { if (navigator.share) { await navigator.share({ text }); return; } await navigator.clipboard.writeText(text); showToast('Result copied - paste it anywhere!', 'success'); }
+            catch (e) { if (e && e.name !== 'AbortError') showToast(text, 'info', 8000); }
+        }
+
+        // ---- Hot or Not: which city is warmer right now? ----
+        const HOT = { score: 0, streak: 0, best: lsGet('ev_hot_best', 0), current: null };
+        async function loadHotOrNot() {
+            const live = document.getElementById('live-section');
+            const a = pickRandom(WORLD_CITIES); let b = pickRandom(WORLD_CITIES); while (b === a) b = pickRandom(WORLD_CITIES);
+            const data = await cachedJson(`https://api.open-meteo.com/v1/forecast?latitude=${a[2]},${b[2]}&longitude=${a[3]},${b[3]}&current=temperature_2m,weather_code,is_day&timezone=auto`, 10 * 60 * 1000);
+            const list = Array.isArray(data) ? data : [data];
+            HOT.current = { a: Object.assign({ wx: list[0] }, { city: a }), b: Object.assign({ wx: list[1] }, { city: b }), answered: false };
+            const card = (side, item) => { let lt = ''; try { lt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', timeZone: item.wx.timezone }); } catch (e) {} return `
+        <button type="button" id="hot-${side}" onclick="answerHot('${side}')" class="quiz-choice vault-card rounded-[2rem] p-6 md:p-8 text-center border border-white/10 hover:border-orange-400/60">
+            <div class="text-5xl md:text-6xl mb-3">${flagEmoji(item.city[1])}</div>
+            <div class="text-lg md:text-xl font-black text-white">${item.city[0]}</div>
+            <div class="text-[10px] text-slate-500 uppercase tracking-widest mt-1">${lt ? 'Local time ' + lt : ''} ${item.wx.current.is_day ? '☀️' : '🌙'}</div>
+            <div id="hot-val-${side}" class="mt-4 text-2xl font-black font-mono-data text-orange-300 opacity-0 transition-opacity">?</div>
+        </button>`; };
+            live.innerHTML = `
+    <div class="vault-card rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10">
+        ${scoreHeader(HOT.score, HOT.streak, HOT.best, 'orange')}
+        <p class="text-center text-[10px] font-black text-orange-400 uppercase tracking-[0.3em] mb-2">Live right now</p>
+        <h3 class="text-center text-xl md:text-3xl font-black text-white mb-6 md:mb-8">Which city is <span class="text-orange-300">warmer</span> at this moment?</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 max-w-2xl mx-auto">${card('a', HOT.current.a)}${card('b', HOT.current.b)}</div>
+        <div id="hot-verdict" class="text-center mt-6 min-h-[2rem]"></div>
+        <div class="flex flex-wrap justify-center gap-3 mt-4"><button type="button" onclick="runLiveMode('hotornot')" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-300">Skip</button><button type="button" onclick="HOT.score=0;HOT.streak=0;runLiveMode('hotornot')" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-300">Reset score</button></div>
+        <p class="text-center text-[10px] text-slate-500 mt-5">Temperatures are live from Open-Meteo, so the answer changes through the day.</p>
+    </div>`;
+        }
+        function answerHot(side) {
+            const q = HOT.current; if (!q || q.answered) return; q.answered = true;
+            const ta = q.a.wx.current.temperature_2m, tb = q.b.wx.current.temperature_2m;
+            const warmer = ta >= tb ? 'a' : 'b', correct = side === warmer;
+            if (correct) { HOT.score++; HOT.streak++; } else HOT.streak = 0;
+            let newBest = false; if (HOT.streak > HOT.best) { HOT.best = HOT.streak; newBest = HOT.best >= 3; lsSet('ev_hot_best', HOT.best); }
+            ['a', 'b'].forEach(s => { const it = q[s], v = document.getElementById(`hot-val-${s}`), btn = document.getElementById(`hot-${s}`); if (v) { v.textContent = `${it.wx.current.temperature_2m.toFixed(1)}°C ${WX_EMOJI(it.wx.current.weather_code)}`; v.classList.remove('opacity-0'); } if (btn) { btn.disabled = true; btn.classList.add(s === warmer ? 'border-emerald-400/70' : 'border-rose-500/40'); if (s === side) btn.classList.add(correct ? 'bg-emerald-500/10' : 'bg-rose-500/10'); } });
+            const w = q[warmer], l = q[warmer === 'a' ? 'b' : 'a'];
+            document.getElementById('hot-verdict').innerHTML = `<p class="text-lg font-black ${correct ? 'text-emerald-400' : 'text-rose-400'}">${correct ? pickRandom(['Correct! 🔥', 'Hot streak! 🌡️', 'Yes! ☀️']) : pickRandom(['Brrr, wrong 🧊', 'Not this time ❄️'])}</p>
+        <p class="text-sm text-slate-300 mt-1">${w.city[0]} is ${Math.abs(ta - tb).toFixed(1)}°C warmer than ${l.city[0]} right now. ${WX_TEXT(w.wx.current.weather_code)} there, ${WX_TEXT(l.wx.current.weather_code).toLowerCase()} in ${l.city[0]}.</p>
+        <div class="flex flex-wrap justify-center gap-3 mt-4"><button type="button" onclick="runLiveMode('hotornot')" class="px-5 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-sm font-bold text-white">Next duel →</button><button type="button" onclick="jumpTo('weather', '${w.city[0].replace(/'/g, '&#39;')}')" class="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-sm font-bold text-slate-200">50 years of ${w.city[0]} weather →</button></div>`;
+            const header = document.querySelector('#live-section .vault-card > div'); if (header) header.outerHTML = scoreHeader(HOT.score, HOT.streak, HOT.best, 'orange');
+            if (correct && [3, 5, 10, 15].includes(HOT.streak)) { burst({ particleCount: 60 + HOT.streak * 10 }); showToast(`🔥 ${HOT.streak} in a row!`, 'success', 3000); }
+            else if (newBest) { burst({ particleCount: 80 }); showToast(`🏆 New best streak: ${HOT.best}`, 'success', 3000); }
+        }
+
+        // ---- Flag Flash: 30 seconds, as many flags as you can ----
+        const FLAGS = { timer: null, timeLeft: 30, score: 0, asked: 0, best: lsGet('ev_flags_best', 0), pool: [], current: null };
+        function stopFlags() { if (FLAGS.timer) { clearInterval(FLAGS.timer); FLAGS.timer = null; } }
+        async function loadFlags() {
+            const live = document.getElementById('live-section');
+            stopFlags();
+            FLAGS.pool = (await wbCountries()).filter(c => !c.name.includes(',') && c.iso2Code && /^[A-Z]{2}$/.test(c.iso2Code) && c.id !== 'XKX');
+            live.innerHTML = `
+    <div class="vault-card rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 text-center">
+        <p class="text-[10px] font-black text-yellow-400 uppercase tracking-[0.3em] mb-2">Flag Flash</p>
+        <h3 class="text-xl md:text-3xl font-black text-white mb-3">How many flags can you name in 30 seconds?</h3>
+        <p class="text-sm text-slate-400 mb-6">${FLAGS.pool.length} countries in the deck · Your best: <b class="text-white">${FLAGS.best}</b></p>
+        <button type="button" onclick="startFlags()" class="px-8 py-4 rounded-2xl bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-black text-lg">Start ▶</button>
+    </div>`;
+        }
+        function startFlags() {
+            stopFlags(); FLAGS.timeLeft = 30; FLAGS.score = 0; FLAGS.asked = 0;
+            nextFlag();
+            FLAGS.timer = setInterval(() => {
+                if (currentMode !== 'flags' || !document.getElementById('flags-time')) return stopFlags();
+                FLAGS.timeLeft--; const t = document.getElementById('flags-time'); if (t) t.textContent = FLAGS.timeLeft;
+                if (FLAGS.timeLeft <= 0) endFlags();
+            }, 1000);
+        }
+        function nextFlag() {
+            const live = document.getElementById('live-section');
+            const answer = pickRandom(FLAGS.pool);
+            const sameRegion = FLAGS.pool.filter(c => c.region.id === answer.region.id && c.id !== answer.id);
+            const others = new Set(); let guard = 0;
+            while (others.size < 3 && guard++ < 50) { const src = sameRegion.length >= 3 && Math.random() < 0.7 ? sameRegion : FLAGS.pool; const c = pickRandom(src); if (c.id !== answer.id) others.add(c); }
+            const options = [answer, ...others].sort(() => Math.random() - 0.5);
+            FLAGS.current = answer; FLAGS.asked++;
+            live.innerHTML = `
+    <div class="vault-card rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 text-center">
+        <div class="flex items-center justify-between max-w-md mx-auto mb-4 text-[10px] font-black uppercase tracking-widest"><span class="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-slate-300">Score <span class="text-white">${FLAGS.score}</span></span><span class="px-3 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/30 text-yellow-300">⏱ <span id="flags-time">${FLAGS.timeLeft}</span>s</span></div>
+        <div class="text-7xl md:text-8xl my-6 leading-none">${flagEmoji(answer.iso2Code)}</div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-xl mx-auto">${options.map(o => `<button type="button" onclick="answerFlag('${o.id}', this)" class="quiz-choice px-4 py-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-bold text-white">${escapeHtml(o.name)}</button>`).join('')}</div>
+    </div>`;
+        }
+        function answerFlag(id, btn) {
+            if (!FLAGS.timer) return;
+            const correct = id === FLAGS.current.id;
+            if (correct) FLAGS.score++;
+            btn.classList.add(correct ? 'bg-emerald-500/30' : 'bg-rose-500/30');
+            if (!correct) { const right = [...document.querySelectorAll('#live-section button.quiz-choice')].find(b => b.getAttribute('onclick').includes(`'${FLAGS.current.id}'`)); if (right) right.classList.add('bg-emerald-500/30'); }
+            document.querySelectorAll('#live-section button.quiz-choice').forEach(b => b.disabled = true);
+            setTimeout(() => { if (FLAGS.timer) nextFlag(); }, correct ? 350 : 900);
+        }
+        function endFlags() {
+            stopFlags();
+            const live = document.getElementById('live-section');
+            const newBest = FLAGS.score > FLAGS.best; if (newBest) { FLAGS.best = FLAGS.score; lsSet('ev_flags_best', FLAGS.best); burst({ particleCount: 150, spread: 100 }); }
+            const acc = FLAGS.asked > 1 ? Math.round(FLAGS.score / (FLAGS.asked - 1) * 100) : 0;
+            live.innerHTML = `
+    <div class="vault-card rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 text-center">
+        <p class="text-[10px] font-black text-yellow-400 uppercase tracking-[0.3em] mb-2">Time's up</p>
+        <p class="text-6xl font-black text-white font-mono-data">${FLAGS.score}</p>
+        <p class="text-sm text-slate-400 mt-2">flags in 30 seconds · ${acc}% accuracy${newBest ? ' · <b class="text-yellow-300">new personal best!</b>' : ` · best ${FLAGS.best}`}</p>
+        <div class="flex flex-wrap justify-center gap-3 mt-6"><button type="button" onclick="startFlags()" class="px-6 py-3 rounded-2xl bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-black">Play again</button><button type="button" onclick="(async()=>{const t='I named ${FLAGS.score} flags in 30 seconds on EarthVault Flag Flash 🚩 https://chamitro.github.io/EarthVault/'; try { if (navigator.share) await navigator.share({ text: t }); else { await navigator.clipboard.writeText(t); showToast('Copied!', 'success'); } } catch(e) {} })()" class="px-6 py-3 rounded-2xl bg-white/5 hover:bg-white/10 text-sm font-bold text-slate-200">Share</button></div>
+    </div>`;
+        }
+
+        // ---- Planet Right Now: live extremes across 56 cities ----
+        let rightnowTimer = null;
+        function stopRightNow() { if (rightnowTimer) { clearInterval(rightnowTimer); rightnowTimer = null; } }
+        async function loadRightNow() {
+            const live = document.getElementById('live-section');
+            stopRightNow();
+            const lats = WORLD_CITIES.map(c => c[2]).join(','), lons = WORLD_CITIES.map(c => c[3]).join(',');
+            const [wx, aq] = await Promise.all([
+                cachedJson(`https://api.open-meteo.com/v1/forecast?latitude=${lats}&longitude=${lons}&current=temperature_2m,wind_speed_10m,weather_code,relative_humidity_2m,is_day&timezone=auto`, 10 * 60 * 1000),
+                cachedJson(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lats}&longitude=${lons}&current=pm2_5,uv_index`, 10 * 60 * 1000).catch(() => null)
+            ]);
+            const rows = WORLD_CITIES.map((c, i) => ({ name: c[0], cc: c[1], t: wx[i].current.temperature_2m, wind: wx[i].current.wind_speed_10m, code: wx[i].current.weather_code, hum: wx[i].current.relative_humidity_2m, day: wx[i].current.is_day, tz: wx[i].timezone, pm: aq && aq[i] ? aq[i].current.pm2_5 : null, uv: aq && aq[i] ? aq[i].current.uv_index : null }));
+            const fmtT = v => `${v.toFixed(1)}°C`;
+            const board = (title, icon, tone, items, fmt) => `<div class="bg-${tone}-500/10 border border-${tone}-500/20 rounded-3xl p-4"><div class="text-[10px] font-black text-${tone}-400 uppercase tracking-widest mb-3">${icon} ${title}</div>${items.map((r, i) => `<button type="button" onclick="jumpTo('weather', '${r.name.replace(/'/g, '&#39;')}')" class="w-full flex items-center justify-between gap-2 py-1.5 border-b border-white/5 last:border-0 text-left hover:text-white"><span class="text-xs text-slate-300 truncate"><span class="text-slate-500 mr-1">${i + 1}</span>${flagEmoji(r.cc)} ${r.name}</span><span class="text-xs font-black text-white font-mono-data whitespace-nowrap">${fmt(r)} ${WX_EMOJI(r.code)}</span></button>`).join('')}</div>`;
+            const by = (k, desc = true) => [...rows].filter(r => r[k] !== null && r[k] !== undefined).sort((a, b) => desc ? b[k] - a[k] : a[k] - b[k]).slice(0, 5);
+            const raining = rows.filter(r => r.code >= 51 && r.code <= 67 || r.code >= 80 && r.code <= 82 || r.code >= 95).length, snowing = rows.filter(r => r.code >= 71 && r.code <= 77 || r.code === 85 || r.code === 86).length, clear = rows.filter(r => r.code <= 1).length, night = rows.filter(r => !r.day).length;
+            const hottest = by('t')[0], coldest = by('t', false)[0];
+            live.innerHTML = `
+    <div class="vault-card rounded-[2rem] md:rounded-[2.5rem] p-5 md:p-8">
+        <div class="flex flex-wrap items-end justify-between gap-3 mb-5">
+            <div><h3 class="text-xl md:text-2xl font-black text-white">🌍 The planet, right now</h3><p class="text-[10px] text-slate-500 uppercase tracking-widest mt-1">${rows.length} cities · live from Open-Meteo</p></div>
+            <div class="text-right text-sm text-slate-300">Spread of <b class="text-white">${(hottest.t - coldest.t).toFixed(1)}°C</b> between ${hottest.name} and ${coldest.name}</div>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5 text-center">
+            <div class="bg-white/5 rounded-2xl p-3"><div class="text-2xl font-black text-white">${clear}</div><div class="text-[9px] text-slate-500 uppercase tracking-widest">☀️ Clear skies</div></div>
+            <div class="bg-white/5 rounded-2xl p-3"><div class="text-2xl font-black text-white">${raining}</div><div class="text-[9px] text-slate-500 uppercase tracking-widest">🌧️ Raining</div></div>
+            <div class="bg-white/5 rounded-2xl p-3"><div class="text-2xl font-black text-white">${snowing}</div><div class="text-[9px] text-slate-500 uppercase tracking-widest">❄️ Snowing</div></div>
+            <div class="bg-white/5 rounded-2xl p-3"><div class="text-2xl font-black text-white">${night}</div><div class="text-[9px] text-slate-500 uppercase tracking-widest">🌙 In night</div></div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            ${board('Hottest', '🔥', 'rose', by('t'), r => fmtT(r.t))}
+            ${board('Coldest', '🧊', 'sky', by('t', false), r => fmtT(r.t))}
+            ${board('Windiest', '💨', 'cyan', by('wind'), r => `${Math.round(r.wind)} km/h`)}
+            ${aq ? board('Cleanest air', '🌿', 'emerald', by('pm', false), r => `${r.pm.toFixed(0)} µg/m³`) : ''}
+            ${aq ? board('Most polluted air', '🏭', 'amber', by('pm'), r => `${r.pm.toFixed(0)} µg/m³`) : ''}
+            ${aq ? board('Strongest sun (UV)', '🕶️', 'yellow', by('uv'), r => `UV ${r.uv.toFixed(1)}`) : board('Most humid', '💧', 'indigo', by('hum'), r => `${r.hum}%`)}
+        </div>
+        <div class="flex items-center justify-center gap-3 mt-5 text-[10px] text-slate-500 uppercase tracking-widest"><span>${t('updated')} ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · ${L('refreshes every 10 min', 'ανανέωση κάθε 10 λεπτά')}</span><button type="button" onclick="Object.keys(liveCache).forEach(k => { if (k.includes('open-meteo')) delete liveCache[k]; }); runLiveMode('rightnow')" class="px-3 py-1 rounded-full bg-white/5 hover:bg-white/10 font-bold">${t('refresh')}</button></div>
+    </div>`;
+            rightnowTimer = setInterval(() => { if (currentMode !== 'rightnow') return stopRightNow(); Object.keys(liveCache).forEach(k => { if (k.includes('open-meteo')) delete liveCache[k]; }); loadRightNow().catch(() => {}); }, 10 * 60 * 1000);
+        }
+
+        // ---- Sky Tonight: sunset, dark sky, moon, clouds, aurora for any city ----
+        async function searchSky(query) {
+            const live = document.getElementById('live-section');
+            document.getElementById('app-content').classList.add('hidden');
+            live.classList.remove('hidden');
+            live.innerHTML = `<div class="text-center py-16 text-slate-500 text-xs font-bold uppercase tracking-widest animate-pulse">Checking the sky over ${escapeHtml(query)}…</div>`;
+            const geoData = await fetchJson(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=1&language=en&format=json`, 20000);
+            const geo = geoData.results && geoData.results[0];
+            if (!geo) { live.classList.add('hidden'); showToast(t('city_nf')); return; }
+            const safe = p => p.catch(() => null);
+            const [wx, sun, aurora, kp] = await Promise.all([
+                fetchJson(`https://api.open-meteo.com/v1/forecast?latitude=${geo.latitude}&longitude=${geo.longitude}&daily=sunrise,sunset,daylight_duration,uv_index_max&current=cloud_cover,is_day,temperature_2m&timezone=auto&forecast_days=2`, 20000),
+                safe(cachedJson(`https://api.sunrise-sunset.org/json?lat=${geo.latitude}&lng=${geo.longitude}&formatted=0`, 6 * 3600 * 1000)),
+                safe(cachedJson('https://services.swpc.noaa.gov/json/ovation_aurora_latest.json', 30 * 60 * 1000)),
+                safe(cachedJson('https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json', 15 * 60 * 1000))
+            ]);
+            if (currentMode !== 'sky') return;
+            const tz = wx.timezone;
+            const lt = iso => { try { return new Date(iso).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: tz }); } catch (e) { return iso.slice(11, 16); } };
+            const ltLocal = s => s ? s.slice(11, 16) : '--'; // Open-Meteo daily times are already local
+            const sunset = wx.daily.sunset[0], sunriseTomorrow = wx.daily.sunrise[1], dayLen = wx.daily.daylight_duration[0];
+            const golden = new Date(sunset); golden.setMinutes(golden.getMinutes() - 60);
+            const goldenTxt = `${String(golden.getHours()).padStart(2, '0')}:${String(golden.getMinutes()).padStart(2, '0')}`;
+            const dark = sun && sun.results ? lt(sun.results.astronomical_twilight_end) : null, darkEnd = sun && sun.results ? lt(sun.results.astronomical_twilight_begin) : null;
+            const moon = moonPhase();
+            const clouds = wx.current.cloud_cover;
+            let auroraPct = null; if (aurora && aurora.coordinates) { const lon = ((Math.round(geo.longitude) % 360) + 360) % 360, lat = Math.max(-90, Math.min(90, Math.round(geo.latitude))); const cell = aurora.coordinates[lon * 181 + (lat + 90)]; if (cell) auroraPct = cell[2]; }
+            const kpNow = kp && kp.length ? parseFloat(kp[kp.length - 1].Kp) : null;
+            const uvMax = wx.daily.uv_index_max[1];
+            const score = (clouds <= 25 ? 2 : clouds <= 60 ? 1 : 0) + (moon.illumination <= 40 ? 1 : 0);
+            const verdict = clouds > 60 ? `Clouds cover ${clouds}% of the sky right now - not a night for stars.` : score >= 3 ? 'Clear skies and a dim moon: a great night for stargazing.' : score === 2 ? 'Decent conditions tonight. Look away from city lights.' : 'The moon is bright tonight, which washes out faint stars - good for moon-watching instead.';
+            const cell = (label, value, sub, tone, icon) => `<div class="bg-${tone}-500/10 border border-${tone}-500/20 rounded-2xl p-4 text-center"><div class="text-[9px] font-black text-${tone}-400 uppercase tracking-widest">${label}</div><div class="text-xl md:text-2xl font-black text-white mt-1">${icon ? icon + ' ' : ''}${value}</div>${sub ? `<div class="text-[10px] text-slate-500 mt-1">${sub}</div>` : ''}</div>`;
+            live.innerHTML = `
+    <div class="vault-card rounded-[2rem] md:rounded-[2.5rem] p-5 md:p-8">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+            <div><h3 class="text-xl md:text-2xl font-black text-white">🌌 Sky tonight over ${flagEmoji(geo.country_code)} ${escapeHtml(geo.name)}</h3><p class="text-[10px] text-slate-500 uppercase tracking-widest mt-1">${tz.replace(/_/g, ' ')} · ${wx.current.temperature_2m.toFixed(0)}°C now · ${wx.current.is_day ? 'daytime' : 'night'}</p></div>
+            <div class="px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-200 text-xs font-bold">${verdict}</div>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            ${cell('Sunset', ltLocal(sunset), `Golden hour from ${goldenTxt}`, 'orange', '🌇')}
+            ${cell('Fully dark from', dark || '--', darkEnd ? `until ${darkEnd}` : 'astronomical twilight', 'indigo', '🌃')}
+            ${cell('Moon', moon.name, `${moon.illumination}% lit`, 'slate', moon.emoji)}
+            ${cell('Cloud cover now', `${clouds}%`, clouds <= 25 ? 'Mostly clear' : clouds <= 60 ? 'Some cloud' : 'Overcast', 'sky', '☁️')}
+            ${cell('Aurora chance', auroraPct === null ? '--' : `${auroraPct}%`, kpNow !== null ? `Kp ${kpNow.toFixed(1)} · NOAA 30-min forecast` : 'NOAA forecast', auroraPct >= 20 ? 'emerald' : 'violet', '🌌')}
+            ${cell('Sunrise tomorrow', ltLocal(sunriseTomorrow), `${(dayLen / 3600).toFixed(1)} h of daylight today`, 'amber', '🌅')}
+            ${cell('UV tomorrow', uvMax !== null && uvMax !== undefined ? uvMax.toFixed(0) : '--', uvMax >= 8 ? 'Very high - cover up' : uvMax >= 6 ? 'High' : uvMax >= 3 ? 'Moderate' : 'Low', 'yellow', '🕶️')}
+            <button type="button" onclick="selectMode('iss')" class="bg-cyan-500/10 border border-cyan-500/20 hover:bg-cyan-500/20 rounded-2xl p-4 text-center transition-all"><div class="text-[9px] font-black text-cyan-400 uppercase tracking-widest">Spot the ISS</div><div class="text-xl md:text-2xl font-black text-white mt-1">🛰️ Track it</div><div class="text-[10px] text-slate-500 mt-1">Brightest after sunset</div></button>
+        </div>
+        <p class="text-center text-[10px] text-slate-500 mt-5">Sun and clouds by Open-Meteo, twilight by sunrise-sunset.org, aurora by NOAA SWPC. Moon phase is computed locally.</p>
+    </div>`;
+            if (window.innerWidth < 768) setTimeout(() => live.scrollIntoView({ behavior: 'smooth', block: 'start' }), 150);
+        }
+
+        // ---- Asteroid Watch: near-Earth objects this week (NASA NeoWs) ----
+        async function loadAsteroids() {
+            const live = document.getElementById('live-section');
+            const start = new Date(), end = new Date(); end.setDate(end.getDate() + 6);
+            const iso = d => d.toISOString().slice(0, 10);
+            const feed = await cachedJson(`https://api.nasa.gov/neo/rest/v1/feed?start_date=${iso(start)}&end_date=${iso(end)}&api_key=DEMO_KEY`, 6 * 3600 * 1000);
+            const all = Object.values(feed.near_earth_objects || {}).flat().map(n => { const ca = n.close_approach_data[0] || {}; const dm = n.estimated_diameter.meters; return { name: n.name.replace(/[()]/g, ''), size: (dm.estimated_diameter_min + dm.estimated_diameter_max) / 2, lunar: parseFloat(ca.miss_distance ? ca.miss_distance.lunar : 999), km: parseFloat(ca.miss_distance ? ca.miss_distance.kilometers : 0), vel: parseFloat(ca.relative_velocity ? ca.relative_velocity.kilometers_per_hour : 0), when: ca.close_approach_date_full || ca.close_approach_date, hazardous: n.is_potentially_hazardous_asteroid, url: n.nasa_jpl_url }; }).sort((a, b) => a.lunar - b.lunar);
+            const sizeOf = m => m < 5 ? 'a car' : m < 15 ? 'a bus' : m < 40 ? 'a house' : m < 110 ? 'a football field' : m < 330 ? 'the Eiffel Tower' : m < 1000 ? 'a small mountain' : 'a mountain';
+            const closest = all[0], biggest = [...all].sort((a, b) => b.size - a.size)[0];
+            const row = a => `<a href="${a.url}" target="_blank" rel="noopener" class="flex items-center gap-3 bg-white/5 hover:bg-white/10 border ${a.hazardous ? 'border-rose-500/40' : 'border-white/10'} rounded-2xl p-3 transition-all">
+            <div class="text-2xl shrink-0">${a.size >= 140 ? '🪨' : '☄️'}</div>
+            <div class="min-w-0 flex-1"><div class="text-sm font-black text-white truncate">${escapeHtml(a.name)} ${a.hazardous ? '<span class="text-[9px] text-rose-400 uppercase ml-1">potentially hazardous</span>' : ''}</div><div class="text-[10px] text-slate-400">About the size of ${sizeOf(a.size)} (~${Math.round(a.size)} m) · ${Math.round(a.vel).toLocaleString()} km/h</div></div>
+            <div class="text-right shrink-0"><div class="text-sm font-black ${a.lunar < 1 ? 'text-rose-300' : a.lunar < 5 ? 'text-amber-300' : 'text-slate-200'} font-mono-data">${a.lunar.toFixed(1)} LD</div><div class="text-[9px] text-slate-500">${escapeHtml(a.when || '')}</div></div>
+        </a>`;
+            live.innerHTML = `
+    <div class="vault-card rounded-[2rem] md:rounded-[2.5rem] p-5 md:p-8">
+        <div class="flex flex-wrap items-end justify-between gap-3 mb-5">
+            <div><h3 class="text-xl md:text-2xl font-black text-white">☄️ Asteroids passing Earth this week</h3><p class="text-[10px] text-slate-500 uppercase tracking-widest mt-1">${iso(start)} to ${iso(end)} · NASA Near-Earth Object service</p></div>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6 text-center">
+            <div class="bg-white/5 rounded-2xl p-3"><div class="text-2xl font-black text-white">${all.length}</div><div class="text-[9px] text-slate-500 uppercase tracking-widest">Fly-bys this week</div></div>
+            <div class="bg-rose-500/10 border border-rose-500/20 rounded-2xl p-3"><div class="text-2xl font-black text-white">${all.filter(a => a.hazardous).length}</div><div class="text-[9px] text-rose-400 uppercase tracking-widest">Potentially hazardous</div></div>
+            <div class="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-3"><div class="text-2xl font-black text-white">${closest ? closest.lunar.toFixed(1) + ' LD' : '--'}</div><div class="text-[9px] text-amber-400 uppercase tracking-widest">Closest pass</div></div>
+            <div class="bg-violet-500/10 border border-violet-500/20 rounded-2xl p-3"><div class="text-2xl font-black text-white">${biggest ? Math.round(biggest.size) + ' m' : '--'}</div><div class="text-[9px] text-violet-400 uppercase tracking-widest">Biggest rock</div></div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">${all.slice(0, 10).map(row).join('')}</div>
+        <p class="text-center text-[10px] text-slate-500 mt-5">LD = lunar distance (384,400 km, the gap between Earth and the Moon). "Potentially hazardous" is a size-and-orbit category, not a prediction of impact. Tap a rock for its NASA JPL page.</p>
+    </div>`;
+        }
+
+        // ---- On This Day on Earth (Wikipedia) ----
+        async function loadOnThisDay(month, day) {
+            const live = document.getElementById('live-section');
+            const now = new Date(); month = month || now.getMonth() + 1; day = day || now.getDate();
+            const mm = String(month).padStart(2, '0'), dd = String(day).padStart(2, '0');
+            const feed = await cachedJson(`https://en.wikipedia.org/api/rest_v1/feed/onthisday/events/${mm}/${dd}`, 6 * 3600 * 1000);
+            const earthRe = /earthquake|volcan|erupt|tsunami|hurricane|typhoon|cyclone|flood|drought|wildfire|climate|glacier|ice|Antarctic|Arctic|ocean|sea |expedition|explorer|summit|Everest|discover|eclipse|comet|asteroid|meteor|space|Moon|Mars|satellite|orbit|planet|species|national park|forest|river|island|storm|tornado|blizzard|heat wave|environment/i;
+            const events = (feed.events || []).map(e => ({ year: e.year, text: e.text, earth: earthRe.test(e.text), page: e.pages && e.pages[0] ? e.pages[0] : null }));
+            const picks = [...events.filter(e => e.earth), ...events.filter(e => !e.earth)].slice(0, 10).sort((a, b) => a.year - b.year);
+            const label = new Date(2000, month - 1, day).toLocaleDateString(undefined, { month: 'long', day: 'numeric' });
+            const card = e => `<a href="${e.page && e.page.content_urls ? e.page.content_urls.desktop.page : '#'}" target="_blank" rel="noopener" class="flex gap-3 bg-white/5 hover:bg-white/10 border ${e.earth ? 'border-emerald-500/30' : 'border-white/10'} rounded-2xl p-3 transition-all">
+            ${e.page && e.page.thumbnail ? `<img src="${e.page.thumbnail.source}" alt="" loading="lazy" class="w-16 h-16 rounded-xl object-cover shrink-0">` : `<div class="w-16 h-16 rounded-xl bg-slate-800 shrink-0 flex items-center justify-center text-2xl">${e.earth ? '🌍' : '📜'}</div>`}
+            <div class="min-w-0"><div class="text-[10px] font-black ${e.earth ? 'text-emerald-400' : 'text-slate-500'} uppercase tracking-widest">${e.year < 0 ? Math.abs(e.year) + ' BC' : e.year}${e.earth ? ' · planet' : ''}</div><div class="text-sm text-slate-200 leading-snug">${escapeHtml(e.text)}</div></div>
+        </a>`;
+            live.innerHTML = `
+    <div class="vault-card rounded-[2rem] md:rounded-[2.5rem] p-5 md:p-8">
+        <div class="flex flex-wrap items-end justify-between gap-3 mb-5">
+            <div><h3 class="text-xl md:text-2xl font-black text-white">📅 On this day: ${label}</h3><p class="text-[10px] text-slate-500 uppercase tracking-widest mt-1">${events.filter(e => e.earth).length} planet moments among ${events.length} events · Wikipedia</p></div>
+            <div class="flex gap-2"><button type="button" onclick="loadOnThisDay()" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-300">Today</button><button type="button" onclick="loadOnThisDay(1 + Math.floor(Math.random() * 12), 1 + Math.floor(Math.random() * 28))" class="px-3 py-1.5 rounded-xl bg-emerald-600/80 hover:bg-emerald-500 text-xs font-bold text-white">🎲 Random day</button></div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">${picks.map(card).join('')}</div>
+        <p class="text-center text-[10px] text-slate-500 mt-5">Green cards are about the planet, nature or space. Tap any card for the full article.</p>
+    </div>`;
+        }
+
+        // ---- Wildlife Near You: iNaturalist sightings of the last 30 days around any city ----
+        async function searchNearby(query) {
+            const live = document.getElementById('live-section');
+            document.getElementById('app-content').classList.add('hidden');
+            live.classList.remove('hidden');
+            live.innerHTML = `<div class="text-center py-16 text-slate-500 text-xs font-bold uppercase tracking-widest animate-pulse">Asking the naturalists around ${escapeHtml(query)}…</div>`;
+            const geoData = await fetchJson(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=1&language=en&format=json`, 20000);
+            const geo = geoData.results && geoData.results[0];
+            if (!geo) { live.classList.add('hidden'); showToast(t('city_nf')); return; }
+            const since = new Date(); since.setDate(since.getDate() - 30);
+            const base = `lat=${geo.latitude}&lng=${geo.longitude}&radius=40&d1=${since.toISOString().slice(0, 10)}&without_taxon_id=43584`;
+            const [obs, species] = await Promise.all([
+                cachedJson(`https://api.inaturalist.org/v1/observations?${base}&photos=true&order=desc&order_by=observed_on&per_page=12&quality_grade=research,needs_id`, 10 * 60 * 1000),
+                cachedJson(`https://api.inaturalist.org/v1/observations/species_counts?${base}&per_page=6`, 10 * 60 * 1000).catch(() => null)
+            ]);
+            if (currentMode !== 'nearby') return;
+            const total = obs.total_results || 0;
+            if (!total) { live.innerHTML = `<div class="vault-card rounded-[2rem] p-8 text-center"><p class="text-white font-bold">Nobody has logged wildlife within 40 km of ${escapeHtml(geo.name)} this month.</p><p class="text-slate-500 text-xs mt-2">Try a larger city, or be the first on iNaturalist.</p></div>`; return; }
+            const ICON = { Aves: '🐦', Mammalia: '🦌', Reptilia: '🦎', Amphibia: '🐸', Insecta: '🐞', Arachnida: '🕷️', Actinopterygii: '🐟', Mollusca: '🐌', Plantae: '🌿', Fungi: '🍄' };
+            const card = r => { const t = r.taxon || {}, photo = r.photos && r.photos[0] ? r.photos[0].url.replace('square', 'medium') : ''; const name = t.preferred_common_name || t.name || 'Unknown'; return `<a href="${r.uri}" target="_blank" rel="noopener" class="wild-card bg-slate-900/70 border border-white/10 rounded-3xl overflow-hidden hover:border-emerald-400/50 transition-all hover:-translate-y-1">
+            ${photo ? `<img src="${photo}" alt="${escapeHtml(name)}" loading="lazy">` : ''}
+            <div class="p-3"><div class="text-xs font-black text-white truncate">${ICON[t.iconic_taxon_name] || '🧬'} ${escapeHtml(name)}</div><div class="text-[10px] text-slate-400 truncate">${escapeHtml(t.name || '')}</div><div class="text-[9px] text-slate-500 mt-1 truncate">${escapeHtml((r.observed_on || '') + (r.place_guess ? ' · ' + r.place_guess.split(',')[0] : ''))}</div></div>
+        </a>`; };
+            const chips = species && species.results ? species.results.map(s => `<div class="bg-white/5 border border-white/10 rounded-2xl px-3 py-2 text-center"><div class="text-[10px] font-black text-slate-200 truncate">${ICON[(s.taxon || {}).iconic_taxon_name] || '🧬'} ${escapeHtml((s.taxon || {}).preferred_common_name || (s.taxon || {}).name || '')}</div><div class="text-[10px] text-emerald-300 font-bold">${s.count} sightings</div></div>`).join('') : '';
+            live.innerHTML = `
+    <div class="vault-card rounded-[2rem] md:rounded-[2.5rem] p-5 md:p-8">
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-5">
+            <div class="flex items-center gap-3"><span class="text-4xl md:text-5xl">${flagEmoji(geo.country_code)}</span><div><h3 class="text-xl md:text-2xl font-black text-white">Spotted near ${escapeHtml(geo.name)}</h3><p class="text-[10px] text-slate-500 uppercase tracking-widest">${total.toLocaleString()} sightings within 40 km in the last 30 days${species ? ` · ${species.total_results.toLocaleString()} species` : ''}</p></div></div>
+            <button type="button" onclick="Object.keys(liveCache).forEach(k => { if (k.includes('inaturalist')) delete liveCache[k]; }); searchNearby('${escapeHtml(geo.name).replace(/'/g, '&#39;')}')" class="px-4 py-2 rounded-xl bg-emerald-600/80 hover:bg-emerald-500 text-xs font-bold text-white">↻ Latest</button>
+        </div>
+        ${chips ? `<div class="text-[10px] font-black text-emerald-400 uppercase tracking-[0.3em] mb-2">Most seen this month</div><div class="grid grid-cols-2 md:grid-cols-6 gap-2 mb-6">${chips}</div>` : ''}
+        <div class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-2">Latest sightings</div>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">${obs.results.map(card).join('')}</div>
+        <p class="text-center text-[10px] text-slate-500 mt-5">Live from iNaturalist, where people log what they see. Tap a photo for the observation.</p>
+    </div>`;
+            if (window.innerWidth < 768) setTimeout(() => live.scrollIntoView({ behavior: 'smooth', block: 'start' }), 150);
+        }
+
+        // ---- Live numbers on the splash screen ----
+        async function loadSplashLive() {
+            const box = document.getElementById('splash-live'); if (!box) return;
+            const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+            const safe = p => p.catch(() => null);
+            const [quakes, fires, kp] = await Promise.all([
+                safe(cachedJson('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_day.geojson', 10 * 60 * 1000)),
+                safe(cachedJson('https://eonet.gsfc.nasa.gov/api/v3/events?status=open&days=30&category=wildfires&limit=500', 30 * 60 * 1000)),
+                safe(cachedJson('https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json', 15 * 60 * 1000))
+            ]);
+            if (quakes && quakes.features) set('splash-quakes', quakes.features.length);
+            if (fires && fires.events) set('splash-fires', fires.events.length);
+            if (kp && kp.length) set('splash-kp', parseFloat(kp[kp.length - 1].Kp).toFixed(1));
+        }
+
+        // ---- Tide now and next high/low water (Ocean Pulse footer) ----
+        async function loadTide(lat, lon) {
+            try {
+                const t = await cachedJson(`https://marine-api.open-meteo.com/v1/marine?latitude=${lat}&longitude=${lon}&current=sea_level_height_msl&hourly=sea_level_height_msl&forecast_days=2&timezone=auto`, 30 * 60 * 1000);
+                const h = t.hourly.sea_level_height_msl, times = t.hourly.time, nowIdx = Math.max(0, times.findIndex(x => x >= t.current.time));
+                let next = null;
+                for (let i = nowIdx + 1; i < h.length - 1; i++) { if (h[i] !== null && ((h[i] > h[i - 1] && h[i] >= h[i + 1]) || (h[i] < h[i - 1] && h[i] <= h[i + 1]))) { next = { kind: h[i] > h[i - 1] ? 'high' : 'low', time: times[i].slice(11, 16), val: h[i] }; break; } }
+                const footer = document.getElementById('weather-footer'); if (!footer || currentMode !== 'ocean') return;
+                let slot = document.getElementById('tide-slot');
+                if (!slot) { slot = document.createElement('div'); slot.id = 'tide-slot'; slot.className = 'text-slate-400'; footer.appendChild(slot); }
+                slot.innerHTML = `Tide: <span class="text-sky-400">${t.current.sea_level_height_msl >= 0 ? '+' : ''}${t.current.sea_level_height_msl.toFixed(1)} m</span>${next ? ` · ${next.kind} water ${next.time}` : ''}`;
+            } catch (e) {}
+        }
+
+        // ======================= INTERFACE LANGUAGE (English / Ελληνικά) =======================
+        // Only the shell is translated (menu, titles, descriptions, search row, splash, tips, shared labels).
+        // Data coming from the sources stays in English.
+        let LANG = 'en';
+        try { LANG = localStorage.getItem('ev_lang') || (((navigator.language || '').toLowerCase().startsWith('el')) ? 'el' : 'en'); } catch (e) {}
+        const L = (en, el) => LANG === 'el' ? el : en;
+        const UI = {
+            splash_title: ['Live on <span class="text-emerald-500">EarthVault</span>', 'Ζωντανά στο <span class="text-emerald-500">EarthVault</span>'],
+            splash_sub: ["Today's Earth Vitals", 'Τα ζωτικά της Γης σήμερα'],
+            splash_disc: ['Based on Statistical Models', 'Βάσει στατιστικών μοντέλων'],
+            k_forest: ['Forests Lost Today', 'Δάση που χάθηκαν σήμερα'],
+            k_co2: ['CO₂ Emitted Today', 'CO₂ που εκπέμφθηκε σήμερα'],
+            k_energy: ['Renewable Power Today', 'Ανανεώσιμη ενέργεια σήμερα'],
+            k_plastic: ['Ocean Plastic Today', 'Πλαστικό στον ωκεανό σήμερα'],
+            k_pop: ['Population Change Today', 'Μεταβολή πληθυσμού σήμερα'],
+            k_temp: ['Global Temp Rise', 'Άνοδος παγκόσμιας θερμοκρασίας'],
+            u_ha: ['HA', 'ΕΚΤ.'], u_tons: ['TONS', 'ΤΟΝΟΙ'], u_mwh: ['MWH', 'MWH'], u_people: ['PEOPLE', 'ΑΤΟΜΑ'],
+            live_quakes: ['Quakes M4.5+ · 24h', 'Σεισμοί M4.5+ · 24ω'],
+            live_fires: ['Wildfires burning', 'Ενεργές πυρκαγιές'],
+            live_kp: ['Kp index now', 'Δείκτης Kp τώρα'],
+            live_src: ['Live right now · USGS, NASA EONET, NOAA', 'Ζωντανά τώρα · USGS, NASA EONET, NOAA'],
+            splash_enter: ['Explore Real Data →', 'Εξερεύνησε αληθινά δεδομένα →'],
+            menu_aria: ['Choose a vault', 'Διάλεξε ενότητα'],
+            filter_ph: ['Find a vault... (e.g. ocean, happiness)', 'Βρες μια ενότητα... (π.χ. ocean, ευτυχία)'],
+            filter_empty: ['No vault matches that.', 'Καμία ενότητα δεν ταιριάζει.'],
+            cat_games: ['🎮 Games', '🎮 Παιχνίδια'],
+            cat_live: ['🛰️ Live Earth', '🛰️ Ζωντανή Γη'],
+            cat_env: ['🌍 Environmental Data', '🌍 Περιβαλλοντικά Δεδομένα'],
+            cat_social: ['👥 Social & Health', '👥 Κοινωνία & Υγεία'],
+            cat_digital: ['🌐 Digital & Cultural', '🌐 Ψηφιακά & Πολιτισμός'],
+            cat_tools: ['🧰 Tools', '🧰 Εργαλεία'],
+            subtitle_default: ['Global Environmental Terminal', 'Παγκόσμιο Περιβαλλοντικό Τερματικό'],
+            fact_label: ['Archive Intel', 'Το ήξερες;'],
+            badge_active: ['Archive Active', 'Ενεργό αρχείο'],
+            ph_city: ['Search city...', 'Αναζήτηση πόλης...'],
+            ph_coastal: ['Search coastal city...', 'Παράκτια πόλη...'],
+            ph_first: ['First country...', 'Πρώτη χώρα...'],
+            ph_second: ['Second country...', 'Δεύτερη χώρα...'],
+            ph_country: ['Search country...', 'Αναζήτηση χώρας...'],
+            dice_title: ['Surprise me with a random place', 'Τυχαίο μέρος'],
+            analyze: ['Analyze', 'Ανάλυση'], compare: ['Compare', 'Σύγκριση'], working: ['Working', 'Φόρτωση'],
+            try: ['Try', 'Δοκίμασε'],
+            tips_head: ['New here? Three things to try', 'Νέος εδώ; Τρία πράγματα να δοκιμάσεις'],
+            tips_1: ['<b class="text-white">Pick a vault</b> from the menu above - weather, oceans, wildlife, happiness and 35 more.', '<b class="text-white">Διάλεξε μια ενότητα</b> από το μενού πάνω: καιρός, ωκεανοί, άγρια ζωή, ευτυχία και 35 ακόμη.'],
+            tips_2: ['<b class="text-white">Feeling lucky?</b> Hit the dice for a random place, or press <kbd class="px-1.5 py-0.5 rounded bg-white/10 text-xs">/</kbd> to jump to the search box.', '<b class="text-white">Νιώθεις τυχερός;</b> Πάτα το ζάρι για ένα τυχαίο μέρος, ή πάτα <kbd class="px-1.5 py-0.5 rounded bg-white/10 text-xs">/</kbd> για να πας στην αναζήτηση.'],
+            tips_3: ['<b class="text-white">Play</b> the daily Mystery Country or Flag Flash under <i>Games</i>, and watch the planet live under <i>Live Earth</i>. Every result has a Share button.', '<b class="text-white">Παίξε</b> τη Μυστήρια Χώρα της ημέρας ή τις Σημαίες Αστραπή στα <i>Παιχνίδια</i>, και δες τον πλανήτη ζωντανά στη <i>Ζωντανή Γη</i>. Κάθε αποτέλεσμα έχει κουμπί κοινοποίησης.'],
+            tips_ok: ['Got it', 'Το \'πιασα'],
+            share_btn: ['📸 Share this result', '📸 Μοιράσου το αποτέλεσμα'],
+            pulse_live: ['Live planetary vitals', 'Ζωντανά ζωτικά του πλανήτη'],
+            capital: ['Capital', 'Πρωτεύουσα'], income: ['Income group', 'Εισοδηματική ομάδα'], population: ['Population', 'Πληθυσμός'],
+            contacting: ['Contacting satellites...', 'Επικοινωνία με δορυφόρους...'],
+            feed_fail: ['Live feed unavailable', 'Η ζωντανή ροή δεν είναι διαθέσιμη'], retry: ['Retry', 'Ξανά'],
+            updated: ['Updated', 'Ενημερώθηκε'], refresh: ['Refresh', 'Ανανέωση'],
+            toast_place: ['Type a place to explore first.', 'Γράψε πρώτα ένα μέρος.'],
+            toast_two: ['Type two countries to compare.', 'Γράψε δύο χώρες για σύγκριση.'],
+            city_nf: ['City not found', 'Η πόλη δεν βρέθηκε'],
+            err: ['Something went wrong: ', 'Κάτι πήγε στραβά: '],
+            dice_toast: ['🎲 Rolling the dice: ', '🎲 Ρίχνω το ζάρι: '],
+            lang_btn: ['ΕΛ', 'EN'], lang_title: ['Αλλαγή στα Ελληνικά', 'Switch to English'],
+            // weather / ocean / generic stat labels
+            s_today_high: ['Today High', 'Μέγιστη σήμερα'], s_sea_now: ['Sea Surface Now', 'Θάλασσα τώρα'], s_archive: ['Archive Value', 'Τιμή αρχείου'],
+            s_humidity: ['Humidity', 'Υγρασία'], s_wave: ['Wave Height', 'Ύψος κύματος'], s_growth: ['Growth Rate', 'Ρυθμός μεταβολής'],
+            s_delta: ['Temporal Delta', 'Χρονική διαφορά'], s_marine_delta: ['Marine Delta', 'Θαλάσσια διαφορά'], s_insight: ['Historical Insight', 'Ιστορική ματιά'],
+            s_marine_book: ['Marine Record Book', 'Θαλάσσια ρεκόρ'], s_peaks: ['Historical Vault Peaks', 'Ιστορικά ρεκόρ'],
+            s_rec_warm: ['Record Warm', 'Ρεκόρ ζέστης'], s_rec_max: ['Record Max', 'Ρεκόρ μέγιστο'], s_rec_cool: ['Record Cool', 'Ρεκόρ ψύχους'], s_rec_min: ['Record Min', 'Ρεκόρ ελάχιστο'],
+            s_timeline: ['Timeline', 'Χρονολόγιο'],
+            s_mhw: ['Marine Heatwave Days', 'Ημέρες θαλάσσιου καύσωνα'], s_heat: ['Extreme Heat', 'Ακραία ζέστη'],
+            s_mhw_desc: ['Days above the 90th percentile (last 12 months)', 'Ημέρες πάνω από το 90ό εκατοστημόριο (12 μήνες)'], s_heat_desc: ['Days hit 30°C+ (This Date over 50y)', 'Ημέρες με 30°C+ (ίδια ημερομηνία, 50 χρόνια)'],
+            s_cool_days: ['Cool Anomaly Days', 'Ημέρες ψυχρής ανωμαλίας'], s_frost: ['Historical Frost', 'Ιστορικός παγετός'],
+            s_cool_desc: ['Days below the 10th percentile (last 12 months)', 'Ημέρες κάτω από το 10ο εκατοστημόριο (12 μήνες)'], s_frost_desc: ['Days hit sub-zero (This Date over 50y)', 'Ημέρες υπό το μηδέν (ίδια ημερομηνία, 50 χρόνια)'],
+            s_rec_avg: ['Record Avg: ', 'Μέσος ρεκόρ: '], s_day_avg: ['Day Avg: ', 'Μέσος ημέρας: '], s_current: ['Current: ', 'Τώρα: '], s_pollution: ['Pollution: ', 'Ρύπανση: '],
+            s_on: ['On ', 'Στις '], s_year: ['Year ', 'Έτος ']
+        };
+        // Greek names for every vault: menu entry, short label on the menu button, page title, one-line description.
+        const GR = {
+            menu: { quiz: 'Κουίζ Πλανήτη', mystery: 'Μυστήρια Χώρα (ημερήσιο)', hotornot: 'Ζεστό ή Κρύο (ζωντανή μονομαχία)', flags: 'Σημαίες Αστραπή', rightnow: 'Ο Πλανήτης Τώρα', alerts: 'Συναγερμοί Πλανήτη', space: 'Διαστημικός Καιρός', iss: 'Διαστημικός Σταθμός', sky: 'Ο Ουρανός Απόψε', asteroids: 'Παρατηρητήριο Αστεροειδών', onthisday: 'Σαν Σήμερα στη Γη', nearby: 'Άγρια Ζωή Κοντά σου', outside: 'Καλύτερη Ώρα Έξω', weather: 'Αρχείο Καιρού', ocean: 'Παλμός Ωκεανού', forest: 'Δασική Κληρονομιά', agri: 'Γεωργία', energy: 'Ενέργεια & ΑΠΕ', water: 'Ασφάλεια Νερού', carbon: 'Εκπομπές Άνθρακα', endangered: 'Απειλούμενα Είδη', waste: 'Απορρίμματα & Ανακύκλωση', power: 'Ενεργειακό Μείγμα', air: 'Ποιότητα Αέρα', waterstress: 'Υδατική Πίεση', wildlife: 'Γκαλερί Άγριας Ζωής', human_span: 'Προσδόκιμο Ζωής', mental: 'Ψυχική Υγεία', happiness: 'Ευτυχία & Ευημερία', generations: 'Γενιές', univ: 'Πρόσβαση στο Πανεπιστήμιο', public_private: 'Εκπαίδευση: Δημόσια vs Ιδιωτική', health_private: 'Υγεία: Δημόσια vs Ιδιωτική', migration: 'Μετανάστευση & Διασπορά', economy: 'Οικονομία & Αγορά Εργασίας', internet: 'Πρόσβαση στο Διαδίκτυο', music: 'Μουσική Κουλτούρα', cinema: 'Κινηματογράφος', trends: 'Τάσεις Διαδικτύου', city: 'Ιστορίες Πόλεων', compare: 'Χώρα vs Χώρα' },
+            labels: { quiz: 'ΚΟΥΙΖ ΠΛΑΝΗΤΗ', mystery: 'ΜΥΣΤΗΡΙΑ ΧΩΡΑ', hotornot: 'ΖΕΣΤΟ Ή ΚΡΥΟ', flags: 'ΣΗΜΑΙΕΣ ΑΣΤΡΑΠΗ', rightnow: 'Ο ΠΛΑΝΗΤΗΣ ΤΩΡΑ', alerts: 'ΣΥΝΑΓΕΡΜΟΙ ΠΛΑΝΗΤΗ', space: 'ΔΙΑΣΤΗΜΙΚΟΣ ΚΑΙΡΟΣ', iss: 'ΔΙΑΣΤΗΜΙΚΟΣ ΣΤΑΘΜΟΣ', sky: 'Ο ΟΥΡΑΝΟΣ ΑΠΟΨΕ', asteroids: 'ΑΣΤΕΡΟΕΙΔΕΙΣ', onthisday: 'ΣΑΝ ΣΗΜΕΡΑ', nearby: 'ΑΓΡΙΑ ΖΩΗ ΚΟΝΤΑ ΣΟΥ', outside: 'ΚΑΛΥΤΕΡΗ ΩΡΑ ΕΞΩ', weather: 'ΑΡΧΕΙΟ ΚΑΙΡΟΥ', ocean: 'ΠΑΛΜΟΣ ΩΚΕΑΝΟΥ', forest: 'ΔΑΣΙΚΗ ΚΛΗΡΟΝΟΜΙΑ', agri: 'ΓΕΩΡΓΙΑ', energy: 'ΕΝΕΡΓΕΙΑ & ΑΠΕ', water: 'ΑΣΦΑΛΕΙΑ ΝΕΡΟΥ', carbon: 'ΕΚΠΟΜΠΕΣ ΑΝΘΡΑΚΑ', endangered: 'ΑΠΕΙΛΟΥΜΕΝΑ ΕΙΔΗ', waste: 'ΑΠΟΡΡΙΜΜΑΤΑ & ΑΝΑΚΥΚΛΩΣΗ', power: 'ΕΝΕΡΓΕΙΑΚΟ ΜΕΙΓΜΑ', air: 'ΠΟΙΟΤΗΤΑ ΑΕΡΑ', waterstress: 'ΥΔΑΤΙΚΗ ΠΙΕΣΗ', wildlife: 'ΓΚΑΛΕΡΙ ΑΓΡΙΑΣ ΖΩΗΣ', human_span: 'ΠΡΟΣΔΟΚΙΜΟ ΖΩΗΣ', mental: 'ΨΥΧΙΚΗ ΥΓΕΙΑ', happiness: 'ΕΥΤΥΧΙΑ & ΕΥΗΜΕΡΙΑ', generations: 'ΓΕΝΙΕΣ', univ: 'ΠΑΝΕΠΙΣΤΗΜΙΟ', public_private: 'ΕΚΠΑΙΔΕΥΣΗ: ΔΗΜΟΣΙΑ vs ΙΔΙΩΤΙΚΗ', health_private: 'ΥΓΕΙΑ: ΔΗΜΟΣΙΑ vs ΙΔΙΩΤΙΚΗ', migration: 'ΜΕΤΑΝΑΣΤΕΥΣΗ & ΔΙΑΣΠΟΡΑ', economy: 'ΟΙΚΟΝΟΜΙΑ & ΕΡΓΑΣΙΑ', internet: 'ΠΡΟΣΒΑΣΗ ΣΤΟ ΔΙΑΔΙΚΤΥΟ', music: 'ΜΟΥΣΙΚΗ ΚΟΥΛΤΟΥΡΑ', cinema: 'ΚΙΝΗΜΑΤΟΓΡΑΦΟΣ', trends: 'ΤΑΣΕΙΣ ΔΙΑΔΙΚΤΥΟΥ', city: 'ΙΣΤΟΡΙΕΣ ΠΟΛΕΩΝ', compare: 'ΧΩΡΑ VS ΧΩΡΑ' },
+            titles: { weather: 'Ιστορία του Καιρού', ocean: 'Παλμός του Ωκεανού', univ: 'Πρόσβαση στο Πανεπιστήμιο', forest: 'Δασική Κληρονομιά', agri: 'Γεωργία', human_span: 'Προσδόκιμο Ζωής', energy: 'Ενέργεια & Ανανεώσιμες', water: 'Ποιότητα & Ασφάλεια Νερού', mental: 'Ψυχική Υγεία', happiness: 'Ευτυχία & Ευημερία', carbon: 'Εκπομπές Άνθρακα', generations: 'Γενιές', internet: 'Πρόσβαση στο Διαδίκτυο', music: 'Μουσική Κουλτούρα', cinema: 'Ανακάλυψη Κινηματογράφου', endangered: 'Απειλούμενα Είδη', migration: 'Μετανάστευση & Διασπορά', public_private: 'Εκπαίδευση: Δημόσια vs Ιδιωτική', health_private: 'Υγεία: Δημόσια vs Ιδιωτική', economy: 'Οικονομία & Αγορά Εργασίας', trends: 'Τάσεις του Διαδικτύου', waste: 'Απορρίμματα & Ανακύκλωση', power: 'Ενεργειακό Μείγμα', air: 'Ποιότητα Αέρα', waterstress: 'Υδατική Πίεση', alerts: 'Συναγερμοί Πλανήτη', space: 'Διαστημικός Καιρός', compare: 'Χώρα εναντίον Χώρας', wildlife: 'Γκαλερί Άγριας Ζωής', quiz: 'Κουίζ Πλανήτη', iss: 'Εντοπισμός Διαστημικού Σταθμού', city: 'Ιστορίες Πόλεων', mystery: 'Μυστήρια Χώρα', hotornot: 'Ζεστό ή Κρύο', flags: 'Σημαίες Αστραπή', rightnow: 'Ο Πλανήτης Τώρα', sky: 'Ο Ουρανός Απόψε', asteroids: 'Παρατηρητήριο Αστεροειδών', onthisday: 'Σαν Σήμερα στη Γη', nearby: 'Άγρια Ζωή Κοντά σου', outside: 'Καλύτερη Ώρα Έξω' },
+            desc: { weather: '50 χρόνια ημερήσιας ιστορίας θερμοκρασίας για κάθε πόλη', ocean: 'Ζωντανή θερμοκρασία θάλασσας και θαλάσσιοι καύσωνες για κάθε παράκτια πόλη', forest: 'Δασοκάλυψη και τάσεις αποψίλωσης ανά χώρα', agri: 'Ποσοστό γης που χρησιμοποιείται για καλλιέργειες, ανά χώρα', energy: 'Μερίδιο ανανεώσιμων και υδροηλεκτρικών στην ηλεκτρική ενέργεια ανά χώρα', water: 'Πρόσβαση σε ασφαλές πόσιμο νερό ανά χώρα', carbon: 'Εκπομπές αερίων του θερμοκηπίου σε σχέση με προϋπολογισμό άνθρακα με βάση το 1990', endangered: 'Απειλούμενα θηλαστικά, πουλιά, ψάρια και φυτά ανά χώρα', waste: 'Ποσοστά ανακύκλωσης, κομποστοποίησης και ταφής από τον ΟΟΣΑ', power: 'Μερίδια ορυκτών, άνθρακα και πυρηνικών στο δίκτυο, συν κατανάλωση ρεύματος ανά άτομο', wildlife: 'Αληθινές φωτογραφίες άγριας ζωής από πολίτες-επιστήμονες, και τι ζει εκεί', quiz: 'Περισσότερο ή λιγότερο; Μάντεψε ποια χώρα κερδίζει με αληθινά δεδομένα του πλανήτη', iss: 'Πού βρίσκεται ο Διεθνής Διαστημικός Σταθμός αυτή τη στιγμή, ζωντανά στον χάρτη', city: 'Πότε ιδρύθηκε μια πόλη, ποιοι γεννήθηκαν εκεί και οι στιγμές που τη διαμόρφωσαν', mystery: 'Μία μυστική χώρα κάθε μέρα. Έξι προσπάθειες, νέα ένδειξη μετά από κάθε λάθος', hotornot: 'Δύο πόλεις, ζωντανές θερμοκρασίες: ποια είναι πιο ζεστή αυτή τη στιγμή;', flags: 'Τριάντα δευτερόλεπτα, τέσσερις επιλογές ανά σημαία. Πόσες θα αναγνωρίσεις;', rightnow: 'Οι πιο ζεστές, κρύες, ανεμώδεις και καθαρές πόλεις της Γης αυτό το λεπτό', sky: 'Ηλιοβασίλεμα, ώρα σκότους, φεγγάρι, σύννεφα και πιθανότητα σέλας για κάθε πόλη απόψε', asteroids: 'Κάθε αστεροειδής που περνά κοντά στη Γη αυτή την εβδομάδα, με μέγεθος και απόσταση', onthisday: 'Σεισμοί, αποστολές, εκλείψεις και ανακαλύψεις που έγιναν σαν σήμερα', nearby: 'Τι εντόπισαν οι άνθρωποι στη φύση σε ακτίνα 40 χλμ. από κάθε πόλη αυτόν τον μήνα', outside: 'Οι επόμενες 48 ώρες βαθμολογημένες για περπάτημα, τρέξιμο ή πικνίκ: καιρός, αέρας, UV και γύρη μαζί', air: 'Ετήσια έκθεση σε PM2.5 συν ζωντανή μέτρηση στην πρωτεύουσα', waterstress: 'Πόσο από το ανανεώσιμο γλυκό νερό αντλεί μια χώρα κάθε χρόνο', human_span: 'Προσδόκιμο ζωής, με τη διαφορά ανάμεσα σε γυναίκες και άνδρες', mental: 'Θνησιμότητα από αυτοκτονίες ανά 100.000 κατοίκους, ανά φύλο', happiness: 'Βαθμολογίες της Παγκόσμιας Έκθεσης Ευτυχίας με κατάταξη, ώρες εργασίας και ασφάλεια', generations: 'Δείκτες γονιμότητας και η δημογραφική μετάβαση', univ: 'Πανεπιστημιακή εκπαίδευση, με τον διαχωρισμό ανά φύλο', public_private: 'Εγγραφές σε δημόσια και ιδιωτικά σχολεία και δαπάνες για την εκπαίδευση', health_private: 'Ποιος πληρώνει την υγεία: κράτος, ιδιώτες και από την τσέπη', migration: 'Καθαρή μετανάστευση, μεταναστευτικός πληθυσμός και εμβάσματα', economy: 'ΑΕΠ κατά κεφαλήν, ανεργία, ανισότητα και συμμετοχή στην εργασία', internet: 'Πρόσβαση στο διαδίκτυο, με ανάλυση ανά φύλο', music: 'Οι πιο δημοφιλείς καλλιτέχνες και τραγούδια ανά χώρα', cinema: 'Οι ταινίες με την υψηλότερη βαθμολογία που γυρίστηκαν σε μια χώρα', trends: 'Για τι μιλάει το Reddit, παγκόσμια και σε μια χώρα', alerts: 'Πυρκαγιές, καταιγίδες, παγόβουνα και σεισμοί που συμβαίνουν αυτή τη στιγμή', space: 'Γεωμαγνητικές καταιγίδες, πιθανότητα σέλας και ηλιακή δραστηριότητα, ζωντανά από τη NOAA', compare: 'Βάλε δύο χώρες δίπλα-δίπλα σε οποιονδήποτε δείκτη' }
+        };
+        function t(key) { const e = UI[key]; if (!e) return key; return (LANG === 'el' && e[1]) ? e[1] : e[0]; }
+        function trv(group, mode, fallback) { return (LANG === 'el' && GR[group] && GR[group][mode]) ? GR[group][mode] : fallback; }
+        function toggleLang() { setLang(LANG === 'el' ? 'en' : 'el'); }
+        function setLang(lang) {
+            LANG = lang === 'el' ? 'el' : 'en';
+            try { localStorage.setItem('ev_lang', LANG); } catch (e) {}
+            applyLang();
+            showToast(LANG === 'el' ? '🇬🇷 Η εφαρμογή είναι τώρα στα Ελληνικά. Τα δεδομένα παραμένουν στα Αγγλικά.' : '🇬🇧 Interface switched to English.', 'success', 3500);
+        }
+        function applyLang() {
+            document.documentElement.lang = LANG;
+            document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+            document.querySelectorAll('[data-i18n-html]').forEach(el => { el.innerHTML = t(el.dataset.i18nHtml); });
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { el.placeholder = t(el.dataset.i18nPlaceholder); });
+            document.querySelectorAll('[data-i18n-title]').forEach(el => { el.title = t(el.dataset.i18nTitle); });
+            document.querySelectorAll('[data-i18n-aria]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.i18nAria)); });
+            document.querySelectorAll('#dropdown-menu button[data-vault]').forEach(b => {
+                const tn = [...b.childNodes].reverse().find(n => n.nodeType === 3 && n.textContent.trim());
+                if (!tn) return;
+                if (!b.dataset.en) b.dataset.en = tn.textContent.trim();
+                tn.textContent = ' ' + trv('menu', b.dataset.vault, b.dataset.en);
+            });
+            document.querySelectorAll('.lang-btn').forEach(b => { b.textContent = t('lang_btn'); b.title = t('lang_title'); b.setAttribute('aria-label', t('lang_title')); });
+            if (typeof currentMode !== 'undefined' && currentMode && document.getElementById('main-title') && typeof applyModeText === 'function') {
+                applyModeText(currentMode);
+                const sel = document.getElementById('selected-mode-text');
+                if (sel && typeof MODE_LABELS !== 'undefined' && MODE_LABELS[currentMode]) sel.innerText = trv('labels', currentMode, MODE_LABELS[currentMode]);
+            }
+        }
+        // Everything in setMode that is plain text lives here so a language switch can redraw it without resetting the page.
+        function applyModeText(mode) {
+            const isOcean = mode === 'ocean';
+            const set = (id, txt) => { const el = document.getElementById(id); if (el) el.innerText = txt; };
+            set('stat1-label', mode === 'weather' ? t('s_today_high') : isOcean ? t('s_sea_now') : t('s_archive'));
+            set('stat2-label', mode === 'weather' ? t('s_humidity') : isOcean ? t('s_wave') : t('s_growth'));
+            set('top-card-label', mode === 'weather' ? t('s_delta') : isOcean ? t('s_marine_delta') : t('s_insight'));
+            set('dark-card-title', isOcean ? t('s_marine_book') : t('s_peaks'));
+            set('ext1-label', isOcean ? t('s_rec_warm') : t('s_rec_max'));
+            set('ext2-label', isOcean ? t('s_rec_cool') : t('s_rec_min'));
+            set('timeline-title', t('s_timeline'));
+            set('extreme-heat-title', isOcean ? t('s_mhw') : t('s_heat'));
+            set('extreme-heat-desc', isOcean ? t('s_mhw_desc') : t('s_heat_desc'));
+            set('frost-title', isOcean ? t('s_cool_days') : t('s_frost'));
+            set('frost-desc', isOcean ? t('s_cool_desc') : t('s_frost_desc'));
+            set('avg-label', isOcean ? t('s_rec_avg') : t('s_day_avg'));
+            set('pollution-label', isOcean ? t('s_current') : t('s_pollution'));
+            document.querySelectorAll('.rec-prefix').forEach(el => el.innerText = isOcean ? t('s_on') : t('s_year'));
+            const titles = {
+                weather: "Weather History Vault", ocean: "Ocean Pulse Vault", univ: "University Access Vault", forest: "Forest Heritage Vault", agri: "Agriculture Vault", human_span: "Human Span Vault", energy: "Energy & Renewables Vault", water: "Water Quality & Safety Vault", mental: "Mental Health Vault", happiness: "Happiness & Wellbeing Vault", carbon: "Carbon Emissions Vault", generations: "Generations Vault", internet: "Internet Access Vault", music: "Music Culture Vault", cinema: "Cinema Discovery Vault", endangered: "Endangered Species Vault", migration: "Migration & Diaspora Vault", public_private: "Education: Public vs Private Vault", health_private: "Health: Public vs Private Vault", economy: "Economy & Labor Market Vault", trends: "Internet Trends Vault", waste: "Waste & Recycling Vault", power: "Power Mix Vault", air: "Air Quality Vault", waterstress: "Water Stress Vault", alerts: "Planet Alerts", space: "Space Weather Vault", compare: "Country vs Country", wildlife: "Wildlife Gallery", quiz: "Planet Quiz", iss: "Space Station Tracker", city: "City Stories", mystery: "Mystery Country", hotornot: "Hot or Not", flags: "Flag Flash", rightnow: "Planet Right Now", sky: "Sky Tonight", asteroids: "Asteroid Watch", onthisday: "On This Day on Earth", nearby: "Wildlife Near You", outside: "Best Hour Outside"
+            };
+            set('main-title', trv('titles', mode, titles[mode] || 'EarthVault'));
+            set('main-subtitle', trv('desc', mode, (MODE_INFO[mode] && MODE_INFO[mode].desc) || t('subtitle_default')));
+            const btn = document.getElementById('searchBtn');
+            if (btn && !btn.disabled) btn.innerText = mode === 'compare' ? t('compare') : t('analyze');
+            renderExampleChips(mode);
+            document.getElementById('cityInput').placeholder = ['weather', 'city', 'sky', 'nearby', 'outside'].includes(mode) ? t('ph_city') : mode === 'ocean' ? t('ph_coastal') : mode === 'compare' ? t('ph_first') : t('ph_country');
+        }
+
+        // ======================= BEST HOUR OUTSIDE: the next 48 hours scored for being outdoors =======================
+        let outsideChart = null;
+        const OUTSIDE_ACTIVITIES = [
+            { icon: '🚶', en: 'Walk', el: 'Περπάτημα', lo: 12, hi: 25, night: 20, wind: 1 },
+            { icon: '🏃', en: 'Run', el: 'Τρέξιμο', lo: 6, hi: 18, night: 15, wind: 1 },
+            { icon: '🚴', en: 'Cycling', el: 'Ποδήλατο', lo: 10, hi: 24, night: 30, wind: 2 },
+            { icon: '🧺', en: 'Picnic', el: 'Πικνίκ', lo: 18, hi: 28, night: 60, wind: 1.5 }
+        ];
+        const WX_TEXT_EL = code => code === 0 ? 'Αίθριος' : code <= 2 ? 'Λίγα σύννεφα' : code === 3 ? 'Συννεφιά' : code <= 48 ? 'Ομίχλη' : code <= 57 ? 'Ψιχάλες' : code <= 67 ? 'Βροχή' : code <= 77 ? 'Χιόνι' : code <= 82 ? 'Μπόρες' : code <= 86 ? 'Χιονόνερο' : 'Καταιγίδα';
+        const wxText = code => LANG === 'el' ? WX_TEXT_EL(code) : WX_TEXT(code);
+        function scoreOutsideHour(h, opt = { lo: 12, hi: 25, night: 25, wind: 1 }) {
+            let s = 100; const why = [];
+            if (h.feel < opt.lo || h.feel > opt.hi) {
+                const d = Math.min(45, (h.feel < opt.lo ? opt.lo - h.feel : h.feel - opt.hi) * 3); s -= d;
+                if (d >= 9) why.push(L(`feels ${Math.round(h.feel)}°C`, `αίσθηση ${Math.round(h.feel)}°C`));
+            }
+            if (h.pop > 20) { s -= Math.min(40, (h.pop - 20) * 0.5); why.push(L(`rain ${h.pop}%`, `βροχή ${h.pop}%`)); }
+            if (h.rain >= 0.5) s -= 15;
+            if (h.wind > 20) { s -= Math.min(25, (h.wind - 20) * opt.wind); why.push(L(`wind ${Math.round(h.wind)} km/h`, `άνεμος ${Math.round(h.wind)} km/h`)); }
+            if (h.uv >= 6) { s -= Math.min(20, (h.uv - 5) * 4); why.push(`UV ${h.uv.toFixed(0)}`); }
+            if (h.aqi !== null && h.aqi > 40) { s -= Math.min(30, (h.aqi - 40) * 0.6); why.push(L(`air ${h.aqi >= 80 ? 'very poor' : h.aqi >= 60 ? 'poor' : 'moderate'}`, `αέρας ${h.aqi >= 80 ? 'πολύ κακός' : h.aqi >= 60 ? 'κακός' : 'μέτριος'}`)); }
+            if (h.pollen !== null && h.pollen > 20) { s -= Math.min(20, h.pollen / 10); why.push(L(`${h.pollenType} pollen`, `γύρη (${h.pollenType})`)); }
+            if (h.code >= 95) { s -= 40; why.push(L('thunderstorm', 'καταιγίδα')); }
+            else if ((h.code >= 61 && h.code <= 67) || (h.code >= 80 && h.code <= 82)) { s -= 30; if (h.pop <= 20) why.push(L('rain', 'βροχή')); }
+            else if (h.code >= 51 && h.code <= 57) { s -= 15; if (h.pop <= 20) why.push(L('drizzle', 'ψιχάλες')); }
+            else if (h.code === 45 || h.code === 48) { s -= 10; why.push(L('fog', 'ομίχλη')); }
+            else if ((h.code >= 71 && h.code <= 77) || h.code === 85 || h.code === 86) { s -= 15; why.push(L('snow', 'χιόνι')); }
+            if (!h.day) { s -= opt.night; why.push(L('dark', 'σκοτάδι')); }
+            return { score: Math.max(0, Math.min(100, Math.round(s))), why };
+        }
+        const outsideGrade = s => s >= 80 ? { label: L('Perfect', 'Τέλεια'), color: 'emerald', hex: '#34d399' } : s >= 60 ? { label: L('Good', 'Καλά'), color: 'lime', hex: '#a3e635' } : s >= 40 ? { label: L('So-so', 'Έτσι κι έτσι'), color: 'amber', hex: '#fbbf24' } : { label: L('Stay in', 'Μείνε μέσα'), color: 'rose', hex: '#fb7185' };
+        async function searchOutside(query) {
+            const live = document.getElementById('live-section');
+            document.getElementById('app-content').classList.add('hidden');
+            live.classList.remove('hidden');
+            live.innerHTML = `<div class="text-center py-16 text-slate-500 text-xs font-bold uppercase tracking-widest animate-pulse">${L('Scoring the next 48 hours in', 'Βαθμολογώ τις επόμενες 48 ώρες σε')} ${escapeHtml(query)}…</div>`;
+            const geoData = await fetchJson(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=1&language=${LANG === 'el' ? 'el' : 'en'}&format=json`, 20000);
+            const geo = geoData.results && geoData.results[0];
+            if (!geo) { live.classList.add('hidden'); showToast(t('city_nf')); return; }
+            const [wx, aq] = await Promise.all([
+                fetchJson(`https://api.open-meteo.com/v1/forecast?latitude=${geo.latitude}&longitude=${geo.longitude}&hourly=temperature_2m,apparent_temperature,precipitation_probability,precipitation,wind_speed_10m,uv_index,weather_code,is_day,cloud_cover&current=temperature_2m,weather_code&timezone=auto&forecast_days=3`, 20000),
+                fetchJson(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${geo.latitude}&longitude=${geo.longitude}&hourly=european_aqi,pm2_5,grass_pollen,birch_pollen,olive_pollen,ragweed_pollen,alder_pollen&timezone=auto&forecast_days=3`, 20000).catch(() => null)
+            ]);
+            if (currentMode !== 'outside') return;
+            const tz = wx.timezone;
+            let nowKey; try { nowKey = new Date().toLocaleString('sv-SE', { timeZone: tz }).replace(' ', 'T').slice(0, 13); } catch (e) { nowKey = new Date().toISOString().slice(0, 13); }
+            const H = wx.hourly, A = aq && aq.hourly ? aq.hourly : null;
+            const aqIndex = {}; if (A) A.time.forEach((tm, i) => { aqIndex[tm] = i; });
+            let i0 = H.time.findIndex(tm => tm.slice(0, 13) >= nowKey); if (i0 < 0) i0 = 0;
+            const today = H.time[i0].slice(0, 10);
+            const hours = [];
+            for (let i = i0; i < Math.min(H.time.length, i0 + 48); i++) {
+                const ai = A ? aqIndex[H.time[i]] : undefined;
+                const pollens = ai !== undefined ? [['grass', A.grass_pollen[ai]], ['birch', A.birch_pollen[ai]], ['olive', A.olive_pollen[ai]], ['ragweed', A.ragweed_pollen[ai]], ['alder', A.alder_pollen[ai]]].filter(p => p[1] !== null && p[1] !== undefined).sort((a, b) => b[1] - a[1]) : [];
+                const h = { time: H.time[i], date: H.time[i].slice(0, 10), hour: parseInt(H.time[i].slice(11, 13), 10), temp: H.temperature_2m[i], feel: H.apparent_temperature[i] ?? H.temperature_2m[i], pop: H.precipitation_probability[i] ?? 0, rain: H.precipitation[i] ?? 0, wind: H.wind_speed_10m[i] ?? 0, uv: H.uv_index[i] ?? 0, code: H.weather_code[i] ?? 0, day: H.is_day[i] === 1, clouds: H.cloud_cover[i] ?? 0, aqi: ai !== undefined && A.european_aqi[ai] !== null ? A.european_aqi[ai] : null, pollen: pollens.length ? pollens[0][1] : null, pollenType: pollens.length ? pollens[0][0] : '' };
+                const r = scoreOutsideHour(h); h.score = r.score; h.why = r.why; h.awake = h.hour >= 6 && h.hour <= 22;
+                hours.push(h);
+            }
+            if (!hours.length) throw new Error('No hourly forecast returned');
+            const dayName = d => d === today ? L('Today', 'Σήμερα') : (() => { const dt = new Date(d + 'T12:00:00'); const diff = Math.round((dt - new Date(today + 'T12:00:00')) / 86400000); return diff === 1 ? L('Tomorrow', 'Αύριο') : dt.toLocaleDateString(LANG === 'el' ? 'el-GR' : 'en-GB', { weekday: 'long' }); })();
+            const hh = n => String(n).padStart(2, '0') + ':00';
+            const bestWindow = list => { let best = null; for (let i = 0; i < list.length - 1; i++) { const a = list[i], b = list[i + 1]; if (!a.awake || !b.awake || b.date !== a.date && b.hour !== a.hour + 1) continue; const avg = (a.score + b.score) / 2; if (!best || avg > best.avg) best = { avg: Math.round(avg), start: a, end: b }; } return best; };
+            const overall = bestWindow(hours), bestToday = bestWindow(hours.filter(h => h.date === today)), bestTomorrow = bestWindow(hours.filter(h => h.date !== today));
+            const now = hours[0];
+            const worst = [...hours.slice(0, 24)].filter(h => h.awake && h.score < 50).sort((a, b) => a.score - b.score)[0];
+            const niceLine = h => `${Math.round(h.temp)}°C · ${WX_EMOJI(h.code)} ${wxText(h.code)} · ${L('wind', 'άνεμος')} ${Math.round(h.wind)} km/h · UV ${h.uv.toFixed(0)}${h.aqi !== null ? ` · ${L('air', 'αέρας')} ${h.aqi <= 20 ? L('clean', 'καθαρός') : h.aqi <= 40 ? L('fair', 'καλός') : h.aqi <= 60 ? L('moderate', 'μέτριος') : L('poor', 'κακός')}` : ''}${h.pollen !== null && h.pollen > 20 ? ` · ${L('pollen', 'γύρη')} ${h.pollenType}` : ''}`;
+            const g = s => outsideGrade(s);
+            const pill = s => `<span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-black bg-${g(s).color}-500/20 text-${g(s).color}-300">${s}</span>`;
+            const windowCard = (w, label, big) => w ? `<div class="bg-${g(w.avg).color}-500/10 border border-${g(w.avg).color}-500/30 rounded-2xl p-4 ${big ? 'md:p-6' : ''}">
+                <div class="text-[9px] font-black text-${g(w.avg).color}-400 uppercase tracking-widest">${label}</div>
+                <div class="${big ? 'text-3xl md:text-5xl' : 'text-xl'} font-black text-white mt-1">${dayName(w.start.date)} ${hh(w.start.hour)}–${hh(w.end.hour + 1)}</div>
+                <div class="text-sm text-slate-300 mt-2"><span class="font-black text-${g(w.avg).color}-300">${w.avg}/100 · ${g(w.avg).label}</span> · ${niceLine(w.start)}</div>
+            </div>` : `<div class="bg-white/5 border border-white/10 rounded-2xl p-4"><div class="text-[9px] font-black text-slate-500 uppercase tracking-widest">${label}</div><div class="text-xl font-black text-slate-400 mt-1">--</div></div>`;
+            const actRows = OUTSIDE_ACTIVITIES.map(a => {
+                let best = null;
+                hours.forEach(h => { if (!h.awake) return; const r = scoreOutsideHour(h, a); if (!best || r.score > best.score) best = { score: r.score, h }; });
+                return `<div class="bg-white/5 border border-white/10 rounded-2xl p-3 text-center"><div class="text-2xl">${a.icon}</div><div class="text-[9px] font-black text-slate-500 uppercase tracking-widest mt-1">${L(a.en, a.el)}</div><div class="text-sm font-black text-white mt-1">${best ? `${dayName(best.h.date)} ${hh(best.h.hour)}` : '--'}</div><div class="mt-1">${best ? pill(best.score) : ''}</div></div>`;
+            }).join('');
+            const strip = hours.slice(0, 12).map(h => `<div class="bg-white/5 border ${h === now ? 'border-white/30' : 'border-white/10'} rounded-xl p-2 text-center" title="${escapeHtml(h.why.join(', '))}"><div class="text-[9px] text-slate-500 font-bold">${hh(h.hour)}</div><div class="text-lg leading-tight">${WX_EMOJI(h.code)}</div><div class="text-xs font-bold text-slate-200">${Math.round(h.temp)}°</div><div class="mt-1">${pill(h.score)}</div></div>`).join('');
+            live.innerHTML = `
+    <div class="vault-card rounded-[2rem] md:rounded-[2.5rem] p-5 md:p-8">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+            <div><h3 class="text-xl md:text-2xl font-black text-white">🏃 ${L('Best hour outside in', 'Καλύτερη ώρα έξω σε')} ${flagEmoji(geo.country_code)} ${escapeHtml(geo.name)}</h3><p class="text-[10px] text-slate-500 uppercase tracking-widest mt-1">${tz.replace(/_/g, ' ')} · ${L('now', 'τώρα')} ${Math.round(wx.current.temperature_2m)}°C ${wxText(wx.current.weather_code)} · ${L('next 48 hours scored 0-100', 'επόμενες 48 ώρες με βαθμό 0-100')}</p></div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-5">
+            <div class="md:col-span-2">${windowCard(overall, L('Best window', 'Καλύτερο παράθυρο'), true)}</div>
+            <div class="grid grid-cols-1 gap-3">
+                <div class="bg-white/5 border border-white/10 rounded-2xl p-4"><div class="text-[9px] font-black text-slate-500 uppercase tracking-widest">${L('Right now', 'Αυτή τη στιγμή')}</div><div class="text-xl font-black text-white mt-1">${now.score}/100 · <span class="text-${g(now.score).color}-300">${g(now.score).label}</span></div><div class="text-[11px] text-slate-400 mt-1">${now.why.length ? escapeHtml(now.why.join(' · ')) : L('Nothing holding you back', 'Τίποτα δεν σε κρατάει μέσα')}</div></div>
+                ${worst ? `<div class="bg-rose-500/10 border border-rose-500/20 rounded-2xl p-4"><div class="text-[9px] font-black text-rose-400 uppercase tracking-widest">${L('Avoid', 'Απόφυγε')}</div><div class="text-xl font-black text-white mt-1">${dayName(worst.date)} ${hh(worst.hour)}</div><div class="text-[11px] text-slate-400 mt-1">${escapeHtml(worst.why.join(' · '))}</div></div>` : `<div class="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-4"><div class="text-[9px] font-black text-emerald-400 uppercase tracking-widest">${L('Avoid', 'Απόφυγε')}</div><div class="text-xl font-black text-white mt-1">${L('Nothing today', 'Τίποτα σήμερα')}</div><div class="text-[11px] text-slate-400 mt-1">${L('Every waking hour scores 50 or better.', 'Κάθε ώρα της ημέρας σκοράρει 50 ή καλύτερα.')}</div></div>`}
+            </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-5">
+            ${windowCard(bestToday, L('Best today', 'Καλύτερα σήμερα'))}
+            ${windowCard(bestTomorrow, L('Best tomorrow', 'Καλύτερα αύριο'))}
+        </div>
+        <div class="bg-slate-900/50 border border-white/5 rounded-2xl p-3 md:p-5 mb-5 h-56 md:h-64"><canvas id="outside-chart"></canvas></div>
+        <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">${L('Best hour for', 'Καλύτερη ώρα για')}</div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">${actRows}</div>
+        <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">${L('Next 12 hours', 'Επόμενες 12 ώρες')}</div>
+        <div class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-12 gap-2">${strip}</div>
+        <div class="flex flex-wrap justify-center gap-2 mt-5">
+            <button type="button" onclick="jumpTo('sky', ${JSON.stringify(geo.name)})" class="px-4 py-2 rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 text-xs font-bold text-indigo-200">🌌 ${L('Sky tonight here', 'Ο ουρανός απόψε εδώ')}</button>
+            <button type="button" onclick="jumpTo('nearby', ${JSON.stringify(geo.name)})" class="px-4 py-2 rounded-xl bg-green-500/10 hover:bg-green-500/20 border border-green-500/30 text-xs font-bold text-green-200">🐾 ${L('Wildlife nearby', 'Άγρια ζωή κοντά')}</button>
+        </div>
+        <p class="text-center text-[10px] text-slate-500 mt-5">${L('Score blends feels-like temperature, rain chance, wind, UV, European air-quality index and pollen (pollen is forecast for Europe only). Hours between 23:00 and 05:00 are shown but never picked.', 'Ο βαθμός συνδυάζει αίσθηση θερμοκρασίας, πιθανότητα βροχής, άνεμο, UV, ευρωπαϊκό δείκτη ποιότητας αέρα και γύρη (η γύρη προβλέπεται μόνο για την Ευρώπη). Οι ώρες 23:00-05:00 εμφανίζονται αλλά δεν επιλέγονται ποτέ.')} Open-Meteo.</p>
+    </div>`;
+            try {
+                if (outsideChart) { outsideChart.destroy(); outsideChart = null; }
+                const ctx = document.getElementById('outside-chart').getContext('2d');
+                outsideChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: { labels: hours.map(h => hh(h.hour)), datasets: [{ data: hours.map(h => h.score), backgroundColor: hours.map(h => g(h.score).hex + (h.day ? 'cc' : '66')), borderRadius: 4, borderSkipped: false }] },
+                    options: { responsive: true, maintainAspectRatio: false, animation: { duration: 600 },
+                        plugins: { legend: { display: false }, tooltip: { callbacks: { title: items => { const h = hours[items[0].dataIndex]; return `${dayName(h.date)} ${hh(h.hour)}`; }, label: item => { const h = hours[item.dataIndex]; return [`${h.score}/100 · ${g(h.score).label}`, niceLine(h), ...(h.why.length ? [h.why.join(' · ')] : [])]; } } } },
+                        scales: { y: { min: 0, max: 100, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b', stepSize: 25 } }, x: { grid: { display: false }, ticks: { color: '#64748b', maxRotation: 0, autoSkip: false, callback: (v, i) => { const h = hours[i]; if (h.hour === 0) return dayName(h.date); return i % 3 === 0 ? hh(h.hour) : ''; } } } } }
+                });
+            } catch (e) { console.warn('Chart failed', e); }
             if (window.innerWidth < 768) setTimeout(() => live.scrollIntoView({ behavior: 'smooth', block: 'start' }), 150);
         }
 
