@@ -1310,7 +1310,7 @@
             power: ["Data centres used about 1.5% of global electricity in 2024, and the IEA expects that share to double by 2030.", "Coal still generates roughly a third of the world's electricity.", "Nuclear plants supply around 9% of global electricity with near-zero operating emissions.", "The average person uses about 3,400 kWh of electricity a year; Iceland tops 50,000.", "Solar became the cheapest source of new electricity in history during the 2020s."],
             air: ["WHO's guideline for annual PM2.5 is 5 µg/m³, and most of the world's population breathes air above it.", "PM2.5 particles are about 30 times thinner than a human hair and reach deep into the lungs and bloodstream.", "Air pollution is linked to around 7 million premature deaths a year, according to WHO.", "Wildfire smoke can push PM2.5 above 200 µg/m³ hundreds of kilometres from the fire.", "Clean-air laws cut US PM2.5 by roughly 40% between 2000 and 2020."],
             waterstress: ["Water stress above 25% is where the FAO says supply starts to constrain growth; above 75% is critical.", "Agriculture takes about 70% of global freshwater withdrawals.", "Aquifers like the Ogallala in the US are pumped far faster than rain refills them.", "Desalination supplies most of the drinking water in Israel and the Gulf states.", "A quarter of humanity lives in countries facing extremely high water stress, per the World Resources Institute."],
-            alerts: ["NASA's EONET feed tracks natural events worldwide, from wildfires to icebergs, using satellite observations.", "Roughly 55 earthquakes of magnitude 5 or more are recorded somewhere on Earth every week.", "The USGS locates about 20,000 earthquakes a year; most are too weak to feel.", "A magnitude 7 quake releases about 32 times more energy than a magnitude 6.", "Antarctic icebergs are named by the quadrant where they calved: A, B, C or D."],
+            alerts: ["GDACS, run by the European Commission and the UN, rates every detected disaster green, orange or red by its likely humanitarian impact.", "Roughly 55 earthquakes of magnitude 5 or more are recorded somewhere on Earth every week.", "The USGS locates about 20,000 earthquakes a year; most are too weak to feel.", "A magnitude 7 quake releases about 32 times more energy than a magnitude 6.", "Antarctic icebergs are named by the quadrant where they calved: A, B, C or D."],
             space: ["Kp 5 means a minor geomagnetic storm (G1); Kp 9 is an extreme G5 storm.", "The Carrington Event of 1859 set telegraph wires sparking and lit auroras over the Caribbean.", "Solar wind normally blows at 300-500 km/s; fast streams can top 800 km/s.", "A southward magnetic field (negative Bz) lets solar wind energy pour into Earth's magnetosphere.", "Solar Cycle 25 peaked around 2024-2025, so storms and auroras are more frequent now than a few years ago.", "Flare classes step up by 10x each: B, C, M, then X."],
             compare: ["Pick any two countries and one metric to see who leads and how the gap has moved over time.", "GDP per capita and life expectancy are strongly linked, but outliers like Costa Rica punch above their income.", "Country comparisons use the same World Bank series as the single-country vaults."],
             wildlife: ["Citizen scientists have logged over 3 billion wildlife observations on GBIF - most of them with a phone camera.", "Insects make up about 80% of all known animal species, yet birds dominate photo records because they are easier to spot.", "A single iNaturalist photo can confirm a species in a country where it had never been recorded before.", "Costa Rica holds about 5% of the world's biodiversity on just 0.03% of its land."],
@@ -4080,7 +4080,7 @@ function displayMovies(data, query) {
             music:          { desc: 'Most-listened artists and tracks by country', examples: ['Greece', 'Brazil', 'Japan'] },
             cinema:         { desc: 'Top-rated films produced in a country', examples: ['Greece', 'South Korea', 'France'] },
             trends:         { desc: 'What Reddit is talking about, globally and in a country', examples: ['Greece', 'Germany', 'Japan'] },
-            alerts:         { desc: 'Wildfires, storms, icebergs and earthquakes happening right now' },
+            alerts:         { desc: 'Wildfires, storms, floods, volcanoes, droughts and earthquakes happening right now, worldwide. Tap a category to see every event' },
             space:          { desc: 'Geomagnetic storms, aurora chances and solar activity, live from NOAA' },
             compare:        { desc: 'Put two countries side by side on any metric', examples: [['Greece', 'Portugal'], ['Japan', 'South Korea'], ['Norway', 'Poland']] }
         };
@@ -4106,7 +4106,7 @@ function displayMovies(data, query) {
         // ======================= LIVE MODES (no search): Planet Alerts & Space Weather =======================
         const LIVE_MODES = ['alerts', 'space', 'quiz', 'iss', 'mystery', 'hotornot', 'flags', 'rightnow', 'asteroids', 'onthisday'];
         const MODE_THEMES = {
-            alerts:      { color: 'rose',   attr: 'Data by NASA EONET & USGS', href: 'https://eonet.gsfc.nasa.gov/' },
+            alerts:      { color: 'rose',   attr: 'Data by GDACS, NASA EONET & USGS', href: 'https://www.gdacs.org/' },
             space:       { color: 'violet', attr: 'Data by NOAA SWPC', href: 'https://www.swpc.noaa.gov/' },
             power:       { color: 'amber',  attr: 'Data by World Bank & IEA', href: 'https://data.worldbank.org/' },
             air:         { color: 'teal',   attr: 'Data by World Bank & Open-Meteo', href: 'https://data.worldbank.org/' },
@@ -4179,47 +4179,142 @@ function displayMovies(data, query) {
         }
         const EONET_ICONS = { 'Wildfires': '🔥', 'Severe Storms': '🌀', 'Volcanoes': '🌋', 'Sea and Lake Ice': '🧊', 'Floods': '🌊', 'Earthquakes': '🌍', 'Drought': '🏜️', 'Dust and Haze': '🌫️', 'Landslides': '⛰️', 'Snow': '❄️', 'Temperature Extremes': '🌡️', 'Water Color': '🟢', 'Manmade': '🏭' };
 
+        // ---- Planet Alerts: GDACS (global disasters) + NASA EONET (storms, icebergs, US fires) + USGS (earthquakes) ----
+        const ALERTS = { data: null, cat: 'all', q: '' };
+        const ALERT_CATS = {
+            all:      { icon: '🌍', name: ['All events', 'Όλα τα γεγονότα'], tone: 'rose' },
+            fires:    { icon: '🔥', name: ['Wildfires', 'Πυρκαγιές'], tone: 'orange' },
+            storms:   { icon: '🌀', name: ['Storms & cyclones', 'Καταιγίδες & κυκλώνες'], tone: 'cyan' },
+            floods:   { icon: '🌊', name: ['Floods', 'Πλημμύρες'], tone: 'blue' },
+            quakes:   { icon: '🌐', name: ['Earthquakes', 'Σεισμοί'], tone: 'amber' },
+            volcanoes:{ icon: '🌋', name: ['Volcanoes', 'Ηφαίστεια'], tone: 'red' },
+            droughts: { icon: '🏜️', name: ['Droughts', 'Ξηρασίες'], tone: 'yellow' },
+            ice:      { icon: '🧊', name: ['Icebergs', 'Παγόβουνα'], tone: 'sky' }
+        };
+        const GDACS_CAT = { WF: 'fires', TC: 'storms', FL: 'floods', EQ: 'quakes', VO: 'volcanoes', DR: 'droughts' };
+        const EONET_CAT = { 'Wildfires': 'fires', 'Severe Storms': 'storms', 'Floods': 'floods', 'Earthquakes': 'quakes', 'Volcanoes': 'volcanoes', 'Drought': 'droughts', 'Sea and Lake Ice': 'ice' };
+        const LEVEL_RANK = { Red: 3, Orange: 2, Green: 1 };
+        const gdacsDate = daysAgo => new Date(Date.now() - daysAgo * 86400000).toISOString().slice(0, 10);
+        const gdacsUrl = (types, days, levels = 'Green;Orange;Red') => `https://www.gdacs.org/gdacsapi/api/events/geteventlist/SEARCH?eventlist=${types}&fromDate=${gdacsDate(days)}&toDate=${gdacsDate(-1)}&alertlevel=${levels}`;
+        function gdacsSeverity(p) {
+            const sd = p.severitydata || {}, s = Number(sd.severity), txt = sd.severitytext || '';
+            if (p.eventtype === 'WF') return s > 0 ? `${Math.round(s).toLocaleString()} ha burned` : 'Forest fire';
+            if (p.eventtype === 'EQ') { const d = (txt.match(/Depth:\s*([\d.]+)/) || [])[1]; return `M${s.toFixed(1)}${d ? ` · depth ${Math.round(d)} km` : ''}`; }
+            if (p.eventtype === 'DR') return s > 0 ? `${Math.round(s).toLocaleString()} km² affected` : 'Agricultural drought';
+            if (p.eventtype === 'FL') return 'River flood (GloFAS)';
+            if (p.eventtype === 'TC') { const w = (txt.match(/maximum wind speed of ([\d.]+ km\/h)/) || [])[1]; return (txt.split(' (')[0] || 'Tropical cyclone') + (w ? ` · peak winds ${w}` : ''); }
+            if (p.eventtype === 'VO') return 'Volcanic eruption';
+            return txt.replace(/^(Green|Orange|Red) /, '') || '';
+        }
         async function loadPlanetAlerts() {
-            const [eonet, quakesDay, quakesWeek] = await Promise.all([
-                cachedJson('https://eonet.gsfc.nasa.gov/api/v3/events?status=open&days=30&limit=500'),
+            const safe = p => p.catch(e => { console.warn('Alerts source failed:', e.message); return null; });
+            const [gFires, gFloods, gStormsVolc, gDrought, gQuakes, eonet, quakesDay, quakesWeek] = await Promise.all([
+                safe(cachedJson(gdacsUrl('WF', 7))),
+                safe(cachedJson(gdacsUrl('FL', 14))),
+                safe(cachedJson(gdacsUrl('TC;VO', 30))),
+                safe(cachedJson(gdacsUrl('DR', 200))),
+                safe(cachedJson(gdacsUrl('EQ', 30, 'Orange;Red'))),
+                safe(cachedJson('https://eonet.gsfc.nasa.gov/api/v3/events?status=open&days=30&limit=500')),
                 cachedJson('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_day.geojson'),
-                cachedJson('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_week.geojson').catch(() => ({ features: [] }))
+                safe(cachedJson('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_week.geojson'))
             ]);
-            const events = (eonet.events || []).map(e => {
-                const g = e.geometry[e.geometry.length - 1] || {};
-                return { title: e.title, cat: e.categories?.[0]?.title || 'Event', date: g.date ? new Date(g.date).getTime() : 0, mag: g.magnitudeValue, unit: g.magnitudeUnit, coords: g.coordinates, link: e.sources?.[0]?.url || 'https://eonet.gsfc.nasa.gov/' };
-            }).sort((a, b) => b.date - a.date);
-            const counts = {};
-            events.forEach(e => { counts[e.cat] = (counts[e.cat] || 0) + 1; });
-            const quakes = (quakesDay.features || []).map(f => ({ mag: f.properties.mag, place: f.properties.place, time: f.properties.time, url: f.properties.url, tsunami: f.properties.tsunami })).sort((a, b) => b.mag - a.mag);
-            const strongest = quakes[0];
-            const significant = (quakesWeek.features || []).slice(0, 5).map(f => ({ mag: f.properties.mag, place: f.properties.place, time: f.properties.time, url: f.properties.url, tsunami: f.properties.tsunami }));
-            const nonFire = events.filter(e => e.cat !== 'Wildfires').slice(0, 10);
-            const fires = events.filter(e => e.cat === 'Wildfires').slice(0, 6);
+            const gdacsOk = !!(gFires || gFloods || gStormsVolc || gDrought || gQuakes);
+            const events = [], seen = new Set();
+            [gFires, gFloods, gStormsVolc, gDrought, gQuakes].forEach(fc => (fc && fc.features || []).forEach(f => {
+                const p = f.properties || {}; const cat = GDACS_CAT[p.eventtype]; if (!cat) return;
+                if ((p.eventtype === 'DR' || p.eventtype === 'TC') && String(p.iscurrent) !== 'true') return; // only ongoing droughts and active cyclones
+                const key = `${p.eventtype}-${p.eventid}`; if (seen.has(key)) return; seen.add(key);
+                const ac = Array.isArray(p.affectedcountries) ? p.affectedcountries : [];
+                const country = p.country || ac.map(c => c.countryname).join(', ') || '';
+                events.push({ cat, title: String(p.name || p.description || 'Event').replace(/\s+/g, ' ').trim(), country, iso2: (ac[0] && ac[0].iso2) || '', level: p.alertlevel || 'Green', severity: gdacsSeverity(p), date: new Date(p.datemodified || p.fromdate || 0).getTime(), coords: f.geometry && f.geometry.coordinates, link: (p.url && p.url.report) || 'https://www.gdacs.org/', src: 'GDACS', name: String(p.eventname || '').toUpperCase().replace(/-\d+$/, '') });
+            }));
+            const stormNames = new Set(events.filter(e => e.cat === 'storms' && e.name).map(e => e.name));
+            ((eonet && eonet.events) || []).forEach(e => {
+                const catTitle = e.categories && e.categories[0] && e.categories[0].title; const cat = EONET_CAT[catTitle]; if (!cat) return;
+                const g = e.geometry && e.geometry[e.geometry.length - 1] || {};
+                if (cat === 'fires' && /prescribed fire/i.test(e.title)) return; // controlled burns are not emergencies
+                if (cat === 'storms') { if (gdacsOk) return; const n = (e.title.split(' ').pop() || '').toUpperCase(); if (stormNames.has(n)) return; } // GDACS already tracks every active cyclone; EONET keeps ended storms open for weeks
+                const usFire = cat === 'fires' && (e.sources || []).some(s => s.id === 'IRWIN');
+                const sev = g.magnitudeValue ? `${Number(g.magnitudeValue).toLocaleString()} ${g.magnitudeUnit || ''}`.trim() : (cat === 'ice' ? 'Tracked iceberg' : cat === 'fires' ? 'Active incident' : '');
+                events.push({ cat, title: e.title, country: usFire ? 'United States' : '', iso2: usFire ? 'US' : '', level: 'Green', severity: sev, date: g.date ? new Date(g.date).getTime() : 0, coords: g.coordinates, link: (e.sources && e.sources[0] && e.sources[0].url) || 'https://eonet.gsfc.nasa.gov/', src: 'NASA EONET', name: '' });
+            });
+            const q = f => ({ mag: f.properties.mag, place: f.properties.place || 'Unknown location', time: f.properties.time, url: f.properties.url, tsunami: f.properties.tsunami, coords: f.geometry && f.geometry.coordinates });
+            const quakes = (quakesDay.features || []).map(q).sort((a, b) => b.mag - a.mag);
+            const significant = ((quakesWeek && quakesWeek.features) || []).map(q).sort((a, b) => b.time - a.time);
+            ALERTS.data = { events, quakes, significant, gdacsOk, eonetOk: !!eonet, fetched: Date.now() };
+            renderAlerts();
+        }
+        function setAlertCat(cat) { ALERTS.cat = ALERT_CATS[cat] ? cat : 'all'; renderAlerts(); }
+        function setAlertQuery(v) { ALERTS.q = (v || '').trim().toLowerCase(); renderAlerts(true); }
+        function renderAlerts(keepFocus) {
+            const live = document.getElementById('live-section'), d = ALERTS.data; if (!live || !d) return;
+            const qf = ALERTS.q;
+            const hit = s => !qf || String(s || '').toLowerCase().includes(qf);
+            const evMatch = e => hit(e.title) || hit(e.country);
+            const qkMatch = k => hit(k.place);
+            const counts = {}; d.events.forEach(e => { counts[e.cat] = (counts[e.cat] || 0) + 1; });
+            counts.quakes = d.quakes.length;
             const fmtCoords = c => Array.isArray(c) && typeof c[0] === 'number' ? `${Math.abs(c[1]).toFixed(1)}°${c[1] >= 0 ? 'N' : 'S'} ${Math.abs(c[0]).toFixed(1)}°${c[0] >= 0 ? 'E' : 'W'}` : '';
-            const chip = (label, value, tone) => `<div class="vault-card rounded-2xl p-4 text-center"><div class="text-[9px] font-black uppercase tracking-widest text-slate-500 mb-1">${label}</div><div class="text-2xl md:text-3xl font-black text-${tone}-400 font-mono-data">${value}</div></div>`;
-            const eventRow = e => `<a href="${e.link}" target="_blank" rel="noopener" class="flex items-start gap-3 p-3 rounded-xl hover:bg-white/5 transition-all"><span class="text-xl">${EONET_ICONS[e.cat] || '📍'}</span><div class="min-w-0 flex-1"><div class="text-sm font-bold text-white truncate">${e.title}</div><div class="text-[10px] text-slate-500">${e.cat}${e.mag ? ' · ' + Number(e.mag).toLocaleString() + ' ' + (e.unit || '') : ''}${fmtCoords(e.coords) ? ' · ' + fmtCoords(e.coords) : ''}${e.date ? ' · ' + timeAgo(e.date) : ''}</div></div></a>`;
-            const quakeRow = q => `<a href="${q.url}" target="_blank" rel="noopener" class="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-all"><span class="w-14 text-center text-lg font-black font-mono-data ${q.mag >= 6 ? 'text-rose-400' : q.mag >= 5 ? 'text-orange-400' : 'text-amber-300'}">M${Number(q.mag).toFixed(1)}</span><div class="min-w-0 flex-1"><div class="text-sm font-bold text-white truncate">${q.place || 'Unknown location'}</div><div class="text-[10px] text-slate-500">${timeAgo(q.time)}${q.tsunami ? ' · 🌊 tsunami advisory' : ''}</div></div></a>`;
-            document.getElementById('live-section').innerHTML = `
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6">
-                    ${chip('Active wildfires', counts['Wildfires'] || 0, 'orange')}
-                    ${chip('Storms tracked', counts['Severe Storms'] || 0, 'cyan')}
-                    ${chip('Quakes M4.5+ (24h)', quakes.length, 'amber')}
-                    ${chip('Strongest today', strongest ? 'M' + Number(strongest.mag).toFixed(1) : '--', 'rose')}
-                </div>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+            const dot = lvl => `<span class="inline-block w-2 h-2 rounded-full ${lvl === 'Red' ? 'bg-rose-500' : lvl === 'Orange' ? 'bg-orange-400' : 'bg-emerald-400'}" title="GDACS alert level: ${lvl}"></span>`;
+            const eventRow = e => `<a href="${e.link}" target="_blank" rel="noopener" class="flex items-start gap-3 p-3 rounded-xl hover:bg-white/5 transition-all"><span class="text-xl leading-none pt-0.5">${ALERT_CATS[e.cat].icon}</span><div class="min-w-0 flex-1"><div class="text-sm font-bold text-white truncate">${e.iso2 ? flagEmoji(e.iso2) + ' ' : ''}${escapeHtml(e.title)}</div><div class="text-[10px] text-slate-500 flex flex-wrap items-center gap-x-1.5">${e.src === 'GDACS' ? dot(e.level) : ''}${e.severity ? `<span>${escapeHtml(e.severity)}</span>` : ''}${e.country && !e.title.includes(e.country) ? `<span>· ${escapeHtml(e.country)}</span>` : ''}${fmtCoords(e.coords) ? `<span>· ${fmtCoords(e.coords)}</span>` : ''}${e.date ? `<span>· ${timeAgo(e.date)}</span>` : ''}<span class="text-slate-600">· ${e.src}</span></div></div></a>`;
+            const quakeRow = k => `<a href="${k.url}" target="_blank" rel="noopener" class="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-all"><span class="w-14 text-center text-lg font-black font-mono-data ${k.mag >= 6 ? 'text-rose-400' : k.mag >= 5 ? 'text-orange-400' : 'text-amber-300'}">M${Number(k.mag).toFixed(1)}</span><div class="min-w-0 flex-1"><div class="text-sm font-bold text-white truncate">${escapeHtml(k.place)}</div><div class="text-[10px] text-slate-500">${timeAgo(k.time)}${k.tsunami ? ' · 🌊 tsunami advisory' : ''} <span class="text-slate-600">· USGS</span></div></div></a>`;
+            const byUrgency = (a, b) => (LEVEL_RANK[b.level] || 0) - (LEVEL_RANK[a.level] || 0) || b.date - a.date;
+            const tile = (cat, extra) => { const c = ALERT_CATS[cat], on = ALERTS.cat === cat; return `<button type="button" onclick="setAlertCat('${cat}')" class="vault-card rounded-2xl p-4 text-center transition-all border ${on ? `border-${c.tone}-400/70 ring-1 ring-${c.tone}-400/40` : 'border-white/5 hover:border-white/20'}"><div class="text-[9px] font-black uppercase tracking-widest text-slate-500 mb-1">${c.icon} ${L(c.name[0], c.name[1])}</div><div class="text-2xl md:text-3xl font-black text-${c.tone}-400 font-mono-data">${counts[cat] || 0}</div>${extra ? `<div class="text-[10px] text-slate-500 mt-1">${extra}</div>` : ''}</button>`; };
+            const chipBtn = cat => { const c = ALERT_CATS[cat], on = ALERTS.cat === cat; return `<button type="button" onclick="setAlertCat('${cat}')" class="px-3 py-1.5 rounded-full text-[10px] font-bold transition-all ${on ? `bg-${c.tone}-500/20 text-${c.tone}-200 ring-1 ring-${c.tone}-400/50` : 'bg-white/5 text-slate-300 hover:bg-white/10'}">${c.icon} ${L(c.name[0], c.name[1])}${cat === 'all' ? '' : ` · ${counts[cat] || 0}`}</button>`; };
+            const strongest = d.quakes[0];
+            const noMatch = `<p class="text-slate-500 text-sm p-3">${qf ? L(`No tracked events matching “${escapeHtml(ALERTS.q)}”. Good news, usually.`, `Κανένα γεγονός για “${escapeHtml(ALERTS.q)}”. Συνήθως καλά νέα.`) : L('Nothing tracked in this category right now.', 'Τίποτα σε αυτή την κατηγορία αυτή τη στιγμή.')}${qf && ALERTS.cat !== 'all' ? ` <button type="button" onclick="setAlertCat('all')" class="ml-1 px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-[10px] font-bold text-white">${L('Search all categories →', 'Αναζήτηση σε όλες τις κατηγορίες →')}</button>` : ''}</p>`;
+            let body;
+            if (ALERTS.cat === 'all') {
+                const list = d.events.filter(evMatch).sort(byUrgency);
+                const qk = d.quakes.filter(qkMatch), sig = d.significant.filter(qkMatch);
+                body = `<div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
                     <div class="vault-card rounded-[2rem] p-5 md:p-6">
-                        <div class="flex items-center justify-between mb-3"><h5 class="text-[11px] font-black text-rose-400 uppercase tracking-widest">🛰️ Earth events right now</h5><span class="text-[9px] text-slate-500 uppercase">NASA EONET</span></div>
-                        <div class="flex flex-wrap gap-2 mb-3">${Object.entries(counts).sort((a, b) => b[1] - a[1]).map(([c, n]) => `<span class="px-2.5 py-1 rounded-full bg-white/5 text-[10px] font-bold text-slate-300">${EONET_ICONS[c] || '📍'} ${c} · ${n}</span>`).join('')}</div>
-                        <div class="divide-y divide-white/5">${nonFire.map(eventRow).join('')}${fires.map(eventRow).join('') || ''}</div>
+                        <div class="flex items-center justify-between mb-3"><h5 class="text-[11px] font-black text-rose-400 uppercase tracking-widest">🛰️ ${L('Most urgent worldwide', 'Τα πιο επείγοντα παγκοσμίως')}</h5><span class="text-[9px] text-slate-500 uppercase">${list.length} ${L('events', 'γεγονότα')}</span></div>
+                        <div class="divide-y divide-white/5">${list.slice(0, 14).map(eventRow).join('') || noMatch}</div>
+                        ${list.length > 14 ? `<p class="text-[10px] text-slate-500 mt-3 px-3">${L('Tap a category above to see every event in it.', 'Πάτησε μια κατηγορία πάνω για να δεις όλα τα γεγονότα της.')}</p>` : ''}
                     </div>
                     <div class="vault-card rounded-[2rem] p-5 md:p-6">
-                        <div class="flex items-center justify-between mb-3"><h5 class="text-[11px] font-black text-amber-400 uppercase tracking-widest">🌍 Earthquakes, last 24 hours</h5><span class="text-[9px] text-slate-500 uppercase">USGS · M4.5+</span></div>
-                        <div class="divide-y divide-white/5">${quakes.slice(0, 12).map(quakeRow).join('') || '<p class="text-slate-500 text-sm p-3">No M4.5+ earthquakes in the last 24 hours.</p>'}</div>
-                        ${significant.length ? `<h6 class="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-5 mb-2">Significant this week</h6><div class="divide-y divide-white/5">${significant.map(quakeRow).join('')}</div>` : ''}
+                        <div class="flex items-center justify-between mb-3"><h5 class="text-[11px] font-black text-amber-400 uppercase tracking-widest">🌐 ${L('Earthquakes, last 24 hours', 'Σεισμοί, τελευταίες 24 ώρες')}</h5><span class="text-[9px] text-slate-500 uppercase">USGS · M4.5+</span></div>
+                        <div class="divide-y divide-white/5">${qk.slice(0, 12).map(quakeRow).join('') || noMatch}</div>
+                        ${qk.length > 12 ? `<button type="button" onclick="setAlertCat('quakes')" class="mt-3 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-[10px] font-bold text-slate-300">${L('Show all', 'Δες όλους')} ${qk.length} →</button>` : ''}
+                        ${sig.length ? `<h6 class="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-5 mb-2">${L('Significant this week', 'Σημαντικοί αυτή την εβδομάδα')}</h6><div class="divide-y divide-white/5">${sig.slice(0, 5).map(quakeRow).join('')}</div>` : ''}
                     </div>
+                </div>`;
+            } else if (ALERTS.cat === 'quakes') {
+                const qk = d.quakes.filter(qkMatch), sig = d.significant.filter(qkMatch), danger = d.events.filter(e => e.cat === 'quakes' && evMatch(e)).sort(byUrgency);
+                body = `<div class="vault-card rounded-[2rem] p-5 md:p-6">
+                    <div class="flex items-center justify-between mb-3"><h5 class="text-[11px] font-black text-amber-400 uppercase tracking-widest">🌐 ${L('All earthquakes M4.5+, last 24 hours', 'Όλοι οι σεισμοί M4.5+, τελευταίες 24 ώρες')}</h5><span class="text-[9px] text-slate-500 uppercase">${qk.length} · USGS</span></div>
+                    <div class="divide-y divide-white/5">${qk.map(quakeRow).join('') || noMatch}</div>
+                    ${sig.length ? `<h6 class="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-5 mb-2">${L('Significant this week', 'Σημαντικοί αυτή την εβδομάδα')}</h6><div class="divide-y divide-white/5">${sig.map(quakeRow).join('')}</div>` : ''}
+                    ${danger.length ? `<h6 class="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-5 mb-2">${L('Orange and red alerts, last 30 days', 'Πορτοκαλί και κόκκινοι συναγερμοί, 30 ημέρες')}</h6><div class="divide-y divide-white/5">${danger.map(eventRow).join('')}</div>` : ''}
+                </div>`;
+            } else {
+                const c = ALERT_CATS[ALERTS.cat], list = d.events.filter(e => e.cat === ALERTS.cat && evMatch(e)).sort(byUrgency);
+                const winTxt = { fires: L('last 7 days', '7 ημέρες'), floods: L('last 14 days', '14 ημέρες'), storms: L('last 30 days', '30 ημέρες'), volcanoes: L('eruptions, 30 days', 'εκρήξεις, 30 ημέρες'), droughts: L('ongoing', 'σε εξέλιξη'), ice: L('tracked', 'υπό παρακολούθηση') }[ALERTS.cat] || '';
+                const countries = {}; list.forEach(e => { if (e.country) e.country.split(',').map(s => s.trim()).forEach(n => { countries[n] = (countries[n] || 0) + 1; }); });
+                const topCountries = Object.entries(countries).sort((a, b) => b[1] - a[1]).slice(0, 8);
+                body = `<div class="vault-card rounded-[2rem] p-5 md:p-6">
+                    <div class="flex items-center justify-between mb-3"><h5 class="text-[11px] font-black text-${c.tone}-400 uppercase tracking-widest">${c.icon} ${L('All', 'Όλα')} · ${L(c.name[0], c.name[1])}</h5><span class="text-[9px] text-slate-500 uppercase">${list.length} · ${winTxt}</span></div>
+                    ${topCountries.length > 1 && list.length >= 5 ? `<div class="flex flex-wrap gap-2 mb-3">${topCountries.map(([n, k]) => `<button type="button" onclick="document.getElementById('alert-q').value='${n.replace(/'/g, '&#39;')}'; setAlertQuery('${n.replace(/'/g, '&#39;')}')" class="px-2.5 py-1 rounded-full bg-white/5 hover:bg-white/10 text-[10px] font-bold text-slate-300">${escapeHtml(n)} · ${k}</button>`).join('')}</div>` : ''}
+                    <div class="divide-y divide-white/5">${list.map(eventRow).join('') || noMatch}</div>
+                </div>`;
+            }
+            live.innerHTML = `
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-4">
+                    ${tile('fires', L('worldwide, 7 days', 'παγκοσμίως, 7 ημέρες'))}
+                    ${tile('storms', L('active cyclones', 'ενεργοί κυκλώνες'))}
+                    ${tile('floods', L('river floods, 14 days', 'πλημμύρες, 14 ημέρες'))}
+                    ${tile('quakes', strongest ? `${L('strongest today', 'ισχυρότερος σήμερα')} M${Number(strongest.mag).toFixed(1)}` : L('M4.5+, 24 hours', 'M4.5+, 24 ώρες'))}
                 </div>
+                <div class="flex flex-col md:flex-row md:items-center gap-3 mb-5">
+                    <div class="flex flex-wrap gap-2 flex-1">${['all', 'volcanoes', 'droughts', 'ice'].map(chipBtn).join('')}</div>
+                    <input id="alert-q" type="search" value="${escapeHtml(ALERTS.q)}" oninput="setAlertQuery(this.value)" placeholder="${L('Filter by country or place… e.g. Greece', 'Φίλτρο χώρας ή τόπου… π.χ. Greece')}" autocomplete="off" class="w-full md:w-72 bg-slate-950/80 border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:ring-2 focus:ring-rose-500">
+                </div>
+                ${body}
+                ${!d.gdacsOk ? `<p class="text-center text-[10px] text-amber-400 mt-4">${L('GDACS did not answer, so only NASA and USGS events are shown.', 'Το GDACS δεν απάντησε, εμφανίζονται μόνο γεγονότα NASA και USGS.')}</p>` : ''}
+                <p class="text-center text-[10px] text-slate-500 mt-4">${L('Fires, floods, cyclones, volcanoes and droughts from GDACS (EU and UN), who report satellite-detected events worldwide with an impact level. Small local incidents below their threshold are not listed. Icebergs and US fire incidents from NASA EONET, earthquakes from USGS.', 'Πυρκαγιές, πλημμύρες, κυκλώνες, ηφαίστεια και ξηρασίες από το GDACS (ΕΕ και ΟΗΕ), που καταγράφει δορυφορικά γεγονότα παγκοσμίως με επίπεδο επίπτωσης. Μικρά τοπικά περιστατικά κάτω από το όριό τους δεν εμφανίζονται. Παγόβουνα και πυρκαγιές ΗΠΑ από τη NASA EONET, σεισμοί από το USGS.')}</p>
                 ${liveFooter('alerts')}`;
+            if (keepFocus) { const inp = document.getElementById('alert-q'); if (inp) { inp.focus(); const v = inp.value; inp.setSelectionRange(v.length, v.length); } }
         }
 
         const G_TEXT = { 0: 'Quiet', 1: 'Minor storm', 2: 'Moderate storm', 3: 'Strong storm', 4: 'Severe storm', 5: 'Extreme storm' };
@@ -6139,7 +6234,7 @@ function displayMovies(data, query) {
             menu: { quiz: 'Κουίζ Πλανήτη', mystery: 'Μυστήρια Χώρα (ημερήσιο)', hotornot: 'Ζεστό ή Κρύο (ζωντανή μονομαχία)', flags: 'Σημαίες Αστραπή', rightnow: 'Ο Πλανήτης Τώρα', alerts: 'Συναγερμοί Πλανήτη', space: 'Διαστημικός Καιρός', iss: 'Διαστημικός Σταθμός', sky: 'Ο Ουρανός Απόψε', asteroids: 'Παρατηρητήριο Αστεροειδών', onthisday: 'Σαν Σήμερα στη Γη', nearby: 'Άγρια Ζωή Κοντά σου', outside: 'Καλύτερη Ώρα Έξω', weather: 'Αρχείο Καιρού', ocean: 'Παλμός Ωκεανού', forest: 'Δασική Κληρονομιά', agri: 'Γεωργία', energy: 'Ενέργεια & ΑΠΕ', water: 'Ασφάλεια Νερού', carbon: 'Εκπομπές Άνθρακα', endangered: 'Απειλούμενα Είδη', waste: 'Απορρίμματα & Ανακύκλωση', power: 'Ενεργειακό Μείγμα', air: 'Ποιότητα Αέρα', waterstress: 'Υδατική Πίεση', wildlife: 'Γκαλερί Άγριας Ζωής', human_span: 'Προσδόκιμο Ζωής', mental: 'Ψυχική Υγεία', happiness: 'Ευτυχία & Ευημερία', generations: 'Γενιές', univ: 'Πρόσβαση στο Πανεπιστήμιο', public_private: 'Εκπαίδευση: Δημόσια vs Ιδιωτική', health_private: 'Υγεία: Δημόσια vs Ιδιωτική', migration: 'Μετανάστευση & Διασπορά', economy: 'Οικονομία & Αγορά Εργασίας', internet: 'Πρόσβαση στο Διαδίκτυο', music: 'Μουσική Κουλτούρα', cinema: 'Κινηματογράφος', trends: 'Τάσεις Διαδικτύου', city: 'Ιστορίες Πόλεων', compare: 'Χώρα vs Χώρα' },
             labels: { quiz: 'ΚΟΥΙΖ ΠΛΑΝΗΤΗ', mystery: 'ΜΥΣΤΗΡΙΑ ΧΩΡΑ', hotornot: 'ΖΕΣΤΟ Ή ΚΡΥΟ', flags: 'ΣΗΜΑΙΕΣ ΑΣΤΡΑΠΗ', rightnow: 'Ο ΠΛΑΝΗΤΗΣ ΤΩΡΑ', alerts: 'ΣΥΝΑΓΕΡΜΟΙ ΠΛΑΝΗΤΗ', space: 'ΔΙΑΣΤΗΜΙΚΟΣ ΚΑΙΡΟΣ', iss: 'ΔΙΑΣΤΗΜΙΚΟΣ ΣΤΑΘΜΟΣ', sky: 'Ο ΟΥΡΑΝΟΣ ΑΠΟΨΕ', asteroids: 'ΑΣΤΕΡΟΕΙΔΕΙΣ', onthisday: 'ΣΑΝ ΣΗΜΕΡΑ', nearby: 'ΑΓΡΙΑ ΖΩΗ ΚΟΝΤΑ ΣΟΥ', outside: 'ΚΑΛΥΤΕΡΗ ΩΡΑ ΕΞΩ', weather: 'ΑΡΧΕΙΟ ΚΑΙΡΟΥ', ocean: 'ΠΑΛΜΟΣ ΩΚΕΑΝΟΥ', forest: 'ΔΑΣΙΚΗ ΚΛΗΡΟΝΟΜΙΑ', agri: 'ΓΕΩΡΓΙΑ', energy: 'ΕΝΕΡΓΕΙΑ & ΑΠΕ', water: 'ΑΣΦΑΛΕΙΑ ΝΕΡΟΥ', carbon: 'ΕΚΠΟΜΠΕΣ ΑΝΘΡΑΚΑ', endangered: 'ΑΠΕΙΛΟΥΜΕΝΑ ΕΙΔΗ', waste: 'ΑΠΟΡΡΙΜΜΑΤΑ & ΑΝΑΚΥΚΛΩΣΗ', power: 'ΕΝΕΡΓΕΙΑΚΟ ΜΕΙΓΜΑ', air: 'ΠΟΙΟΤΗΤΑ ΑΕΡΑ', waterstress: 'ΥΔΑΤΙΚΗ ΠΙΕΣΗ', wildlife: 'ΓΚΑΛΕΡΙ ΑΓΡΙΑΣ ΖΩΗΣ', human_span: 'ΠΡΟΣΔΟΚΙΜΟ ΖΩΗΣ', mental: 'ΨΥΧΙΚΗ ΥΓΕΙΑ', happiness: 'ΕΥΤΥΧΙΑ & ΕΥΗΜΕΡΙΑ', generations: 'ΓΕΝΙΕΣ', univ: 'ΠΑΝΕΠΙΣΤΗΜΙΟ', public_private: 'ΕΚΠΑΙΔΕΥΣΗ: ΔΗΜΟΣΙΑ vs ΙΔΙΩΤΙΚΗ', health_private: 'ΥΓΕΙΑ: ΔΗΜΟΣΙΑ vs ΙΔΙΩΤΙΚΗ', migration: 'ΜΕΤΑΝΑΣΤΕΥΣΗ & ΔΙΑΣΠΟΡΑ', economy: 'ΟΙΚΟΝΟΜΙΑ & ΕΡΓΑΣΙΑ', internet: 'ΠΡΟΣΒΑΣΗ ΣΤΟ ΔΙΑΔΙΚΤΥΟ', music: 'ΜΟΥΣΙΚΗ ΚΟΥΛΤΟΥΡΑ', cinema: 'ΚΙΝΗΜΑΤΟΓΡΑΦΟΣ', trends: 'ΤΑΣΕΙΣ ΔΙΑΔΙΚΤΥΟΥ', city: 'ΙΣΤΟΡΙΕΣ ΠΟΛΕΩΝ', compare: 'ΧΩΡΑ VS ΧΩΡΑ' },
             titles: { weather: 'Ιστορία του Καιρού', ocean: 'Παλμός του Ωκεανού', univ: 'Πρόσβαση στο Πανεπιστήμιο', forest: 'Δασική Κληρονομιά', agri: 'Γεωργία', human_span: 'Προσδόκιμο Ζωής', energy: 'Ενέργεια & Ανανεώσιμες', water: 'Ποιότητα & Ασφάλεια Νερού', mental: 'Ψυχική Υγεία', happiness: 'Ευτυχία & Ευημερία', carbon: 'Εκπομπές Άνθρακα', generations: 'Γενιές', internet: 'Πρόσβαση στο Διαδίκτυο', music: 'Μουσική Κουλτούρα', cinema: 'Ανακάλυψη Κινηματογράφου', endangered: 'Απειλούμενα Είδη', migration: 'Μετανάστευση & Διασπορά', public_private: 'Εκπαίδευση: Δημόσια vs Ιδιωτική', health_private: 'Υγεία: Δημόσια vs Ιδιωτική', economy: 'Οικονομία & Αγορά Εργασίας', trends: 'Τάσεις του Διαδικτύου', waste: 'Απορρίμματα & Ανακύκλωση', power: 'Ενεργειακό Μείγμα', air: 'Ποιότητα Αέρα', waterstress: 'Υδατική Πίεση', alerts: 'Συναγερμοί Πλανήτη', space: 'Διαστημικός Καιρός', compare: 'Χώρα εναντίον Χώρας', wildlife: 'Γκαλερί Άγριας Ζωής', quiz: 'Κουίζ Πλανήτη', iss: 'Εντοπισμός Διαστημικού Σταθμού', city: 'Ιστορίες Πόλεων', mystery: 'Μυστήρια Χώρα', hotornot: 'Ζεστό ή Κρύο', flags: 'Σημαίες Αστραπή', rightnow: 'Ο Πλανήτης Τώρα', sky: 'Ο Ουρανός Απόψε', asteroids: 'Παρατηρητήριο Αστεροειδών', onthisday: 'Σαν Σήμερα στη Γη', nearby: 'Άγρια Ζωή Κοντά σου', outside: 'Καλύτερη Ώρα Έξω' },
-            desc: { weather: '50 χρόνια ημερήσιας ιστορίας θερμοκρασίας για κάθε πόλη', ocean: 'Ζωντανή θερμοκρασία θάλασσας και θαλάσσιοι καύσωνες για κάθε παράκτια πόλη', forest: 'Δασοκάλυψη και τάσεις αποψίλωσης ανά χώρα', agri: 'Ποσοστό γης που χρησιμοποιείται για καλλιέργειες, ανά χώρα', energy: 'Μερίδιο ανανεώσιμων και υδροηλεκτρικών στην ηλεκτρική ενέργεια ανά χώρα', water: 'Πρόσβαση σε ασφαλές πόσιμο νερό ανά χώρα', carbon: 'Εκπομπές αερίων του θερμοκηπίου σε σχέση με προϋπολογισμό άνθρακα με βάση το 1990', endangered: 'Απειλούμενα θηλαστικά, πουλιά, ψάρια και φυτά ανά χώρα', waste: 'Ποσοστά ανακύκλωσης, κομποστοποίησης και ταφής από τον ΟΟΣΑ', power: 'Μερίδια ορυκτών, άνθρακα και πυρηνικών στο δίκτυο, συν κατανάλωση ρεύματος ανά άτομο', wildlife: 'Αληθινές φωτογραφίες άγριας ζωής από πολίτες-επιστήμονες, και τι ζει εκεί', quiz: 'Περισσότερο ή λιγότερο; Μάντεψε ποια χώρα κερδίζει με αληθινά δεδομένα του πλανήτη και προκάλεσε έναν φίλο με σύνδεσμο', iss: 'Πού βρίσκεται ο Διεθνής Διαστημικός Σταθμός αυτή τη στιγμή, ζωντανά στον χάρτη', city: 'Πότε ιδρύθηκε μια πόλη, ποιοι γεννήθηκαν εκεί και οι στιγμές που τη διαμόρφωσαν', mystery: 'Μία μυστική χώρα κάθε μέρα. Έξι προσπάθειες, νέα ένδειξη μετά από κάθε λάθος', hotornot: 'Δύο πόλεις, ζωντανές θερμοκρασίες: ποια είναι πιο ζεστή αυτή τη στιγμή;', flags: 'Τριάντα δευτερόλεπτα, τέσσερις επιλογές ανά σημαία. Πόσες θα αναγνωρίσεις;', rightnow: 'Οι πιο ζεστές, κρύες, ανεμώδεις και καθαρές πόλεις της Γης αυτό το λεπτό', sky: 'Ηλιοβασίλεμα, ώρα σκότους, φεγγάρι, σύννεφα και πιθανότητα σέλας για κάθε πόλη απόψε', asteroids: 'Κάθε αστεροειδής που περνά κοντά στη Γη αυτή την εβδομάδα, με μέγεθος και απόσταση', onthisday: 'Σεισμοί, αποστολές, εκλείψεις και ανακαλύψεις που έγιναν σαν σήμερα', nearby: 'Τι εντόπισαν οι άνθρωποι στη φύση σε ακτίνα 40 χλμ. από κάθε πόλη αυτόν τον μήνα', outside: 'Οι επόμενες 48 ώρες βαθμολογημένες για περπάτημα, τρέξιμο ή πικνίκ: καιρός, αέρας, UV και γύρη μαζί', air: 'Ετήσια έκθεση σε PM2.5 συν ζωντανή μέτρηση στην πρωτεύουσα', waterstress: 'Πόσο από το ανανεώσιμο γλυκό νερό αντλεί μια χώρα κάθε χρόνο', human_span: 'Προσδόκιμο ζωής, με τη διαφορά ανάμεσα σε γυναίκες και άνδρες', mental: 'Θνησιμότητα από αυτοκτονίες ανά 100.000 κατοίκους, ανά φύλο', happiness: 'Βαθμολογίες της Παγκόσμιας Έκθεσης Ευτυχίας με κατάταξη, ώρες εργασίας και ασφάλεια', generations: 'Δείκτες γονιμότητας και η δημογραφική μετάβαση', univ: 'Πανεπιστημιακή εκπαίδευση, με τον διαχωρισμό ανά φύλο', public_private: 'Εγγραφές σε δημόσια και ιδιωτικά σχολεία και δαπάνες για την εκπαίδευση', health_private: 'Ποιος πληρώνει την υγεία: κράτος, ιδιώτες και από την τσέπη', migration: 'Καθαρή μετανάστευση, μεταναστευτικός πληθυσμός και εμβάσματα', economy: 'ΑΕΠ κατά κεφαλήν, ανεργία, ανισότητα και συμμετοχή στην εργασία', internet: 'Πρόσβαση στο διαδίκτυο, με ανάλυση ανά φύλο', music: 'Οι πιο δημοφιλείς καλλιτέχνες και τραγούδια ανά χώρα', cinema: 'Οι ταινίες με την υψηλότερη βαθμολογία που γυρίστηκαν σε μια χώρα', trends: 'Για τι μιλάει το Reddit, παγκόσμια και σε μια χώρα', alerts: 'Πυρκαγιές, καταιγίδες, παγόβουνα και σεισμοί που συμβαίνουν αυτή τη στιγμή', space: 'Γεωμαγνητικές καταιγίδες, πιθανότητα σέλας και ηλιακή δραστηριότητα, ζωντανά από τη NOAA', compare: 'Βάλε δύο χώρες δίπλα-δίπλα σε οποιονδήποτε δείκτη' }
+            desc: { weather: '50 χρόνια ημερήσιας ιστορίας θερμοκρασίας για κάθε πόλη', ocean: 'Ζωντανή θερμοκρασία θάλασσας και θαλάσσιοι καύσωνες για κάθε παράκτια πόλη', forest: 'Δασοκάλυψη και τάσεις αποψίλωσης ανά χώρα', agri: 'Ποσοστό γης που χρησιμοποιείται για καλλιέργειες, ανά χώρα', energy: 'Μερίδιο ανανεώσιμων και υδροηλεκτρικών στην ηλεκτρική ενέργεια ανά χώρα', water: 'Πρόσβαση σε ασφαλές πόσιμο νερό ανά χώρα', carbon: 'Εκπομπές αερίων του θερμοκηπίου σε σχέση με προϋπολογισμό άνθρακα με βάση το 1990', endangered: 'Απειλούμενα θηλαστικά, πουλιά, ψάρια και φυτά ανά χώρα', waste: 'Ποσοστά ανακύκλωσης, κομποστοποίησης και ταφής από τον ΟΟΣΑ', power: 'Μερίδια ορυκτών, άνθρακα και πυρηνικών στο δίκτυο, συν κατανάλωση ρεύματος ανά άτομο', wildlife: 'Αληθινές φωτογραφίες άγριας ζωής από πολίτες-επιστήμονες, και τι ζει εκεί', quiz: 'Περισσότερο ή λιγότερο; Μάντεψε ποια χώρα κερδίζει με αληθινά δεδομένα του πλανήτη και προκάλεσε έναν φίλο με σύνδεσμο', iss: 'Πού βρίσκεται ο Διεθνής Διαστημικός Σταθμός αυτή τη στιγμή, ζωντανά στον χάρτη', city: 'Πότε ιδρύθηκε μια πόλη, ποιοι γεννήθηκαν εκεί και οι στιγμές που τη διαμόρφωσαν', mystery: 'Μία μυστική χώρα κάθε μέρα. Έξι προσπάθειες, νέα ένδειξη μετά από κάθε λάθος', hotornot: 'Δύο πόλεις, ζωντανές θερμοκρασίες: ποια είναι πιο ζεστή αυτή τη στιγμή;', flags: 'Τριάντα δευτερόλεπτα, τέσσερις επιλογές ανά σημαία. Πόσες θα αναγνωρίσεις;', rightnow: 'Οι πιο ζεστές, κρύες, ανεμώδεις και καθαρές πόλεις της Γης αυτό το λεπτό', sky: 'Ηλιοβασίλεμα, ώρα σκότους, φεγγάρι, σύννεφα και πιθανότητα σέλας για κάθε πόλη απόψε', asteroids: 'Κάθε αστεροειδής που περνά κοντά στη Γη αυτή την εβδομάδα, με μέγεθος και απόσταση', onthisday: 'Σεισμοί, αποστολές, εκλείψεις και ανακαλύψεις που έγιναν σαν σήμερα', nearby: 'Τι εντόπισαν οι άνθρωποι στη φύση σε ακτίνα 40 χλμ. από κάθε πόλη αυτόν τον μήνα', outside: 'Οι επόμενες 48 ώρες βαθμολογημένες για περπάτημα, τρέξιμο ή πικνίκ: καιρός, αέρας, UV και γύρη μαζί', air: 'Ετήσια έκθεση σε PM2.5 συν ζωντανή μέτρηση στην πρωτεύουσα', waterstress: 'Πόσο από το ανανεώσιμο γλυκό νερό αντλεί μια χώρα κάθε χρόνο', human_span: 'Προσδόκιμο ζωής, με τη διαφορά ανάμεσα σε γυναίκες και άνδρες', mental: 'Θνησιμότητα από αυτοκτονίες ανά 100.000 κατοίκους, ανά φύλο', happiness: 'Βαθμολογίες της Παγκόσμιας Έκθεσης Ευτυχίας με κατάταξη, ώρες εργασίας και ασφάλεια', generations: 'Δείκτες γονιμότητας και η δημογραφική μετάβαση', univ: 'Πανεπιστημιακή εκπαίδευση, με τον διαχωρισμό ανά φύλο', public_private: 'Εγγραφές σε δημόσια και ιδιωτικά σχολεία και δαπάνες για την εκπαίδευση', health_private: 'Ποιος πληρώνει την υγεία: κράτος, ιδιώτες και από την τσέπη', migration: 'Καθαρή μετανάστευση, μεταναστευτικός πληθυσμός και εμβάσματα', economy: 'ΑΕΠ κατά κεφαλήν, ανεργία, ανισότητα και συμμετοχή στην εργασία', internet: 'Πρόσβαση στο διαδίκτυο, με ανάλυση ανά φύλο', music: 'Οι πιο δημοφιλείς καλλιτέχνες και τραγούδια ανά χώρα', cinema: 'Οι ταινίες με την υψηλότερη βαθμολογία που γυρίστηκαν σε μια χώρα', trends: 'Για τι μιλάει το Reddit, παγκόσμια και σε μια χώρα', alerts: 'Πυρκαγιές, καταιγίδες, πλημμύρες, ηφαίστεια, ξηρασίες και σεισμοί που συμβαίνουν τώρα, παγκοσμίως. Πάτησε μια κατηγορία για όλα τα γεγονότα', space: 'Γεωμαγνητικές καταιγίδες, πιθανότητα σέλας και ηλιακή δραστηριότητα, ζωντανά από τη NOAA', compare: 'Βάλε δύο χώρες δίπλα-δίπλα σε οποιονδήποτε δείκτη' }
         };
         function t(key) { const e = UI[key]; if (!e) return key; return (LANG === 'el' && e[1]) ? e[1] : e[0]; }
         function trv(group, mode, fallback) { return (LANG === 'el' && GR[group] && GR[group][mode]) ? GR[group][mode] : fallback; }

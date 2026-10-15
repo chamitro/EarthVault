@@ -46,7 +46,7 @@ EarthVault provides comprehensive insights across environmental, social, economi
 
 #### 🛰️ **Live Earth (9 sections)**
 - 🌍 **Planet Right Now** - Live leaderboards across 56 cities: hottest, coldest, windiest, cleanest and most polluted air, strongest UV, plus how many are clear, raining, snowing or in night. Refreshes every 10 minutes
-- 🛰️ **Planet Alerts** - Wildfires, storms, icebergs and volcanoes from NASA EONET plus the last 24 hours of M4.5+ earthquakes from USGS, no search needed
+- 🛰️ **Planet Alerts** - Worldwide wildfires, floods, cyclones, volcanic eruptions and droughts from GDACS (the EU and UN disaster alert system, with green/orange/red impact levels), icebergs and US fire incidents from NASA EONET, and the last 24 hours of M4.5+ earthquakes from USGS. Tap a category tile to list every event in it, or filter by country or place ("Greece", "Australia"). No search needed
 - ☀️ **Space Weather** - NOAA geomagnetic, radio and radiation scales, Kp history and forecast, aurora outlook, solar wind and the latest bulletins
 - 🚀 **Space Station Tracker** - The ISS on a world map, refreshed every 5 seconds, with speed, altitude, daylight and the country or ocean it is flying over
 - 🌌 **Sky Tonight** - For any city: sunset and golden hour, when the sky is fully dark, moon phase and illumination, cloud cover now, aurora chance from NOAA's live forecast, sunrise and UV tomorrow, and a plain verdict on stargazing conditions
@@ -196,10 +196,11 @@ Cinema data and analytics:
 
 **API Documentation:** [themoviedb.org/documentation/api](https://www.themoviedb.org/documentation/api)
 
-#### **NASA EONET & USGS**
+#### **GDACS, NASA EONET & USGS**
 
 Power Planet Alerts (live, no search):
-- EONET v3 open events of the last 30 days: wildfires, severe storms, sea and lake ice, volcanoes and more, with magnitudes and coordinates
+- GDACS event list API (`gdacsapi/api/events/geteventlist/SEARCH`), one call per event type with a short window: wildfires 7 days, floods 14 days, cyclones and eruptions 30 days, ongoing droughts, orange/red earthquakes 30 days. Each event carries its alert level, affected countries, severity (hectares burned, peak wind, magnitude and depth) and a report link
+- EONET v3 open events of the last 30 days, used for sea and lake ice and for US wildfire incidents (controlled "prescribed" burns are left out; EONET's wildfire feed only covers the United States and its storm list lags, so GDACS is the source for both worldwide)
 - USGS GeoJSON feeds: all M4.5+ earthquakes in the past day and significant earthquakes of the past week
 
 **API Documentation:** [eonet.gsfc.nasa.gov](https://eonet.gsfc.nasa.gov/docs/v3) · [earthquake.usgs.gov](https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php)
@@ -375,7 +376,7 @@ The following API keys are included in the code:
 - ✅ **TMDB** - Key included (free tier)
 - ✅ **OECD** - No key required (public API)
 - ✅ **reddit** - No key required (public API)
-- ✅ **Our World in Data, NASA EONET, USGS, NOAA SWPC, NASA EPIC, GBIF, iNaturalist, Where the ISS at?, BigDataCloud, Wikipedia, Wikidata, sunrise-sunset.org** - No key required (public APIs with open CORS)
+- ✅ **Our World in Data, GDACS, NASA EONET, USGS, NOAA SWPC, NASA EPIC, GBIF, iNaturalist, Where the ISS at?, BigDataCloud, Wikipedia, Wikidata, sunrise-sunset.org** - No key required (public APIs with open CORS)
 - ⚠️ **NASA NeoWs** - Uses the public DEMO_KEY (rate limited per visitor); swap in a free key for production
 
 
