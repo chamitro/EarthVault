@@ -11,7 +11,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>EarthVault - Explore the Planet in Data</title>
-    <meta name="description" content="EarthVault turns open data into 41 interactive vaults: climate, oceans, forests, energy, air, water, happiness, health, culture, games and live planetary data.">
+    <meta name="description" content="EarthVault turns open data into 44 interactive vaults: climate, oceans, forests, energy, air, water, happiness, health, culture, games and live planetary data.">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0f172a">
     <meta name="mobile-web-app-capable" content="yes">
@@ -850,6 +850,9 @@
                             <button data-vault="outside" role="menuitem" onclick="selectMode('outside')" class="flex items-center gap-3 px-4 py-2.5 text-[10px] font-bold text-slate-300 hover:text-lime-400 hover:bg-white/5 rounded-xl transition-all">
                                 <span>🏃</span> Best Hour Outside
                             </button>
+                            <button data-vault="perfect" role="menuitem" onclick="selectMode('perfect')" class="flex items-center gap-3 px-4 py-2.5 text-[10px] font-bold text-slate-300 hover:text-teal-400 hover:bg-white/5 rounded-xl transition-all">
+                                <span>🌴</span> Perfect Weather Finder
+                            </button>
                         </div>
                     </div>
                     <!-- Environmental Data Category -->
@@ -969,6 +972,12 @@
                             <button data-vault="compare" role="menuitem" onclick="selectMode('compare')" class="flex items-center gap-3 px-4 py-2.5 text-[10px] font-bold text-slate-300 hover:text-indigo-400 hover:bg-white/5 rounded-xl transition-all">
                                 <span>⚖️</span> Country vs Country
                             </button>
+                            <button data-vault="twins" role="menuitem" onclick="selectMode('twins')" class="flex items-center gap-3 px-4 py-2.5 text-[10px] font-bold text-slate-300 hover:text-indigo-400 hover:bg-white/5 rounded-xl transition-all">
+                                <span>👯</span> Country Twins
+                            </button>
+                            <button data-vault="born" role="menuitem" onclick="selectMode('born')" class="flex items-center gap-3 px-4 py-2.5 text-[10px] font-bold text-slate-300 hover:text-violet-400 hover:bg-white/5 rounded-xl transition-all">
+                                <span>🎂</span> The Planet Since You Were Born
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -1043,7 +1052,10 @@
             asteroids: 'ASTEROID WATCH',
             onthisday: 'ON THIS DAY',
             nearby: 'WILDLIFE NEAR YOU',
-            outside: 'BEST HOUR OUTSIDE'
+            outside: 'BEST HOUR OUTSIDE',
+            twins: 'COUNTRY TWINS',
+            born: 'SINCE YOU WERE BORN',
+            perfect: 'PERFECT WEATHER FINDER'
         };
     function selectMode(mode) {
         document.getElementById('selected-mode-text').innerText = trv('labels', mode, MODE_LABELS[mode]);
@@ -1323,6 +1335,9 @@
             asteroids: ["About 100 tonnes of space dust and rock hit Earth every day.", "The Chelyabinsk meteor of 2013 was only about 20 m wide - and still injured 1,500 people.", "NASA's DART mission nudged an asteroid's orbit in 2022 - the first planetary defence test.", "A lunar distance (LD) is 384,400 km; anything closer than 1 LD is a very near miss."],
             onthisday: ["The 1883 Krakatoa eruption was heard 4,800 km away.", "The first photo of Earth from space was taken in 1946 by a captured V-2 rocket.", "In 1815 Mount Tambora caused the 'year without a summer'.", "The deepest ocean dive, 10,935 m, happened in 2019."],
             outside: ["The 'feels like' temperature adds wind chill and humidity to the real reading - it can differ by 10°C.", "UV is strongest within two hours of solar noon, not at the hottest time of day.", "Pollen counts peak in the morning and again at dusk, when the air settles.", "Ozone, the main summer pollutant, builds up through the afternoon and falls after sunset."],
+            twins: ["Portugal and Greece share almost the same fertility rate, forest cover and share of people over 65.", "Two countries can match on twenty measures and still differ tenfold on income: geography and history pull apart.", "The Gini index runs from 0 (everyone equal) to 100 (one person has everything); most countries sit between 25 and 50.", "Fertility below 2.1 children per woman means a population shrinks without migration; more than half of all countries are now below it."],
+            born: ["CO2 at Mauna Loa was 316 ppm in 1959, the first year of records, and passed 420 ppm in 2022.", "Earth moves around the Sun at about 29.8 km per second, so you travel roughly 940 million km every year without noticing.", "World population took until 1804 to reach one billion and only 12 years for the last billion.", "Global average life expectancy has risen by about 20 years since 1960."],
+            perfect: ["Lisbon and Cape Town sit at similar latitudes north and south, so one often has your ideal weather when the other does not.", "The 'feels like' temperature can differ from the thermometer by 10°C or more thanks to wind, humidity and sun.", "Quito and Nairobi, both near the equator and high up, stay close to 20°C all year round.", "Weather codes 0 to 2 mean clear to partly cloudy; that is the 'sunny' filter."],
             nearby: ["iNaturalist users have logged over 200 million observations.", "A single hectare of rainforest can hold more ant species than all of Britain.", "Urban foxes, parakeets and peregrine falcons now thrive in many big cities.", "Citizen scientists discover new species every year - sometimes in their own gardens."],
             city: ["Damascus and Jericho both claim to be the oldest continuously inhabited cities on Earth, with roots over 10,000 years old.", "Tokyo's metropolitan area holds about 37 million people - more than all of Canada.", "Istanbul is the only major city that sits on two continents.", "Rome has been called the Eternal City for over 2,000 years - the nickname dates to the poet Tibullus.", "La Paz in Bolivia is the highest capital city in the world at about 3,650 metres."],
             iss: ["The ISS travels at about 28,000 km/h and laps the planet every 92 minutes.", "Astronauts on the ISS see 16 sunrises and 16 sunsets every day.", "The ISS is the most expensive single object ever built, at well over $100 billion.", "You can spot the ISS with the naked eye - it looks like a bright star moving steadily across the sky.", "More than 270 people from over 20 countries have visited the ISS since 2000."],
@@ -1335,7 +1350,7 @@
             
             const list = facts[currentMode] || facts.weather;
             document.getElementById('fact-text').innerText = list[Math.floor(Math.random() * list.length)];
-            const icons = { weather: '🌪️', ocean: '🌊', forest: '🌳', agri: '🌾', energy: '⚡', water: '💧', univ: '🎓', mental: '🧠', happiness: '😊', carbon: '🏭' , generations: '🤱', human_span: '⏳', internet: '🌐', music: '🎵', cinema: '🎬', endangered: '🐾', migration: '✈️', public_private: '🏛️', health_private: '🏥', economy: '💼', trends: '📊', waste: '♻️', power: '🔌', air: '🌫️', waterstress: '🏜️', alerts: '🛰️', space: '☀️', compare: '⚖️', wildlife: '🦋', quiz: '🎯', iss: '🚀', city: '🏙️', mystery: '🕵️', hotornot: '🌡️', flags: '🚩', rightnow: '🌍', sky: '🌌', asteroids: '☄️', onthisday: '📅', nearby: '🐾', outside: '🏃'};
+            const icons = { twins: '👯', born: '🎂', perfect: '🌴', weather: '🌪️', ocean: '🌊', forest: '🌳', agri: '🌾', energy: '⚡', water: '💧', univ: '🎓', mental: '🧠', happiness: '😊', carbon: '🏭' , generations: '🤱', human_span: '⏳', internet: '🌐', music: '🎵', cinema: '🎬', endangered: '🐾', migration: '✈️', public_private: '🏛️', health_private: '🏥', economy: '💼', trends: '📊', waste: '♻️', power: '🔌', air: '🌫️', waterstress: '🏜️', alerts: '🛰️', space: '☀️', compare: '⚖️', wildlife: '🦋', quiz: '🎯', iss: '🚀', city: '🏙️', mystery: '🕵️', hotornot: '🌡️', flags: '🚩', rightnow: '🌍', sky: '🌌', asteroids: '☄️', onthisday: '📅', nearby: '🐾', outside: '🏃'};
             document.getElementById('fact-icon').innerText = icons[currentMode];
         }
 
@@ -1727,6 +1742,7 @@
                 else if (currentMode === 'sky') await searchSky(query);
                 else if (currentMode === 'nearby') await searchNearby(query);
                 else if (currentMode === 'outside') await searchOutside(query);
+                else if (currentMode === 'twins') await searchTwins(query);
                 else if (currentMode === 'compare') await searchCompare(query);
                 else await searchWBData(query);
             } catch (e) {
@@ -4065,6 +4081,9 @@ function displayMovies(data, query) {
             onthisday:      { desc: 'Earthquakes, expeditions, eclipses and discoveries that happened on today\'s date', examples: [] },
             nearby:         { desc: 'What people spotted in the wild within 40 km of any city this month', examples: ['Athens', 'Berlin', 'Sydney', 'Cape Town'] },
             outside:        { desc: 'The next 48 hours scored for a walk, run or picnic: weather, air, UV and pollen combined', examples: ['Athens', 'London', 'Tokyo', 'Melbourne'] },
+            twins:          { desc: 'Which countries look most like yours? Every vault compared, top five twins with every number side by side', examples: ['Greece', 'Japan', 'Brazil', 'Kenya'] },
+            born:           { desc: 'Enter your birth date: how the air, the climate, the people and the planet changed in your lifetime' },
+            perfect:        { desc: 'Pick your ideal temperature and find the capitals that have it at this very moment' },
             air:            { desc: 'Annual PM2.5 exposure plus a live reading in the capital', examples: ['India', 'Greece', 'Canada'] },
             waterstress:    { desc: 'How much renewable freshwater a country withdraws each year', examples: ['Egypt', 'Spain', 'Brazil'] },
             human_span:     { desc: 'Life expectancy, with the gap between women and men', examples: ['Japan', 'Greece', 'Nigeria'] },
@@ -4104,7 +4123,7 @@ function displayMovies(data, query) {
         }
 
         // ======================= LIVE MODES (no search): Planet Alerts & Space Weather =======================
-        const LIVE_MODES = ['alerts', 'space', 'quiz', 'iss', 'mystery', 'hotornot', 'flags', 'rightnow', 'asteroids', 'onthisday'];
+        const LIVE_MODES = ['alerts', 'space', 'quiz', 'iss', 'mystery', 'hotornot', 'flags', 'rightnow', 'asteroids', 'onthisday', 'born', 'perfect'];
         const MODE_THEMES = {
             alerts:      { color: 'rose',   attr: 'Data by GDACS, NASA EONET & USGS', href: 'https://www.gdacs.org/' },
             space:       { color: 'violet', attr: 'Data by NOAA SWPC', href: 'https://www.swpc.noaa.gov/' },
@@ -4124,7 +4143,10 @@ function displayMovies(data, query) {
             asteroids:   { color: 'slate',  attr: 'Data by NASA NeoWs', href: 'https://api.nasa.gov/' },
             onthisday:   { color: 'emerald', attr: 'Data by Wikipedia', href: 'https://en.wikipedia.org/' },
             nearby:      { color: 'green',  attr: 'Data by iNaturalist', href: 'https://www.inaturalist.org/' },
-            outside:     { color: 'lime',   attr: 'Data by Open-Meteo', href: 'https://open-meteo.com/' }
+            outside:     { color: 'lime',   attr: 'Data by Open-Meteo', href: 'https://open-meteo.com/' },
+            twins:       { color: 'indigo', attr: 'Data by World Bank & Our World in Data', href: 'https://data.worldbank.org/' },
+            born:        { color: 'violet', attr: 'Data by NOAA, NASA GISS, World Bank & Open-Meteo', href: 'https://gml.noaa.gov/ccgg/trends/' },
+            perfect:     { color: 'teal',   attr: 'Data by Open-Meteo', href: 'https://open-meteo.com/' }
         };
         const liveCache = {};
         async function cachedJson(url, ttlMs = 10 * 60 * 1000) {
@@ -4168,7 +4190,7 @@ function displayMovies(data, query) {
             live.innerHTML = `<div class="text-center py-16 text-slate-500 text-xs font-bold uppercase tracking-widest animate-pulse">${t('contacting')}</div>`;
             if (CH.active && CH.game !== mode) CH.active = false;
             if (CH.pending && CH.pending.game === mode) { const p = CH.pending; CH.pending = null; renderChallengeIntro(p); return; }
-            const loader = { alerts: loadPlanetAlerts, space: loadSpaceWeather, quiz: loadQuiz, iss: loadISS, mystery: loadMystery, hotornot: loadHotOrNot, flags: loadFlags, rightnow: loadRightNow, asteroids: loadAsteroids, onthisday: () => loadOnThisDay() }[mode] || loadPlanetAlerts;
+            const loader = { alerts: loadPlanetAlerts, space: loadSpaceWeather, quiz: loadQuiz, iss: loadISS, mystery: loadMystery, hotornot: loadHotOrNot, flags: loadFlags, rightnow: loadRightNow, asteroids: loadAsteroids, onthisday: () => loadOnThisDay(), born: loadBorn, perfect: loadPerfect }[mode] || loadPlanetAlerts;
             loader().catch(e => {
                 console.error('Live feed failed:', e);
                 live.innerHTML = `<div class="vault-card rounded-[2rem] p-8 text-center"><p class="text-rose-400 font-bold mb-2">${t('feed_fail')}</p><p class="text-slate-500 text-xs">${e.message}</p><button onclick="runLiveMode('${mode}')" class="mt-4 px-5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold">${t('retry')}</button></div>`;
@@ -5936,6 +5958,364 @@ function displayMovies(data, query) {
             try { await navigator.clipboard.writeText(li.value); showToast(L('Link copied!', 'Ο σύνδεσμος αντιγράφηκε!'), 'success', 2500); } catch (e) { li.select(); }
         }
 
+        // ---- Shared helpers for the twins / born / perfect vaults ----
+        async function cachedText(url, ttlMs = 24 * 3600 * 1000) {
+            const hit = liveCache[url];
+            if (hit && Date.now() - hit.t < ttlMs) return hit.data;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(`${res.status} from ${url.split('/')[2]}`);
+            const data = await res.text();
+            liveCache[url] = { t: Date.now(), data };
+            return data;
+        }
+        async function simpleShare(text) {
+            try {
+                if (navigator.share) { await navigator.share({ text }); return; }
+                await Promise.race([navigator.clipboard.writeText(text), new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 1500))]);
+                showToast(L('Copied. Paste it anywhere!', 'Αντιγράφηκε. Επικόλλησέ το οπουδήποτε!'), 'success', 3000);
+            } catch (e) { if (e && e.name !== 'AbortError') showToast(text, 'info', 8000); }
+        }
+        const WB_ALIASES = { usa: 'United States', us: 'United States', america: 'United States', uk: 'United Kingdom', britain: 'United Kingdom', england: 'United Kingdom', turkey: 'Turkiye', 'türkiye': 'Turkiye', russia: 'Russian Federation', 'south korea': 'Korea, Rep.', korea: 'Korea, Rep.', 'north korea': "Korea, Dem. People's Rep.", iran: 'Iran, Islamic Rep.', egypt: 'Egypt, Arab Rep.', vietnam: 'Viet Nam', 'czech republic': 'Czechia', syria: 'Syrian Arab Republic', venezuela: 'Venezuela, RB', laos: 'Lao PDR', slovakia: 'Slovak Republic', 'ivory coast': "Cote d'Ivoire", congo: 'Congo, Dem. Rep.', 'hong kong': 'Hong Kong SAR, China', macedonia: 'North Macedonia', gambia: 'Gambia, The', bahamas: 'Bahamas, The', yemen: 'Yemen, Rep.', kyrgyzstan: 'Kyrgyz Republic', brunei: 'Brunei Darussalam', 'cape verde': 'Cabo Verde', micronesia: 'Micronesia, Fed. Sts.', 'st lucia': 'St. Lucia' };
+        function findWBCountry(countries, query) {
+            const q = (query || '').trim().toLowerCase(); if (!q) return null;
+            const alias = WB_ALIASES[q]; if (alias) { const hit = countries.find(c => c.name === alias); if (hit) return hit; }
+            return countries.find(c => c.name.toLowerCase() === q) || countries.find(c => c.name.toLowerCase().startsWith(q)) || countries.find(c => c.name.toLowerCase().includes(q)) || countries.find(c => c.id.toLowerCase() === q || (c.iso2Code || '').toLowerCase() === q) || null;
+        }
+        const showLive = html => { const live = document.getElementById('live-section'); document.getElementById('app-content').classList.add('hidden'); live.classList.remove('hidden'); live.innerHTML = html; return live; };
+        const liveSpinner = txt => `<div class="text-center py-16 text-slate-500 text-xs font-bold uppercase tracking-widest animate-pulse">${txt}</div>`;
+
+        // ---- Country Twins: which countries look most like yours across every vault ----
+        const TWIN_ICON = { generations: '🤱', human_span: '❤️', aging: '👴', population: '👥', economy: '💰', internet: '🌐', univ: '🎓', public_private: '🏫', health_private: '🏥', mental: '🧠', happiness: '😊', migration: '🧳', forest: '🌳', agri: '🌾', weather: '🌧️', water: '💧', waterstress: '🚰', air: '🌫️', energy: '⚡', power: '🔌', carbon: '🏭', endangered: '🐾' };
+        const TWIN_METRICS = [
+            { v: 'generations', ind: 'SP.DYN.TFRT.IN', l: ['Fertility (children per woman)', 'Γονιμότητα (παιδιά ανά γυναίκα)'], d: 2 },
+            { v: 'human_span', ind: 'SP.DYN.LE00.IN', l: ['Life expectancy (years)', 'Προσδόκιμο ζωής (έτη)'], d: 1 },
+            { v: 'aging', ind: 'SP.POP.65UP.TO.ZS', l: ['Aged 65 or over (% of people)', 'Άνω των 65 (% πληθυσμού)'], d: 1 },
+            { v: 'population', ind: 'SP.POP.TOTL', l: ['Population', 'Πληθυσμός'], log: true, fmt: 'big' },
+            { v: 'economy', ind: 'NY.GDP.PCAP.CD', l: ['GDP per person (US$)', 'ΑΕΠ ανά κάτοικο (US$)'], log: true, fmt: 'money' },
+            { v: 'economy', ind: 'SL.UEM.TOTL.ZS', l: ['Unemployment (%)', 'Ανεργία (%)'], d: 1 },
+            { v: 'economy', ind: 'SI.POV.GINI', l: ['Inequality (Gini index)', 'Ανισότητα (δείκτης Gini)'], d: 1 },
+            { v: 'internet', ind: 'IT.NET.USER.ZS', l: ['Internet users (%)', 'Χρήστες ίντερνετ (%)'], d: 0 },
+            { v: 'univ', ind: 'SE.TER.CUAT.BA.ZS', l: ["Bachelor's degree or higher (% of 25+)", 'Πτυχίο ή ανώτερο (% των 25+)'], d: 1 },
+            { v: 'public_private', ind: 'SE.XPD.TOTL.GD.ZS', l: ['Education spending (% of GDP)', 'Δαπάνες παιδείας (% ΑΕΠ)'], d: 1 },
+            { v: 'health_private', ind: 'SH.XPD.OOPC.CH.ZS', l: ['Out-of-pocket health spending (%)', 'Ιδιωτικές δαπάνες υγείας από την τσέπη (%)'], d: 0 },
+            { v: 'mental', ind: 'SH.STA.SUIC.P5', l: ['Suicide rate (per 100,000)', 'Αυτοκτονίες (ανά 100.000)'], log1p: true, d: 1 },
+            { v: 'happiness', owid: 'ladder', l: ['Happiness score (0-10)', 'Δείκτης ευτυχίας (0-10)'], d: 2 },
+            { v: 'migration', ind: 'SM.POP.TOTL.ZS', l: ['Migrants (% of population)', 'Μετανάστες (% πληθυσμού)'], log1p: true, d: 1 },
+            { v: 'forest', ind: 'AG.LND.FRST.ZS', l: ['Forest cover (% of land)', 'Δασοκάλυψη (% εδάφους)'], d: 1 },
+            { v: 'agri', ind: 'AG.LND.AGRI.ZS', l: ['Farmland (% of land)', 'Γεωργική γη (% εδάφους)'], d: 1 },
+            { v: 'weather', ind: 'AG.LND.PRCP.MM', l: ['Rainfall (mm per year)', 'Βροχόπτωση (mm ανά έτος)'], log: true, d: 0 },
+            { v: 'water', ind: 'SH.H2O.SMDW.ZS', l: ['Safely managed drinking water (%)', 'Ασφαλές πόσιμο νερό (%)'], d: 0 },
+            { v: 'waterstress', ind: 'ER.H2O.FWST.ZS', l: ['Water stress (%)', 'Υδατική πίεση (%)'], log1p: true, d: 0 },
+            { v: 'air', ind: 'EN.ATM.PM25.MC.M3', l: ['PM2.5 air pollution (µg/m³)', 'Ρύπανση PM2.5 (µg/m³)'], log: true, d: 1 },
+            { v: 'energy', ind: 'EG.ELC.RNEW.ZS', l: ['Renewable electricity (%)', 'Ανανεώσιμο ρεύμα (%)'], d: 0 },
+            { v: 'power', ind: 'EG.ELC.FOSL.ZS', l: ['Fossil-fuel electricity (%)', 'Ρεύμα από ορυκτά (%)'], d: 0 },
+            { v: 'power', ind: 'EG.USE.ELEC.KH.PC', l: ['Electricity use (kWh per person)', 'Κατανάλωση ρεύματος (kWh ανά άτομο)'], log: true, d: 0 },
+            { v: 'carbon', calc: 'ghgpc', l: ['Emissions per person (t CO₂e)', 'Εκπομπές ανά άτομο (t CO₂e)'], log1p: true, d: 1 },
+            { v: 'endangered', calc: 'threat', l: ['Threatened species', 'Απειλούμενα είδη'], log1p: true, d: 0 }
+        ];
+        const twinKey = mt => mt.ind || (mt.owid ? 'owid_' + mt.owid : 'calc_' + mt.calc);
+        const twinTf = (mt, x) => mt.log ? Math.log10(Math.max(x, 1e-6)) : mt.log1p ? Math.log10(1 + Math.max(x, 0)) : x;
+        const twinFmt = (mt, v) => mt.fmt === 'money' ? '$' + Math.round(v).toLocaleString() : mt.fmt === 'big' ? (v >= 1e9 ? (v / 1e9).toFixed(2) + ' B' : v >= 1e6 ? (v / 1e6).toFixed(1) + ' M' : Math.round(v).toLocaleString()) : Number(v).toLocaleString(undefined, { maximumFractionDigits: mt.d === undefined ? 1 : mt.d, minimumFractionDigits: mt.d === undefined ? 0 : mt.d });
+        let twinData = null;
+        async function loadTwinData() {
+            if (twinData) return twinData;
+            // Multi-indicator calls need source=2 (WDI); the threatened-species counts live in another source, so they are fetched one by one.
+            const inds = [...new Set([...TWIN_METRICS.filter(m => m.ind).map(m => m.ind), 'EN.GHG.ALL.MT.CE.AR5'])];
+            const chunks = []; for (let i = 0; i < inds.length; i += 6) chunks.push(inds.slice(i, i + 6));
+            const singles = ['EN.MAM.THRD.NO', 'EN.BRD.THRD.NO', 'EN.FSH.THRD.NO', 'EN.HPT.THRD.NO'];
+            const [countries, ...parts] = await Promise.all([wbCountries(),
+                ...chunks.map(c => cachedJson(`https://api.worldbank.org/v2/country/all/indicator/${c.join(';')}?source=2&mrnev=1&format=json&per_page=5000`, 24 * 3600 * 1000)),
+                ...singles.map(ind => cachedJson(`https://api.worldbank.org/v2/country/all/indicator/${ind}?format=json&mrnev=1&per_page=400`, 24 * 3600 * 1000).catch(() => null))]);
+            const real = new Set(countries.map(c => c.id));
+            const val = {};
+            parts.forEach(p => ((p && p[1]) || []).forEach(r => { if (r.value === null || !real.has(r.countryiso3code)) return; (val[r.countryiso3code] = val[r.countryiso3code] || {})[r.indicator.id] = { v: r.value, y: r.date }; }));
+            try {
+                const ladder = await loadOwidSeries('ladder');
+                Object.values(ladder).forEach(tb => { if (tb.code && real.has(tb.code) && tb.points.length) { const p = tb.points[tb.points.length - 1]; (val[tb.code] = val[tb.code] || {}).owid_ladder = { v: p.val, y: p.year }; } });
+            } catch (e) { console.warn('Happiness table unavailable for twins:', e.message); }
+            Object.values(val).forEach(m => {
+                if (m['EN.GHG.ALL.MT.CE.AR5'] && m['SP.POP.TOTL']) m.calc_ghgpc = { v: m['EN.GHG.ALL.MT.CE.AR5'].v * 1e6 / m['SP.POP.TOTL'].v, y: m['EN.GHG.ALL.MT.CE.AR5'].y };
+                const th = ['EN.MAM.THRD.NO', 'EN.BRD.THRD.NO', 'EN.FSH.THRD.NO', 'EN.HPT.THRD.NO'].filter(k => m[k]);
+                if (th.length) m.calc_threat = { v: th.reduce((s, k) => s + m[k].v, 0), y: m[th[0]].y };
+            });
+            const scale = {};
+            TWIN_METRICS.forEach(mt => {
+                const k = twinKey(mt);
+                const xs = Object.values(val).map(m => m[k] && twinTf(mt, m[k].v)).filter(x => typeof x === 'number' && isFinite(x)).sort((a, b) => a - b);
+                if (xs.length < 10) { scale[k] = null; return; }
+                let s = xs[Math.floor(xs.length * 0.75)] - xs[Math.floor(xs.length * 0.25)];
+                if (!(s > 0)) { const mean = xs.reduce((a, b) => a + b, 0) / xs.length; s = Math.sqrt(xs.reduce((a, b) => a + (b - mean) ** 2, 0) / xs.length) || 1; }
+                scale[k] = s;
+            });
+            twinData = { countries, val, scale };
+            return twinData;
+        }
+        function twinCompare(data, a, b) {
+            const rows = []; let sum = 0;
+            TWIN_METRICS.forEach(mt => {
+                const k = twinKey(mt), s = data.scale[k], va = data.val[a] && data.val[a][k], vb = data.val[b] && data.val[b][k];
+                if (!s || !va || !vb) return;
+                const d = Math.abs(twinTf(mt, va.v) - twinTf(mt, vb.v)) / s;
+                const sim = Math.max(0, 1 - d / 2);
+                rows.push({ mt, a: va, b: vb, sim }); sum += sim;
+            });
+            return { rows, n: rows.length, score: rows.length ? sum / rows.length : 0 };
+        }
+        const TWINS = { base: null, ranked: [], sel: 0, data: null };
+        async function searchTwins(query) {
+            showLive(liveSpinner(L('Comparing every country on every vault…', 'Συγκρίνω κάθε χώρα σε κάθε θησαυροφυλάκιο…')));
+            const data = await loadTwinData();
+            if (currentMode !== 'twins') return;
+            const base = findWBCountry(data.countries, query);
+            if (!base || !data.val[base.id]) { document.getElementById('live-section').classList.add('hidden'); showToast(L('Country not found. Try the English name, e.g. Greece.', 'Η χώρα δεν βρέθηκε. Δοκίμασε το αγγλικό όνομα, π.χ. Greece.')); return; }
+            try { showPassport(base); } catch (e) {}
+            const ranked = data.countries.filter(c => c.id !== base.id && data.val[c.id]).map(c => Object.assign({ c }, twinCompare(data, base.id, c.id))).filter(r => r.n >= 12).sort((a, b) => b.score - a.score);
+            if (ranked.length < 5) { showLive(`<div class="vault-card rounded-[2rem] p-8 text-center text-slate-400 text-sm">${L('Not enough data to find twins for', 'Δεν υπάρχουν αρκετά δεδομένα για δίδυμες της')} ${escapeHtml(base.name)}.</div>`); return; }
+            TWINS.base = base; TWINS.ranked = ranked; TWINS.sel = 0; TWINS.data = data;
+            renderTwins();
+        }
+        function showTwin(i) { TWINS.sel = i; renderTwins(); const el = document.getElementById('twin-table'); if (el && window.innerWidth < 768) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+        function renderTwins() {
+            const { base, ranked, sel } = TWINS; if (!base) return;
+            const top = ranked.slice(0, 5), pick = top[sel] || top[0], worst = ranked[ranked.length - 1];
+            const pct = r => Math.round(r.score * 100);
+            const name = c => escapeHtml(c.name);
+            const alike = pick.rows.filter(r => r.sim >= 0.85).slice(0, 3).map(r => L(r.mt.l[0], r.mt.l[1]).split(' (')[0].toLowerCase());
+            const differs = [...pick.rows].sort((a, b) => a.sim - b.sim)[0];
+            const tile = (r, i) => `<button type="button" onclick="showTwin(${i})" class="vault-card rounded-2xl p-3 md:p-4 text-left transition-all border ${i === sel ? 'border-indigo-400/70 ring-1 ring-indigo-400/40' : 'border-white/5 hover:border-white/20'}">
+                <div class="flex items-center justify-between"><span class="text-[10px] font-black text-slate-500">#${i + 1}</span><span class="text-xl md:text-2xl font-black font-mono-data ${pct(r) >= 85 ? 'text-emerald-400' : pct(r) >= 70 ? 'text-indigo-300' : 'text-amber-300'}">${pct(r)}%</span></div>
+                <div class="text-sm font-bold text-white truncate mt-1">${flagEmoji(r.c.iso2Code)} ${name(r.c)}</div>
+                <div class="h-1.5 rounded-full bg-white/5 mt-2 overflow-hidden"><div class="h-full rounded-full bg-indigo-500" style="width:${pct(r)}%"></div></div>
+                <div class="text-[9px] text-slate-500 mt-1.5">${r.n} ${L('measures', 'μετρήσεις')}</div>
+            </button>`;
+            const simDot = s => `<span class="inline-block w-2.5 h-2.5 rounded-full ${s >= 0.8 ? 'bg-emerald-400' : s >= 0.5 ? 'bg-amber-400' : 'bg-rose-500'}" title="${Math.round(s * 100)}%"></span>`;
+            const canJump = v => MODE_INFO[v] && !LIVE_MODES.includes(v);
+            const row = r => `<div class="grid grid-cols-[1fr_auto] md:grid-cols-[minmax(0,1.6fr)_1fr_1fr_1.5rem] items-center gap-x-3 gap-y-1 py-2.5 border-b border-white/5">
+                <div class="min-w-0 text-xs text-slate-300 flex items-center gap-2 col-span-2 md:col-span-1"><span>${TWIN_ICON[r.mt.v] || '📊'}</span>${canJump(r.mt.v) ? `<button type="button" onclick="jumpTo('${r.mt.v}', '${base.name.replace(/'/g, '&#39;')}')" class="text-left hover:text-white truncate">${L(r.mt.l[0], r.mt.l[1])}</button>` : `<span class="truncate">${L(r.mt.l[0], r.mt.l[1])}</span>`}</div>
+                <div class="text-sm font-black font-mono-data text-white md:text-right">${twinFmt(r.mt, r.a.v)} <span class="text-[9px] text-slate-500 font-normal">${r.a.y}</span></div>
+                <div class="text-sm font-black font-mono-data text-indigo-200 md:text-right flex items-center justify-end gap-2 md:block">${twinFmt(r.mt, r.b.v)} <span class="text-[9px] text-slate-500 font-normal">${r.b.y}</span><span class="md:hidden">${simDot(r.sim)}</span></div>
+                <div class="hidden md:flex justify-center">${simDot(r.sim)}</div>
+            </div>`;
+            const missing = TWIN_METRICS.length - pick.n;
+            showLive(`
+    <div class="vault-card rounded-[2rem] md:rounded-[2.5rem] p-5 md:p-8">
+        <p class="text-[10px] font-black text-indigo-300 uppercase tracking-[0.3em] mb-2">👯 ${L('Country twins', 'Δίδυμες χώρες')}</p>
+        <h3 class="text-2xl md:text-4xl font-black text-white leading-tight">${flagEmoji(base.iso2Code)} ${L(`${name(base)}'s closest twin is`, `Η πιο κοντινή δίδυμη της ${name(base)} είναι η`)} ${flagEmoji(top[0].c.iso2Code)} ${name(top[0].c)}</h3>
+        <p class="text-sm text-slate-400 mt-3">${L(`${pct(top[0])}% match across ${top[0].n} measures from the vaults`, `${pct(top[0])}% ταύτιση σε ${top[0].n} μετρήσεις από τα θησαυροφυλάκια`)}.${alike.length && sel === 0 ? ` ${L('Alike on', 'Μοιάζουν σε')}: ${alike.join(', ')}.` : ''}${differs && sel === 0 ? ` ${L('Most different', 'Μεγαλύτερη διαφορά')}: ${L(differs.mt.l[0], differs.mt.l[1]).split(' (')[0].toLowerCase()}.` : ''}</p>
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-2 md:gap-3 mt-6">${top.map(tile).join('')}</div>
+        <div id="twin-table" class="mt-7">
+            <div class="flex flex-wrap items-end justify-between gap-2 mb-2">
+                <h4 class="text-[11px] font-black text-indigo-300 uppercase tracking-widest">${flagEmoji(base.iso2Code)} ${name(base)} ${L('vs', 'έναντι')} ${flagEmoji(pick.c.iso2Code)} ${name(pick.c)} · ${pct(pick)}%</h4>
+                <div class="text-[9px] text-slate-500 uppercase tracking-widest hidden md:block">${L('green = alike · amber = close · red = far apart', 'πράσινο = ίδιες · πορτοκαλί = κοντά · κόκκινο = μακριά')}</div>
+            </div>
+            <div class="hidden md:grid grid-cols-[minmax(0,1.6fr)_1fr_1fr_1.5rem] gap-x-3 text-[9px] font-black text-slate-500 uppercase tracking-widest pb-1 border-b border-white/10"><div>${L('Measure', 'Μέτρηση')}</div><div class="text-right">${name(base)}</div><div class="text-right">${name(pick.c)}</div><div></div></div>
+            ${pick.rows.map(row).join('')}
+            ${missing > 0 ? `<p class="text-[10px] text-slate-500 mt-2">${missing} ${L('measures skipped because one of the two countries has no data for them.', 'μετρήσεις παραλείφθηκαν γιατί μία από τις δύο χώρες δεν έχει δεδομένα.')}</p>` : ''}
+        </div>
+        <p class="text-xs text-slate-400 mt-6">${L('Least like', 'Λιγότερο όμοια με')} ${name(base)}: ${flagEmoji(worst.c.iso2Code)} ${name(worst.c)} · ${pct(worst)}%</p>
+        <div class="flex flex-wrap gap-3 mt-5">
+            <button type="button" onclick="openCompare('${base.name.replace(/'/g, '&#39;')}', '${pick.c.name.replace(/'/g, '&#39;')}')" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-sm font-bold text-white">⚖️ ${L('Compare them year by year →', 'Σύγκρινέ τες χρονιά με χρονιά →')}</button>
+            <button type="button" onclick="shareTwins()" class="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-sm font-bold text-slate-200">📤 ${L('Share', 'Κοινοποίηση')}</button>
+        </div>
+        <p class="text-[10px] text-slate-500 mt-5">${L('How it works: every measure is scaled by how much countries normally differ on it (the interquartile range, on a log scale for money, population and pollution), so a gap of 0.3 children per woman counts about as much as $9,000 of GDP per person. The match is the average closeness over all measures both countries report.', 'Πώς λειτουργεί: κάθε μέτρηση κλιμακώνεται με το πόσο διαφέρουν συνήθως οι χώρες σε αυτήν (ενδοτεταρτημοριακό εύρος, λογαριθμικά για χρήμα, πληθυσμό και ρύπανση). Η ταύτιση είναι η μέση εγγύτητα σε όλες τις μετρήσεις που αναφέρουν και οι δύο χώρες.')}</p>
+    </div>`);
+        }
+        function openCompare(a, b) { selectMode('compare'); document.getElementById('cityInput').value = a; document.getElementById('cityInput2').value = b; window.scrollTo({ top: 0, behavior: 'smooth' }); mainAction(); }
+        function shareTwins() {
+            const { base, ranked } = TWINS; if (!base) return;
+            const top = ranked.slice(0, 3).map((r, i) => `${i + 1}. ${r.c.name} ${Math.round(r.score * 100)}%`).join(', ');
+            simpleShare(L(`👯 ${base.name}'s closest twins on EarthVault: ${top}. Which country is yours most like? https://chamitro.github.io/EarthVault/?vault=twins`, `👯 Οι πιο κοντινές δίδυμες της ${base.name} στο EarthVault: ${top}. Ποια χώρα μοιάζει στη δική σου; https://chamitro.github.io/EarthVault/?vault=twins`));
+        }
+
+        // ---- The Planet Since You Were Born ----
+        const BORN = { date: null, city: '' };
+        async function loadBorn() {
+            const saved = lsGet('ev_born', {});
+            const today = new Date().toISOString().slice(0, 10);
+            showLive(`
+    <div class="vault-card rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 text-center">
+        <p class="text-[10px] font-black text-violet-300 uppercase tracking-[0.3em] mb-2">🎂 ${L('The planet since you were born', 'Ο πλανήτης από τότε που γεννήθηκες')}</p>
+        <h3 class="text-2xl md:text-4xl font-black text-white mb-2">${L('When were you born?', 'Πότε γεννήθηκες;')}</h3>
+        <p class="text-sm text-slate-400 mb-6 max-w-md mx-auto">${L('Your personal Earth report: how the air, the climate, the people and the planet have changed in your lifetime.', 'Η προσωπική σου αναφορά για τη Γη: πώς άλλαξαν ο αέρας, το κλίμα, οι άνθρωποι και ο πλανήτης στη ζωή σου.')}</p>
+        <div class="max-w-md mx-auto grid grid-cols-1 gap-3 text-left">
+            <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">${L('Birth date', 'Ημερομηνία γέννησης')}<input id="born-date" type="date" min="1900-01-01" max="${today}" value="${escapeHtml(saved.date || '1990-01-01')}" class="mt-1 w-full bg-slate-900/90 border border-white/10 px-4 py-3 rounded-2xl text-white outline-none focus:ring-2 focus:ring-violet-500 text-sm"></label>
+            <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">${L('City where you were born (optional, for the weather that day)', 'Πόλη γέννησης (προαιρετικό, για τον καιρό εκείνης της μέρας)')}<input id="born-city" value="${escapeHtml(saved.city || '')}" placeholder="${L('e.g. Athens', 'π.χ. Athens')}" autocomplete="off" class="mt-1 w-full bg-slate-900/90 border border-white/10 px-4 py-3 rounded-2xl text-white outline-none focus:ring-2 focus:ring-violet-500 text-sm"></label>
+            <button type="button" onclick="runBorn()" class="mt-2 px-6 py-4 rounded-2xl bg-violet-600 hover:bg-violet-500 text-white font-black text-lg">🌍 ${L('Show my planet →', 'Δείξε μου τον πλανήτη μου →')}</button>
+        </div>
+        <p class="text-[10px] text-slate-500 mt-5">${L('Nothing is uploaded. The date stays on your device.', 'Τίποτα δεν αποστέλλεται. Η ημερομηνία μένει στη συσκευή σου.')}</p>
+    </div>`);
+            const inp = document.getElementById('born-city'); if (inp) inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); runBorn(); } });
+        }
+        const yearMean = (list, year) => { const xs = list.filter(p => p.year === year).map(p => p.v); return xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null; };
+        const nearestYear = (series, year) => { const ys = Object.keys(series).map(Number).sort((a, b) => a - b); if (!ys.length) return null; const hit = ys.find(y => y >= year); return hit === undefined ? null : hit; };
+        async function runBorn() {
+            const dateStr = (document.getElementById('born-date') || {}).value, city = ((document.getElementById('born-city') || {}).value || '').trim();
+            const date = dateStr ? new Date(dateStr + 'T12:00:00') : null;
+            if (!date || isNaN(date) || date > new Date() || date.getFullYear() < 1900) { showToast(L('Pick a real birth date first.', 'Διάλεξε πρώτα μια πραγματική ημερομηνία γέννησης.')); return; }
+            lsSet('ev_born', { date: dateStr, city });
+            BORN.date = date; BORN.city = city;
+            showLive(liveSpinner(L('Reading 100 years of planet records…', 'Διαβάζω 100 χρόνια αρχείων του πλανήτη…')));
+            const safe = p => p.catch(e => { console.warn('Born source failed:', e.message); return null; });
+            const [wld, co2Txt, tempJson, geo] = await Promise.all([
+                safe(cachedJson('https://api.worldbank.org/v2/country/WLD/indicator/SP.POP.TOTL;SP.DYN.LE00.IN;AG.LND.FRST.K2;IT.NET.USER.ZS;EG.ELC.RNEW.ZS;SP.URB.TOTL.IN.ZS;EN.GHG.ALL.MT.CE.AR5?source=2&format=json&per_page=1000&date=1900:2030', 24 * 3600 * 1000)),
+                safe(cachedText('https://gml.noaa.gov/webdata/ccgg/trends/co2/co2_annmean_mlo.csv')),
+                safe(cachedJson('https://global-warming.org/api/temperature-api', 24 * 3600 * 1000)),
+                city ? safe(fetchJson(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json`, 20000)) : Promise.resolve(null)
+            ]);
+            if (currentMode !== 'born') return;
+            const y = date.getFullYear(), nowYear = new Date().getFullYear();
+            // World Bank world series -> { ind: { year: value } }
+            const series = {};
+            ((wld && wld[1]) || []).forEach(r => { if (r.value !== null) (series[r.indicator.id] = series[r.indicator.id] || {})[+r.date] = r.value; });
+            const latest = s => { const ys = Object.keys(s || {}).map(Number); if (!ys.length) return null; const ly = Math.max(...ys); return { y: ly, v: s[ly] }; };
+            const thenOf = s => { const ny = nearestYear(s || {}, y); return ny === null ? null : { y: ny, v: s[ny], approx: ny !== y }; };
+            // CO2 (NOAA, annual means from 1959)
+            const co2 = {}; (co2Txt || '').split('\n').forEach(line => { const m = line.match(/^(\d{4}),([\d.]+)/); if (m) co2[+m[1]] = +m[2]; });
+            // Global temperature anomaly (NASA GISS land-ocean, monthly)
+            const temps = ((tempJson && tempJson.result) || []).map(p => ({ year: Math.floor(+p.time), v: +p.station })).filter(p => isFinite(p.v));
+            const tempThenYear = temps.length ? Math.max(1880, y) : null;
+            const tempThen = tempThenYear ? yearMean(temps, tempThenYear) : null;
+            const tempNow = temps.length >= 12 ? temps.slice(-12).reduce((a, p) => a + p.v, 0) / 12 : null;
+            // Birthday weather
+            let wxThen = null, wxLast = null, place = null;
+            const g = geo && geo.results && geo.results[0];
+            if (g && y >= 1940) {
+                place = g;
+                const mm = String(date.getMonth() + 1).padStart(2, '0'), dd = String(date.getDate()).padStart(2, '0');
+                let lastY = nowYear; const lastBday = new Date(`${lastY}-${mm}-${dd}T12:00:00`); if (isNaN(lastBday) || lastBday > new Date(Date.now() - 7 * 86400000)) lastY = nowYear - 1;
+                const arc = await safe(fetchJson(`https://archive-api.open-meteo.com/v1/archive?latitude=${g.latitude}&longitude=${g.longitude}&start_date=${y}-${mm}-${dd}&end_date=${y}-${mm}-${dd}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weather_code&timezone=auto`, 30000));
+                const arc2 = await safe(fetchJson(`https://archive-api.open-meteo.com/v1/archive?latitude=${g.latitude}&longitude=${g.longitude}&start_date=${lastY}-${mm}-${dd}&end_date=${lastY}-${mm}-${dd}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weather_code&timezone=auto`, 30000));
+                const pick = (a, yy) => a && a.daily && a.daily.temperature_2m_max && a.daily.temperature_2m_max[0] !== null && a.daily.temperature_2m_max[0] !== undefined ? { y: yy, max: a.daily.temperature_2m_max[0], min: a.daily.temperature_2m_min[0], rain: a.daily.precipitation_sum[0], code: a.daily.weather_code[0] } : null;
+                wxThen = pick(arc, y); wxLast = pick(arc2, lastY);
+            }
+            if (currentMode !== 'born') return;
+            renderBorn({ date, y, nowYear, series, latest, thenOf, co2, tempThen, tempThenYear, tempNow, wxThen, wxLast, place });
+        }
+        function renderBorn(r) {
+            const { date, y, nowYear } = r;
+            const days = Math.floor((Date.now() - date.getTime()) / 86400000);
+            const years = days / 365.25;
+            const kmSun = days * 86400 * 29.78, kmGalaxy = days * 86400 * 230;
+            const fmtBig = v => v >= 1e12 ? (v / 1e12).toFixed(2) + ' ' + L('trillion', 'τρισ.') : v >= 1e9 ? (v / 1e9).toFixed(2) + ' ' + L('billion', 'δισ.') : v >= 1e6 ? (v / 1e6).toFixed(1) + ' ' + L('million', 'εκατ.') : Math.round(v).toLocaleString();
+            const moon = moonPhase(date);
+            const weekday = date.toLocaleDateString(LANG === 'el' ? 'el-GR' : 'en-GB', { weekday: 'long' });
+            const issLaunch = new Date('1998-11-20T12:00:00'), issDays = Math.floor((Date.now() - Math.max(date.getTime(), issLaunch.getTime())) / 86400000);
+            const stat = (icon, label, value, sub) => `<div class="bg-white/5 border border-white/5 rounded-2xl p-4"><div class="text-[9px] font-black text-slate-500 uppercase tracking-widest">${icon} ${label}</div><div class="text-xl md:text-2xl font-black text-white font-mono-data mt-1">${value}</div>${sub ? `<div class="text-[10px] text-slate-500 mt-1">${sub}</div>` : ''}</div>`;
+            const thenNow = (icon, label, then, now, fmt, opts = {}) => {
+                if (!then || !now) return `<div class="vault-card rounded-2xl p-4"><div class="text-[9px] font-black text-slate-500 uppercase tracking-widest">${icon} ${label}</div><div class="text-xs text-slate-500 mt-2">${opts.none || L('No record for your birth year.', 'Δεν υπάρχει καταγραφή για το έτος γέννησής σου.')}</div></div>`;
+                const delta = now.v - then.v, pctc = then.v ? delta / Math.abs(then.v) * 100 : 0;
+                const good = opts.higherBetter === undefined ? null : (opts.higherBetter ? delta >= 0 : delta <= 0);
+                const col = good === null ? 'text-indigo-300' : good ? 'text-emerald-400' : 'text-rose-400';
+                const change = opts.change ? opts.change(delta, pctc) : `${delta >= 0 ? '+' : '−'}${fmt(Math.abs(delta))}${Math.abs(pctc) >= 1 && Math.abs(pctc) < 1000 ? ` (${delta >= 0 ? '+' : '−'}${Math.round(Math.abs(pctc))}%)` : ''}`;
+                return `<div class="vault-card rounded-2xl p-4"><div class="text-[9px] font-black text-slate-500 uppercase tracking-widest">${icon} ${label}</div>
+                    <div class="flex items-end justify-between gap-2 mt-2"><div><div class="text-[9px] text-slate-500 uppercase">${then.approx ? L('earliest', 'πρώτο') + ' ' : ''}${then.y}</div><div class="text-lg font-black font-mono-data text-slate-300">${fmt(then.v)}</div></div><div class="text-slate-600">→</div><div class="text-right"><div class="text-[9px] text-slate-500 uppercase">${now.y}</div><div class="text-lg font-black font-mono-data text-white">${fmt(now.v)}</div></div></div>
+                    <div class="text-xs font-bold ${col} mt-2">${change}</div></div>`;
+            };
+            const s = r.series, wld = (ind) => ({ then: r.thenOf(s[ind]), now: r.latest(s[ind]) });
+            const pop = wld('SP.POP.TOTL'), life = wld('SP.DYN.LE00.IN'), forest = wld('AG.LND.FRST.K2'), net = wld('IT.NET.USER.ZS'), ren = wld('EG.ELC.RNEW.ZS'), urb = wld('SP.URB.TOTL.IN.ZS'), ghg = wld('EN.GHG.ALL.MT.CE.AR5');
+            const co2Years = Object.keys(r.co2).map(Number).sort((a, b) => a - b);
+            const co2ThenY = co2Years.find(k => k >= y);
+            const co2Then = co2ThenY === undefined ? null : { y: co2ThenY, v: r.co2[co2ThenY], approx: co2ThenY !== y };
+            const co2Now = co2Years.length ? { y: Math.max(...co2Years), v: r.co2[Math.max(...co2Years)] } : null;
+            const tThen = r.tempThen !== null && r.tempThen !== undefined ? { y: r.tempThenYear, v: r.tempThen, approx: r.tempThenYear !== y } : null;
+            const tNow = r.tempNow !== null && r.tempNow !== undefined ? { y: nowYear, v: r.tempNow } : null;
+            const deg = v => `${v >= 0 ? '+' : '−'}${Math.abs(v).toFixed(2)} °C`;
+            const wxLine = w => w ? `${WX_EMOJI(w.code)} ${w.max.toFixed(0)}° / ${w.min.toFixed(0)}°C${w.rain >= 1 ? ` · ${w.rain.toFixed(0)} mm ${L('rain', 'βροχή')}` : ''} · ${LANG === 'el' ? wxText(w.code) : WX_TEXT(w.code)}` : L('no record', 'χωρίς καταγραφή');
+            const cityName = r.place ? `${r.place.name}${r.place.country_code ? ' ' + flagEmoji(r.place.country_code) : ''}` : '';
+            showLive(`
+    <div class="vault-card rounded-[2rem] md:rounded-[2.5rem] p-5 md:p-8">
+        <p class="text-[10px] font-black text-violet-300 uppercase tracking-[0.3em] mb-2">🎂 ${L('The planet since you were born', 'Ο πλανήτης από τότε που γεννήθηκες')}</p>
+        <h3 class="text-2xl md:text-4xl font-black text-white leading-tight">${L(`You arrived on a ${weekday}, ${date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}`, `Ήρθες μια ${weekday}, ${date.toLocaleDateString('el-GR', { day: 'numeric', month: 'long', year: 'numeric' })}`)}</h3>
+        <p class="text-sm text-slate-400 mt-2">${L(`${moon.emoji} The moon was a ${moon.name.toLowerCase()} that night (${moon.illumination}% lit).`, `${moon.emoji} Η σελήνη ήταν ${moon.illumination}% φωτισμένη εκείνη τη νύχτα.`)}</p>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
+            ${stat('📅', L('Days alive', 'Μέρες ζωής'), days.toLocaleString(), L(`${years.toFixed(1)} orbits around the Sun`, `${years.toFixed(1)} τροχιές γύρω από τον Ήλιο`))}
+            ${stat('🚀', L('Travelled through space', 'Διανυθείσα απόσταση στο διάστημα'), fmtBig(kmSun) + ' km', L(`around the Sun · ${fmtBig(kmGalaxy)} km around the galaxy`, `γύρω από τον Ήλιο · ${fmtBig(kmGalaxy)} km γύρω από τον γαλαξία`))}
+            ${stat('🌕', L('Full moons seen', 'Πανσέληνοι'), Math.floor(days / 29.53).toLocaleString(), L('one every 29.5 days', 'μία κάθε 29,5 μέρες'))}
+            ${stat('🛰️', L('ISS orbits in your lifetime', 'Τροχιές του ISS στη ζωή σου'), issDays > 0 ? Math.round(issDays * 15.5).toLocaleString() : '0', date < issLaunch ? L(`the station launched when you were ${Math.floor((issLaunch - date) / 31557600000)}`, `ο σταθμός εκτοξεύτηκε όταν ήσουν ${Math.floor((issLaunch - date) / 31557600000)}`) : L('it has flown over you every day', 'πετάει από πάνω σου κάθε μέρα'))}
+        </div>
+        <h4 class="text-[11px] font-black text-violet-300 uppercase tracking-widest mt-8 mb-3">${L('Then and now', 'Τότε και τώρα')}</h4>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            ${thenNow('🏭', L('CO₂ in the air (ppm)', 'CO₂ στον αέρα (ppm)'), co2Then, co2Now, v => v.toFixed(0), { higherBetter: false, none: L('Records start in 1959.', 'Οι καταγραφές ξεκινούν το 1959.') })}
+            ${thenNow('🌡️', L('Global temperature vs 1951-80', 'Παγκόσμια θερμοκρασία έναντι 1951-80'), tThen, tNow, deg, { higherBetter: false, change: d => L(`the planet is ${deg(d)} warmer`, `ο πλανήτης είναι ${deg(d)} θερμότερος`) })}
+            ${thenNow('👥', L('People on Earth', 'Άνθρωποι στη Γη'), pop.then, pop.now, fmtBig, { change: d => L(`+${fmtBig(d)} people`, `+${fmtBig(d)} άνθρωποι`) })}
+            ${thenNow('❤️', L('World life expectancy', 'Παγκόσμιο προσδόκιμο ζωής'), life.then, life.now, v => v.toFixed(1) + ' ' + L('yrs', 'έτη'), { higherBetter: true })}
+            ${thenNow('🏙️', L('People living in cities', 'Άνθρωποι σε πόλεις'), urb.then, urb.now, v => v.toFixed(0) + '%', {})}
+            ${thenNow('🌐', L('Internet users', 'Χρήστες ίντερνετ'), net.then, net.now, v => v.toFixed(0) + '%', { higherBetter: true, none: y < 1991 ? L('The web did not exist yet.', 'Ο ιστός δεν υπήρχε ακόμα.') : undefined })}
+            ${thenNow('⚡', L('Renewable electricity', 'Ανανεώσιμο ρεύμα'), ren.then, ren.now, v => v.toFixed(0) + '%', { higherBetter: true })}
+            ${thenNow('🌳', L('Forest on Earth', 'Δάση στη Γη'), forest.then, forest.now, v => fmtBig(v) + ' km²', { higherBetter: true, none: L('Satellite forest records start in 1992.', 'Οι δορυφορικές καταγραφές δασών ξεκινούν το 1992.') })}
+            ${thenNow('💨', L('Greenhouse emissions per year', 'Εκπομπές αερίων θερμοκηπίου ανά έτος'), ghg.then, ghg.now, v => fmtBig(v * 1e6) + ' t', { higherBetter: false })}
+        </div>
+        ${r.place ? `<h4 class="text-[11px] font-black text-violet-300 uppercase tracking-widest mt-8 mb-3">${L('The weather on your birthday in', 'Ο καιρός στα γενέθλιά σου σε')} ${escapeHtml(cityName)}</h4>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            ${stat('👶', `${L('The day you were born', 'Τη μέρα που γεννήθηκες')} · ${y}`, wxLine(r.wxThen), '')}
+            ${stat('🎂', `${L('Your last birthday', 'Τα τελευταία σου γενέθλια')} · ${r.wxLast ? r.wxLast.y : ''}`, wxLine(r.wxLast), r.wxThen && r.wxLast ? L(`${r.wxLast.max - r.wxThen.max >= 0 ? '+' : '−'}${Math.abs(r.wxLast.max - r.wxThen.max).toFixed(1)} °C on the daytime high`, `${r.wxLast.max - r.wxThen.max >= 0 ? '+' : '−'}${Math.abs(r.wxLast.max - r.wxThen.max).toFixed(1)} °C στη μέγιστη της ημέρας`) : '')}
+        </div>` : (y < 1940 && BORN.city ? `<p class="text-xs text-slate-500 mt-6">${L('Birthday weather is available from 1940 onwards.', 'Ο καιρός γενεθλίων είναι διαθέσιμος από το 1940 και μετά.')}</p>` : '')}
+        <div class="flex flex-wrap gap-3 mt-7">
+            <button type="button" onclick="shareBorn()" class="px-5 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-sm font-bold text-white">📤 ${L('Share my planet report', 'Κοινοποίηση της αναφοράς μου')}</button>
+            <button type="button" onclick="loadBorn()" class="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-sm font-bold text-slate-200">${L('Change date', 'Αλλαγή ημερομηνίας')}</button>
+        </div>
+        <p class="text-[10px] text-slate-500 mt-5">${L('CO₂ from NOAA Mauna Loa annual means. Temperature from NASA GISTEMP (land and ocean, anomaly vs 1951-80), latest value is the mean of the last 12 months. World figures from the World Bank; when your birth year has no record, the earliest year after it is shown. Birthday weather from the Open-Meteo ERA5 archive.', 'CO₂ από τα ετήσια μέσα NOAA Mauna Loa. Θερμοκρασία από NASA GISTEMP (ξηρά και ωκεανός, ανωμαλία έναντι 1951-80), η τελευταία τιμή είναι ο μέσος των 12 τελευταίων μηνών. Παγκόσμια στοιχεία από την Παγκόσμια Τράπεζα. Καιρός γενεθλίων από το αρχείο ERA5 του Open-Meteo.')}</p>
+    </div>`);
+            BORN.summary = { days, years, co2Then, co2Now, tThen, tNow, pop };
+            if (years >= 1) burst({ particleCount: 70, spread: 90 });
+        }
+        function shareBorn() {
+            const s = BORN.summary; if (!s) return;
+            const bits = [L(`I have lived ${s.days.toLocaleString()} days (${s.years.toFixed(1)} orbits around the Sun)`, `Έχω ζήσει ${s.days.toLocaleString()} μέρες (${s.years.toFixed(1)} τροχιές γύρω από τον Ήλιο)`)];
+            if (s.co2Then && s.co2Now) bits.push(L(`CO₂ went from ${s.co2Then.v.toFixed(0)} to ${s.co2Now.v.toFixed(0)} ppm`, `το CO₂ πήγε από ${s.co2Then.v.toFixed(0)} σε ${s.co2Now.v.toFixed(0)} ppm`));
+            if (s.tThen && s.tNow) bits.push(L(`the planet warmed ${(s.tNow.v - s.tThen.v).toFixed(2)} °C`, `ο πλανήτης ζεστάθηκε ${(s.tNow.v - s.tThen.v).toFixed(2)} °C`));
+            if (s.pop.then && s.pop.now) bits.push(L(`and ${((s.pop.now.v - s.pop.then.v) / 1e9).toFixed(1)} billion people joined us`, `και ${((s.pop.now.v - s.pop.then.v) / 1e9).toFixed(1)} δισ. άνθρωποι ήρθαν μαζί μας`));
+            simpleShare(`🎂 ${bits.join(', ')}. ${L('See your own planet report', 'Δες τη δική σου αναφορά')}: https://chamitro.github.io/EarthVault/?vault=born`);
+        }
+
+        // ---- Perfect Weather Finder: pick the weather, find the place ----
+        const PERFECT = { ideal: lsGet('ev_perfect_ideal', 25), sunny: false, day: false, region: 'all', rows: null, limit: 15 };
+        const PERFECT_REGIONS = { 'Europe & Central Asia': ['Europe', 'Ευρώπη'], 'East Asia & Pacific': ['Asia-Pacific', 'Ασία-Ειρηνικός'], 'Latin America & Caribbean': ['Latin America', 'Λατ. Αμερική'], 'Middle East & North Africa': ['Middle East', 'Μέση Ανατολή'], 'North America': ['North America', 'Β. Αμερική'], 'South Asia': ['South Asia', 'Ν. Ασία'], 'Sub-Saharan Africa': ['Africa', 'Αφρική'] };
+        async function loadPerfect() {
+            const capitals = (await wbCountries()).filter(c => c.capitalCity && c.latitude && c.longitude && /^[A-Z]{2}$/.test(c.iso2Code || ''));
+            const chunks = []; for (let i = 0; i < capitals.length; i += 104) chunks.push(capitals.slice(i, i + 104));
+            const parts = await Promise.all(chunks.map(ch => cachedJson(`https://api.open-meteo.com/v1/forecast?latitude=${ch.map(c => c.latitude).join(',')}&longitude=${ch.map(c => c.longitude).join(',')}&current=temperature_2m,apparent_temperature,weather_code,is_day,wind_speed_10m,relative_humidity_2m&timezone=auto`, 10 * 60 * 1000)));
+            const rows = [];
+            chunks.forEach((ch, ci) => { const list = Array.isArray(parts[ci]) ? parts[ci] : [parts[ci]]; ch.forEach((c, i) => { const w = list[i] && list[i].current; if (!w || w.temperature_2m === null || w.temperature_2m === undefined) return; rows.push({ city: c.capitalCity, country: c.name, iso2: c.iso2Code, region: c.region.value, t: w.temperature_2m, feel: w.apparent_temperature, code: w.weather_code, day: !!w.is_day, wind: w.wind_speed_10m, hum: w.relative_humidity_2m, tz: list[i].timezone }); }); });
+            if (!rows.length) throw new Error('No weather for the capitals');
+            PERFECT.rows = rows; PERFECT.limit = 15;
+            renderPerfect();
+        }
+        function setPerfect(key, value) { PERFECT[key] = value; if (key === 'ideal') lsSet('ev_perfect_ideal', value); if (key !== 'limit') PERFECT.limit = 15; renderPerfect(); }
+        function renderPerfect() {
+            const live = document.getElementById('live-section'), rows = PERFECT.rows; if (!live || !rows) return;
+            const ideal = Number(PERFECT.ideal);
+            const list = rows.filter(r => (!PERFECT.sunny || r.code <= 2) && (!PERFECT.day || r.day) && (PERFECT.region === 'all' || r.region === PERFECT.region)).map(r => Object.assign({ diff: Math.abs(r.t - ideal) }, r)).sort((a, b) => a.diff - b.diff);
+            const exact = list.filter(r => r.diff <= 1).length;
+            const lt = r => { try { return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', timeZone: r.tz }); } catch (e) { return ''; } };
+            const chip = (key, label, on) => `<button type="button" onclick="setPerfect('region', '${key.replace(/'/g, '&#39;')}')" class="px-3 py-1.5 rounded-full text-[10px] font-bold transition-all ${on ? 'bg-teal-500/20 text-teal-200 ring-1 ring-teal-400/50' : 'bg-white/5 text-slate-300 hover:bg-white/10'}">${label}</button>`;
+            const toggle = (key, label, on) => `<button type="button" onclick="setPerfect('${key}', ${!on})" class="px-3 py-1.5 rounded-full text-[10px] font-bold transition-all ${on ? 'bg-amber-500/20 text-amber-200 ring-1 ring-amber-400/50' : 'bg-white/5 text-slate-300 hover:bg-white/10'}">${on ? '✓ ' : ''}${label}</button>`;
+            const row = (r, i) => `<button type="button" onclick="jumpTo('weather', '${r.city.replace(/'/g, '&#39;')}')" class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-all text-left">
+                <span class="text-[10px] text-slate-500 w-5">${i + 1}</span>
+                <span class="text-2xl">${flagEmoji(r.iso2)}</span>
+                <div class="min-w-0 flex-1"><div class="text-sm font-bold text-white truncate">${escapeHtml(r.city)}<span class="text-slate-500 font-normal"> · ${escapeHtml(r.country)}</span></div><div class="text-[10px] text-slate-500">${WX_EMOJI(r.code)} ${LANG === 'el' ? wxText(r.code) : WX_TEXT(r.code)} · ${r.day ? '☀️' : '🌙'} ${lt(r)} · ${L('feels', 'αίσθηση')} ${r.feel.toFixed(0)}° · ${L('wind', 'άνεμος')} ${Math.round(r.wind)} km/h</div></div>
+                <div class="text-right"><div class="text-xl font-black font-mono-data ${r.diff <= 1 ? 'text-emerald-400' : r.diff <= 3 ? 'text-teal-300' : 'text-slate-300'}">${r.t.toFixed(1)}°</div><div class="text-[9px] text-slate-500">${r.diff <= 0.5 ? L('spot on', 'ακριβώς') : `${r.t > ideal ? '+' : '−'}${r.diff.toFixed(1)}°`}</div></div>
+            </button>`;
+            const best = list[0];
+            live.innerHTML = `
+    <div class="vault-card rounded-[2rem] md:rounded-[2.5rem] p-5 md:p-8">
+        <p class="text-[10px] font-black text-teal-300 uppercase tracking-[0.3em] mb-2">🌴 ${L('Perfect weather finder', 'Εύρεση τέλειου καιρού')}</p>
+        <h3 class="text-2xl md:text-4xl font-black text-white leading-tight">${L('Where is it', 'Πού έχει')} <span class="text-teal-300" id="perfect-ideal-txt">${ideal}°C</span> ${L('right now?', 'αυτή τη στιγμή;')}</h3>
+        <p class="text-sm text-slate-400 mt-2">${best ? (exact ? L(`${exact} capital${exact === 1 ? ' is' : 's are'} within a degree of ${ideal}°C at this moment. Closest: ${best.city}, ${best.t.toFixed(1)}°C.`, `${exact} πρωτεύουσ${exact === 1 ? 'α είναι' : 'ες είναι'} μέσα σε έναν βαθμό από τους ${ideal}°C αυτή τη στιγμή. Πιο κοντά: ${best.city}, ${best.t.toFixed(1)}°C.`) : L(`Nowhere is exactly ${ideal}°C right now. Closest: ${best.city}, ${best.t.toFixed(1)}°C.`, `Πουθενά δεν έχει ακριβώς ${ideal}°C τώρα. Πιο κοντά: ${best.city}, ${best.t.toFixed(1)}°C.`)) : L('No capital matches these filters right now.', 'Καμία πρωτεύουσα δεν ταιριάζει σε αυτά τα φίλτρα τώρα.')}</p>
+        <div class="mt-6 bg-white/5 border border-white/5 rounded-2xl p-4">
+            <div class="flex items-center justify-between text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2"><span>${L('My ideal temperature', 'Η ιδανική μου θερμοκρασία')}</span><span id="perfect-ideal-lbl" class="text-teal-300">${ideal}°C</span></div>
+            <input type="range" min="-10" max="40" step="1" value="${ideal}" oninput="document.getElementById('perfect-ideal-lbl').textContent = this.value + '°C'; document.getElementById('perfect-ideal-txt').textContent = this.value + '°C'" onchange="setPerfect('ideal', Number(this.value))" class="w-full accent-teal-400">
+            <div class="flex justify-between text-[9px] text-slate-600 mt-1"><span>−10°</span><span>❄️ 0°</span><span>🌤️ 15°</span><span>☀️ 25°</span><span>🔥 40°</span></div>
+            <div class="flex flex-wrap gap-2 mt-4">${toggle('sunny', L('Sunny only', 'Μόνο ηλιόλουστα'), PERFECT.sunny)}${toggle('day', L('Daytime only', 'Μόνο μέρα'), PERFECT.day)}</div>
+            <div class="flex flex-wrap gap-2 mt-2">${chip('all', L('Whole planet', 'Όλος ο πλανήτης'), PERFECT.region === 'all')}${Object.entries(PERFECT_REGIONS).map(([k, v]) => chip(k, L(v[0], v[1]), PERFECT.region === k)).join('')}</div>
+        </div>
+        <div class="divide-y divide-white/5 mt-4">${list.slice(0, PERFECT.limit).map(row).join('') || `<p class="text-slate-500 text-sm p-3">${L('Nothing matches. Loosen a filter.', 'Τίποτα δεν ταιριάζει. Χαλάρωσε ένα φίλτρο.')}</p>`}</div>
+        ${list.length > PERFECT.limit ? `<button type="button" onclick="setPerfect('limit', ${PERFECT.limit + 25})" class="mt-3 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-300">${L('Show more', 'Δείξε περισσότερα')} (${list.length - PERFECT.limit})</button>` : ''}
+        <p class="text-[10px] text-slate-500 mt-5">${L(`Live readings for ${rows.length} capital cities from Open-Meteo, refreshed every 10 minutes. Tap a city for its 50-year weather history.`, `Ζωντανές μετρήσεις για ${rows.length} πρωτεύουσες από το Open-Meteo, ανανέωση κάθε 10 λεπτά. Πάτησε μια πόλη για 50 χρόνια ιστορίας καιρού.`)}</p>
+        ${liveFooter('perfect')}
+    </div>`;
+        }
+
         // ---- Planet Right Now: live extremes across 56 cities ----
         let rightnowTimer = null;
         function stopRightNow() { if (rightnowTimer) { clearInterval(rightnowTimer); rightnowTimer = null; } }
@@ -6231,10 +6611,10 @@ function displayMovies(data, query) {
         };
         // Greek names for every vault: menu entry, short label on the menu button, page title, one-line description.
         const GR = {
-            menu: { quiz: 'Κουίζ Πλανήτη', mystery: 'Μυστήρια Χώρα (ημερήσιο)', hotornot: 'Ζεστό ή Κρύο (ζωντανή μονομαχία)', flags: 'Σημαίες Αστραπή', rightnow: 'Ο Πλανήτης Τώρα', alerts: 'Συναγερμοί Πλανήτη', space: 'Διαστημικός Καιρός', iss: 'Διαστημικός Σταθμός', sky: 'Ο Ουρανός Απόψε', asteroids: 'Παρατηρητήριο Αστεροειδών', onthisday: 'Σαν Σήμερα στη Γη', nearby: 'Άγρια Ζωή Κοντά σου', outside: 'Καλύτερη Ώρα Έξω', weather: 'Αρχείο Καιρού', ocean: 'Παλμός Ωκεανού', forest: 'Δασική Κληρονομιά', agri: 'Γεωργία', energy: 'Ενέργεια & ΑΠΕ', water: 'Ασφάλεια Νερού', carbon: 'Εκπομπές Άνθρακα', endangered: 'Απειλούμενα Είδη', waste: 'Απορρίμματα & Ανακύκλωση', power: 'Ενεργειακό Μείγμα', air: 'Ποιότητα Αέρα', waterstress: 'Υδατική Πίεση', wildlife: 'Γκαλερί Άγριας Ζωής', human_span: 'Προσδόκιμο Ζωής', mental: 'Ψυχική Υγεία', happiness: 'Ευτυχία & Ευημερία', generations: 'Γενιές', univ: 'Πρόσβαση στο Πανεπιστήμιο', public_private: 'Εκπαίδευση: Δημόσια vs Ιδιωτική', health_private: 'Υγεία: Δημόσια vs Ιδιωτική', migration: 'Μετανάστευση & Διασπορά', economy: 'Οικονομία & Αγορά Εργασίας', internet: 'Πρόσβαση στο Διαδίκτυο', music: 'Μουσική Κουλτούρα', cinema: 'Κινηματογράφος', trends: 'Τάσεις Διαδικτύου', city: 'Ιστορίες Πόλεων', compare: 'Χώρα vs Χώρα' },
-            labels: { quiz: 'ΚΟΥΙΖ ΠΛΑΝΗΤΗ', mystery: 'ΜΥΣΤΗΡΙΑ ΧΩΡΑ', hotornot: 'ΖΕΣΤΟ Ή ΚΡΥΟ', flags: 'ΣΗΜΑΙΕΣ ΑΣΤΡΑΠΗ', rightnow: 'Ο ΠΛΑΝΗΤΗΣ ΤΩΡΑ', alerts: 'ΣΥΝΑΓΕΡΜΟΙ ΠΛΑΝΗΤΗ', space: 'ΔΙΑΣΤΗΜΙΚΟΣ ΚΑΙΡΟΣ', iss: 'ΔΙΑΣΤΗΜΙΚΟΣ ΣΤΑΘΜΟΣ', sky: 'Ο ΟΥΡΑΝΟΣ ΑΠΟΨΕ', asteroids: 'ΑΣΤΕΡΟΕΙΔΕΙΣ', onthisday: 'ΣΑΝ ΣΗΜΕΡΑ', nearby: 'ΑΓΡΙΑ ΖΩΗ ΚΟΝΤΑ ΣΟΥ', outside: 'ΚΑΛΥΤΕΡΗ ΩΡΑ ΕΞΩ', weather: 'ΑΡΧΕΙΟ ΚΑΙΡΟΥ', ocean: 'ΠΑΛΜΟΣ ΩΚΕΑΝΟΥ', forest: 'ΔΑΣΙΚΗ ΚΛΗΡΟΝΟΜΙΑ', agri: 'ΓΕΩΡΓΙΑ', energy: 'ΕΝΕΡΓΕΙΑ & ΑΠΕ', water: 'ΑΣΦΑΛΕΙΑ ΝΕΡΟΥ', carbon: 'ΕΚΠΟΜΠΕΣ ΑΝΘΡΑΚΑ', endangered: 'ΑΠΕΙΛΟΥΜΕΝΑ ΕΙΔΗ', waste: 'ΑΠΟΡΡΙΜΜΑΤΑ & ΑΝΑΚΥΚΛΩΣΗ', power: 'ΕΝΕΡΓΕΙΑΚΟ ΜΕΙΓΜΑ', air: 'ΠΟΙΟΤΗΤΑ ΑΕΡΑ', waterstress: 'ΥΔΑΤΙΚΗ ΠΙΕΣΗ', wildlife: 'ΓΚΑΛΕΡΙ ΑΓΡΙΑΣ ΖΩΗΣ', human_span: 'ΠΡΟΣΔΟΚΙΜΟ ΖΩΗΣ', mental: 'ΨΥΧΙΚΗ ΥΓΕΙΑ', happiness: 'ΕΥΤΥΧΙΑ & ΕΥΗΜΕΡΙΑ', generations: 'ΓΕΝΙΕΣ', univ: 'ΠΑΝΕΠΙΣΤΗΜΙΟ', public_private: 'ΕΚΠΑΙΔΕΥΣΗ: ΔΗΜΟΣΙΑ vs ΙΔΙΩΤΙΚΗ', health_private: 'ΥΓΕΙΑ: ΔΗΜΟΣΙΑ vs ΙΔΙΩΤΙΚΗ', migration: 'ΜΕΤΑΝΑΣΤΕΥΣΗ & ΔΙΑΣΠΟΡΑ', economy: 'ΟΙΚΟΝΟΜΙΑ & ΕΡΓΑΣΙΑ', internet: 'ΠΡΟΣΒΑΣΗ ΣΤΟ ΔΙΑΔΙΚΤΥΟ', music: 'ΜΟΥΣΙΚΗ ΚΟΥΛΤΟΥΡΑ', cinema: 'ΚΙΝΗΜΑΤΟΓΡΑΦΟΣ', trends: 'ΤΑΣΕΙΣ ΔΙΑΔΙΚΤΥΟΥ', city: 'ΙΣΤΟΡΙΕΣ ΠΟΛΕΩΝ', compare: 'ΧΩΡΑ VS ΧΩΡΑ' },
-            titles: { weather: 'Ιστορία του Καιρού', ocean: 'Παλμός του Ωκεανού', univ: 'Πρόσβαση στο Πανεπιστήμιο', forest: 'Δασική Κληρονομιά', agri: 'Γεωργία', human_span: 'Προσδόκιμο Ζωής', energy: 'Ενέργεια & Ανανεώσιμες', water: 'Ποιότητα & Ασφάλεια Νερού', mental: 'Ψυχική Υγεία', happiness: 'Ευτυχία & Ευημερία', carbon: 'Εκπομπές Άνθρακα', generations: 'Γενιές', internet: 'Πρόσβαση στο Διαδίκτυο', music: 'Μουσική Κουλτούρα', cinema: 'Ανακάλυψη Κινηματογράφου', endangered: 'Απειλούμενα Είδη', migration: 'Μετανάστευση & Διασπορά', public_private: 'Εκπαίδευση: Δημόσια vs Ιδιωτική', health_private: 'Υγεία: Δημόσια vs Ιδιωτική', economy: 'Οικονομία & Αγορά Εργασίας', trends: 'Τάσεις του Διαδικτύου', waste: 'Απορρίμματα & Ανακύκλωση', power: 'Ενεργειακό Μείγμα', air: 'Ποιότητα Αέρα', waterstress: 'Υδατική Πίεση', alerts: 'Συναγερμοί Πλανήτη', space: 'Διαστημικός Καιρός', compare: 'Χώρα εναντίον Χώρας', wildlife: 'Γκαλερί Άγριας Ζωής', quiz: 'Κουίζ Πλανήτη', iss: 'Εντοπισμός Διαστημικού Σταθμού', city: 'Ιστορίες Πόλεων', mystery: 'Μυστήρια Χώρα', hotornot: 'Ζεστό ή Κρύο', flags: 'Σημαίες Αστραπή', rightnow: 'Ο Πλανήτης Τώρα', sky: 'Ο Ουρανός Απόψε', asteroids: 'Παρατηρητήριο Αστεροειδών', onthisday: 'Σαν Σήμερα στη Γη', nearby: 'Άγρια Ζωή Κοντά σου', outside: 'Καλύτερη Ώρα Έξω' },
-            desc: { weather: '50 χρόνια ημερήσιας ιστορίας θερμοκρασίας για κάθε πόλη', ocean: 'Ζωντανή θερμοκρασία θάλασσας και θαλάσσιοι καύσωνες για κάθε παράκτια πόλη', forest: 'Δασοκάλυψη και τάσεις αποψίλωσης ανά χώρα', agri: 'Ποσοστό γης που χρησιμοποιείται για καλλιέργειες, ανά χώρα', energy: 'Μερίδιο ανανεώσιμων και υδροηλεκτρικών στην ηλεκτρική ενέργεια ανά χώρα', water: 'Πρόσβαση σε ασφαλές πόσιμο νερό ανά χώρα', carbon: 'Εκπομπές αερίων του θερμοκηπίου σε σχέση με προϋπολογισμό άνθρακα με βάση το 1990', endangered: 'Απειλούμενα θηλαστικά, πουλιά, ψάρια και φυτά ανά χώρα', waste: 'Ποσοστά ανακύκλωσης, κομποστοποίησης και ταφής από τον ΟΟΣΑ', power: 'Μερίδια ορυκτών, άνθρακα και πυρηνικών στο δίκτυο, συν κατανάλωση ρεύματος ανά άτομο', wildlife: 'Αληθινές φωτογραφίες άγριας ζωής από πολίτες-επιστήμονες, και τι ζει εκεί', quiz: 'Περισσότερο ή λιγότερο; Μάντεψε ποια χώρα κερδίζει με αληθινά δεδομένα του πλανήτη και προκάλεσε έναν φίλο με σύνδεσμο', iss: 'Πού βρίσκεται ο Διεθνής Διαστημικός Σταθμός αυτή τη στιγμή, ζωντανά στον χάρτη', city: 'Πότε ιδρύθηκε μια πόλη, ποιοι γεννήθηκαν εκεί και οι στιγμές που τη διαμόρφωσαν', mystery: 'Μία μυστική χώρα κάθε μέρα. Έξι προσπάθειες, νέα ένδειξη μετά από κάθε λάθος', hotornot: 'Δύο πόλεις, ζωντανές θερμοκρασίες: ποια είναι πιο ζεστή αυτή τη στιγμή;', flags: 'Τριάντα δευτερόλεπτα, τέσσερις επιλογές ανά σημαία. Πόσες θα αναγνωρίσεις;', rightnow: 'Οι πιο ζεστές, κρύες, ανεμώδεις και καθαρές πόλεις της Γης αυτό το λεπτό', sky: 'Ηλιοβασίλεμα, ώρα σκότους, φεγγάρι, σύννεφα και πιθανότητα σέλας για κάθε πόλη απόψε', asteroids: 'Κάθε αστεροειδής που περνά κοντά στη Γη αυτή την εβδομάδα, με μέγεθος και απόσταση', onthisday: 'Σεισμοί, αποστολές, εκλείψεις και ανακαλύψεις που έγιναν σαν σήμερα', nearby: 'Τι εντόπισαν οι άνθρωποι στη φύση σε ακτίνα 40 χλμ. από κάθε πόλη αυτόν τον μήνα', outside: 'Οι επόμενες 48 ώρες βαθμολογημένες για περπάτημα, τρέξιμο ή πικνίκ: καιρός, αέρας, UV και γύρη μαζί', air: 'Ετήσια έκθεση σε PM2.5 συν ζωντανή μέτρηση στην πρωτεύουσα', waterstress: 'Πόσο από το ανανεώσιμο γλυκό νερό αντλεί μια χώρα κάθε χρόνο', human_span: 'Προσδόκιμο ζωής, με τη διαφορά ανάμεσα σε γυναίκες και άνδρες', mental: 'Θνησιμότητα από αυτοκτονίες ανά 100.000 κατοίκους, ανά φύλο', happiness: 'Βαθμολογίες της Παγκόσμιας Έκθεσης Ευτυχίας με κατάταξη, ώρες εργασίας και ασφάλεια', generations: 'Δείκτες γονιμότητας και η δημογραφική μετάβαση', univ: 'Πανεπιστημιακή εκπαίδευση, με τον διαχωρισμό ανά φύλο', public_private: 'Εγγραφές σε δημόσια και ιδιωτικά σχολεία και δαπάνες για την εκπαίδευση', health_private: 'Ποιος πληρώνει την υγεία: κράτος, ιδιώτες και από την τσέπη', migration: 'Καθαρή μετανάστευση, μεταναστευτικός πληθυσμός και εμβάσματα', economy: 'ΑΕΠ κατά κεφαλήν, ανεργία, ανισότητα και συμμετοχή στην εργασία', internet: 'Πρόσβαση στο διαδίκτυο, με ανάλυση ανά φύλο', music: 'Οι πιο δημοφιλείς καλλιτέχνες και τραγούδια ανά χώρα', cinema: 'Οι ταινίες με την υψηλότερη βαθμολογία που γυρίστηκαν σε μια χώρα', trends: 'Για τι μιλάει το Reddit, παγκόσμια και σε μια χώρα', alerts: 'Πυρκαγιές, καταιγίδες, πλημμύρες, ηφαίστεια, ξηρασίες και σεισμοί που συμβαίνουν τώρα, παγκοσμίως. Πάτησε μια κατηγορία για όλα τα γεγονότα', space: 'Γεωμαγνητικές καταιγίδες, πιθανότητα σέλας και ηλιακή δραστηριότητα, ζωντανά από τη NOAA', compare: 'Βάλε δύο χώρες δίπλα-δίπλα σε οποιονδήποτε δείκτη' }
+            menu: { twins: 'Δίδυμες Χώρες', born: 'Ο Πλανήτης από τη Γέννησή σου', perfect: 'Εύρεση Τέλειου Καιρού', quiz: 'Κουίζ Πλανήτη', mystery: 'Μυστήρια Χώρα (ημερήσιο)', hotornot: 'Ζεστό ή Κρύο (ζωντανή μονομαχία)', flags: 'Σημαίες Αστραπή', rightnow: 'Ο Πλανήτης Τώρα', alerts: 'Συναγερμοί Πλανήτη', space: 'Διαστημικός Καιρός', iss: 'Διαστημικός Σταθμός', sky: 'Ο Ουρανός Απόψε', asteroids: 'Παρατηρητήριο Αστεροειδών', onthisday: 'Σαν Σήμερα στη Γη', nearby: 'Άγρια Ζωή Κοντά σου', outside: 'Καλύτερη Ώρα Έξω', weather: 'Αρχείο Καιρού', ocean: 'Παλμός Ωκεανού', forest: 'Δασική Κληρονομιά', agri: 'Γεωργία', energy: 'Ενέργεια & ΑΠΕ', water: 'Ασφάλεια Νερού', carbon: 'Εκπομπές Άνθρακα', endangered: 'Απειλούμενα Είδη', waste: 'Απορρίμματα & Ανακύκλωση', power: 'Ενεργειακό Μείγμα', air: 'Ποιότητα Αέρα', waterstress: 'Υδατική Πίεση', wildlife: 'Γκαλερί Άγριας Ζωής', human_span: 'Προσδόκιμο Ζωής', mental: 'Ψυχική Υγεία', happiness: 'Ευτυχία & Ευημερία', generations: 'Γενιές', univ: 'Πρόσβαση στο Πανεπιστήμιο', public_private: 'Εκπαίδευση: Δημόσια vs Ιδιωτική', health_private: 'Υγεία: Δημόσια vs Ιδιωτική', migration: 'Μετανάστευση & Διασπορά', economy: 'Οικονομία & Αγορά Εργασίας', internet: 'Πρόσβαση στο Διαδίκτυο', music: 'Μουσική Κουλτούρα', cinema: 'Κινηματογράφος', trends: 'Τάσεις Διαδικτύου', city: 'Ιστορίες Πόλεων', compare: 'Χώρα vs Χώρα' },
+            labels: { twins: 'ΔΙΔΥΜΕΣ ΧΩΡΕΣ', born: 'ΑΠΟ ΤΗ ΓΕΝΝΗΣΗ ΣΟΥ', perfect: 'ΤΕΛΕΙΟΣ ΚΑΙΡΟΣ', quiz: 'ΚΟΥΙΖ ΠΛΑΝΗΤΗ', mystery: 'ΜΥΣΤΗΡΙΑ ΧΩΡΑ', hotornot: 'ΖΕΣΤΟ Ή ΚΡΥΟ', flags: 'ΣΗΜΑΙΕΣ ΑΣΤΡΑΠΗ', rightnow: 'Ο ΠΛΑΝΗΤΗΣ ΤΩΡΑ', alerts: 'ΣΥΝΑΓΕΡΜΟΙ ΠΛΑΝΗΤΗ', space: 'ΔΙΑΣΤΗΜΙΚΟΣ ΚΑΙΡΟΣ', iss: 'ΔΙΑΣΤΗΜΙΚΟΣ ΣΤΑΘΜΟΣ', sky: 'Ο ΟΥΡΑΝΟΣ ΑΠΟΨΕ', asteroids: 'ΑΣΤΕΡΟΕΙΔΕΙΣ', onthisday: 'ΣΑΝ ΣΗΜΕΡΑ', nearby: 'ΑΓΡΙΑ ΖΩΗ ΚΟΝΤΑ ΣΟΥ', outside: 'ΚΑΛΥΤΕΡΗ ΩΡΑ ΕΞΩ', weather: 'ΑΡΧΕΙΟ ΚΑΙΡΟΥ', ocean: 'ΠΑΛΜΟΣ ΩΚΕΑΝΟΥ', forest: 'ΔΑΣΙΚΗ ΚΛΗΡΟΝΟΜΙΑ', agri: 'ΓΕΩΡΓΙΑ', energy: 'ΕΝΕΡΓΕΙΑ & ΑΠΕ', water: 'ΑΣΦΑΛΕΙΑ ΝΕΡΟΥ', carbon: 'ΕΚΠΟΜΠΕΣ ΑΝΘΡΑΚΑ', endangered: 'ΑΠΕΙΛΟΥΜΕΝΑ ΕΙΔΗ', waste: 'ΑΠΟΡΡΙΜΜΑΤΑ & ΑΝΑΚΥΚΛΩΣΗ', power: 'ΕΝΕΡΓΕΙΑΚΟ ΜΕΙΓΜΑ', air: 'ΠΟΙΟΤΗΤΑ ΑΕΡΑ', waterstress: 'ΥΔΑΤΙΚΗ ΠΙΕΣΗ', wildlife: 'ΓΚΑΛΕΡΙ ΑΓΡΙΑΣ ΖΩΗΣ', human_span: 'ΠΡΟΣΔΟΚΙΜΟ ΖΩΗΣ', mental: 'ΨΥΧΙΚΗ ΥΓΕΙΑ', happiness: 'ΕΥΤΥΧΙΑ & ΕΥΗΜΕΡΙΑ', generations: 'ΓΕΝΙΕΣ', univ: 'ΠΑΝΕΠΙΣΤΗΜΙΟ', public_private: 'ΕΚΠΑΙΔΕΥΣΗ: ΔΗΜΟΣΙΑ vs ΙΔΙΩΤΙΚΗ', health_private: 'ΥΓΕΙΑ: ΔΗΜΟΣΙΑ vs ΙΔΙΩΤΙΚΗ', migration: 'ΜΕΤΑΝΑΣΤΕΥΣΗ & ΔΙΑΣΠΟΡΑ', economy: 'ΟΙΚΟΝΟΜΙΑ & ΕΡΓΑΣΙΑ', internet: 'ΠΡΟΣΒΑΣΗ ΣΤΟ ΔΙΑΔΙΚΤΥΟ', music: 'ΜΟΥΣΙΚΗ ΚΟΥΛΤΟΥΡΑ', cinema: 'ΚΙΝΗΜΑΤΟΓΡΑΦΟΣ', trends: 'ΤΑΣΕΙΣ ΔΙΑΔΙΚΤΥΟΥ', city: 'ΙΣΤΟΡΙΕΣ ΠΟΛΕΩΝ', compare: 'ΧΩΡΑ VS ΧΩΡΑ' },
+            titles: { twins: 'Δίδυμες Χώρες', born: 'Ο Πλανήτης από τότε που Γεννήθηκες', perfect: 'Εύρεση Τέλειου Καιρού', weather: 'Ιστορία του Καιρού', ocean: 'Παλμός του Ωκεανού', univ: 'Πρόσβαση στο Πανεπιστήμιο', forest: 'Δασική Κληρονομιά', agri: 'Γεωργία', human_span: 'Προσδόκιμο Ζωής', energy: 'Ενέργεια & Ανανεώσιμες', water: 'Ποιότητα & Ασφάλεια Νερού', mental: 'Ψυχική Υγεία', happiness: 'Ευτυχία & Ευημερία', carbon: 'Εκπομπές Άνθρακα', generations: 'Γενιές', internet: 'Πρόσβαση στο Διαδίκτυο', music: 'Μουσική Κουλτούρα', cinema: 'Ανακάλυψη Κινηματογράφου', endangered: 'Απειλούμενα Είδη', migration: 'Μετανάστευση & Διασπορά', public_private: 'Εκπαίδευση: Δημόσια vs Ιδιωτική', health_private: 'Υγεία: Δημόσια vs Ιδιωτική', economy: 'Οικονομία & Αγορά Εργασίας', trends: 'Τάσεις του Διαδικτύου', waste: 'Απορρίμματα & Ανακύκλωση', power: 'Ενεργειακό Μείγμα', air: 'Ποιότητα Αέρα', waterstress: 'Υδατική Πίεση', alerts: 'Συναγερμοί Πλανήτη', space: 'Διαστημικός Καιρός', compare: 'Χώρα εναντίον Χώρας', wildlife: 'Γκαλερί Άγριας Ζωής', quiz: 'Κουίζ Πλανήτη', iss: 'Εντοπισμός Διαστημικού Σταθμού', city: 'Ιστορίες Πόλεων', mystery: 'Μυστήρια Χώρα', hotornot: 'Ζεστό ή Κρύο', flags: 'Σημαίες Αστραπή', rightnow: 'Ο Πλανήτης Τώρα', sky: 'Ο Ουρανός Απόψε', asteroids: 'Παρατηρητήριο Αστεροειδών', onthisday: 'Σαν Σήμερα στη Γη', nearby: 'Άγρια Ζωή Κοντά σου', outside: 'Καλύτερη Ώρα Έξω' },
+            desc: { twins: 'Ποιες χώρες μοιάζουν πιο πολύ στη δική σου; Σύγκριση σε κάθε θησαυροφυλάκιο, οι πέντε πιο κοντινές με κάθε αριθμό δίπλα-δίπλα', born: 'Βάλε την ημερομηνία γέννησής σου: πώς άλλαξαν ο αέρας, το κλίμα, οι άνθρωποι και ο πλανήτης στη ζωή σου', perfect: 'Διάλεξε την ιδανική σου θερμοκρασία και βρες τις πρωτεύουσες που την έχουν αυτή τη στιγμή', weather: '50 χρόνια ημερήσιας ιστορίας θερμοκρασίας για κάθε πόλη', ocean: 'Ζωντανή θερμοκρασία θάλασσας και θαλάσσιοι καύσωνες για κάθε παράκτια πόλη', forest: 'Δασοκάλυψη και τάσεις αποψίλωσης ανά χώρα', agri: 'Ποσοστό γης που χρησιμοποιείται για καλλιέργειες, ανά χώρα', energy: 'Μερίδιο ανανεώσιμων και υδροηλεκτρικών στην ηλεκτρική ενέργεια ανά χώρα', water: 'Πρόσβαση σε ασφαλές πόσιμο νερό ανά χώρα', carbon: 'Εκπομπές αερίων του θερμοκηπίου σε σχέση με προϋπολογισμό άνθρακα με βάση το 1990', endangered: 'Απειλούμενα θηλαστικά, πουλιά, ψάρια και φυτά ανά χώρα', waste: 'Ποσοστά ανακύκλωσης, κομποστοποίησης και ταφής από τον ΟΟΣΑ', power: 'Μερίδια ορυκτών, άνθρακα και πυρηνικών στο δίκτυο, συν κατανάλωση ρεύματος ανά άτομο', wildlife: 'Αληθινές φωτογραφίες άγριας ζωής από πολίτες-επιστήμονες, και τι ζει εκεί', quiz: 'Περισσότερο ή λιγότερο; Μάντεψε ποια χώρα κερδίζει με αληθινά δεδομένα του πλανήτη και προκάλεσε έναν φίλο με σύνδεσμο', iss: 'Πού βρίσκεται ο Διεθνής Διαστημικός Σταθμός αυτή τη στιγμή, ζωντανά στον χάρτη', city: 'Πότε ιδρύθηκε μια πόλη, ποιοι γεννήθηκαν εκεί και οι στιγμές που τη διαμόρφωσαν', mystery: 'Μία μυστική χώρα κάθε μέρα. Έξι προσπάθειες, νέα ένδειξη μετά από κάθε λάθος', hotornot: 'Δύο πόλεις, ζωντανές θερμοκρασίες: ποια είναι πιο ζεστή αυτή τη στιγμή;', flags: 'Τριάντα δευτερόλεπτα, τέσσερις επιλογές ανά σημαία. Πόσες θα αναγνωρίσεις;', rightnow: 'Οι πιο ζεστές, κρύες, ανεμώδεις και καθαρές πόλεις της Γης αυτό το λεπτό', sky: 'Ηλιοβασίλεμα, ώρα σκότους, φεγγάρι, σύννεφα και πιθανότητα σέλας για κάθε πόλη απόψε', asteroids: 'Κάθε αστεροειδής που περνά κοντά στη Γη αυτή την εβδομάδα, με μέγεθος και απόσταση', onthisday: 'Σεισμοί, αποστολές, εκλείψεις και ανακαλύψεις που έγιναν σαν σήμερα', nearby: 'Τι εντόπισαν οι άνθρωποι στη φύση σε ακτίνα 40 χλμ. από κάθε πόλη αυτόν τον μήνα', outside: 'Οι επόμενες 48 ώρες βαθμολογημένες για περπάτημα, τρέξιμο ή πικνίκ: καιρός, αέρας, UV και γύρη μαζί', air: 'Ετήσια έκθεση σε PM2.5 συν ζωντανή μέτρηση στην πρωτεύουσα', waterstress: 'Πόσο από το ανανεώσιμο γλυκό νερό αντλεί μια χώρα κάθε χρόνο', human_span: 'Προσδόκιμο ζωής, με τη διαφορά ανάμεσα σε γυναίκες και άνδρες', mental: 'Θνησιμότητα από αυτοκτονίες ανά 100.000 κατοίκους, ανά φύλο', happiness: 'Βαθμολογίες της Παγκόσμιας Έκθεσης Ευτυχίας με κατάταξη, ώρες εργασίας και ασφάλεια', generations: 'Δείκτες γονιμότητας και η δημογραφική μετάβαση', univ: 'Πανεπιστημιακή εκπαίδευση, με τον διαχωρισμό ανά φύλο', public_private: 'Εγγραφές σε δημόσια και ιδιωτικά σχολεία και δαπάνες για την εκπαίδευση', health_private: 'Ποιος πληρώνει την υγεία: κράτος, ιδιώτες και από την τσέπη', migration: 'Καθαρή μετανάστευση, μεταναστευτικός πληθυσμός και εμβάσματα', economy: 'ΑΕΠ κατά κεφαλήν, ανεργία, ανισότητα και συμμετοχή στην εργασία', internet: 'Πρόσβαση στο διαδίκτυο, με ανάλυση ανά φύλο', music: 'Οι πιο δημοφιλείς καλλιτέχνες και τραγούδια ανά χώρα', cinema: 'Οι ταινίες με την υψηλότερη βαθμολογία που γυρίστηκαν σε μια χώρα', trends: 'Για τι μιλάει το Reddit, παγκόσμια και σε μια χώρα', alerts: 'Πυρκαγιές, καταιγίδες, πλημμύρες, ηφαίστεια, ξηρασίες και σεισμοί που συμβαίνουν τώρα, παγκοσμίως. Πάτησε μια κατηγορία για όλα τα γεγονότα', space: 'Γεωμαγνητικές καταιγίδες, πιθανότητα σέλας και ηλιακή δραστηριότητα, ζωντανά από τη NOAA', compare: 'Βάλε δύο χώρες δίπλα-δίπλα σε οποιονδήποτε δείκτη' }
         };
         function t(key) { const e = UI[key]; if (!e) return key; return (LANG === 'el' && e[1]) ? e[1] : e[0]; }
         function trv(group, mode, fallback) { return (LANG === 'el' && GR[group] && GR[group][mode]) ? GR[group][mode] : fallback; }
@@ -6285,7 +6665,7 @@ function displayMovies(data, query) {
             set('pollution-label', isOcean ? t('s_current') : t('s_pollution'));
             document.querySelectorAll('.rec-prefix').forEach(el => el.innerText = isOcean ? t('s_on') : t('s_year'));
             const titles = {
-                weather: "Weather History Vault", ocean: "Ocean Pulse Vault", univ: "University Access Vault", forest: "Forest Heritage Vault", agri: "Agriculture Vault", human_span: "Human Span Vault", energy: "Energy & Renewables Vault", water: "Water Quality & Safety Vault", mental: "Mental Health Vault", happiness: "Happiness & Wellbeing Vault", carbon: "Carbon Emissions Vault", generations: "Generations Vault", internet: "Internet Access Vault", music: "Music Culture Vault", cinema: "Cinema Discovery Vault", endangered: "Endangered Species Vault", migration: "Migration & Diaspora Vault", public_private: "Education: Public vs Private Vault", health_private: "Health: Public vs Private Vault", economy: "Economy & Labor Market Vault", trends: "Internet Trends Vault", waste: "Waste & Recycling Vault", power: "Power Mix Vault", air: "Air Quality Vault", waterstress: "Water Stress Vault", alerts: "Planet Alerts", space: "Space Weather Vault", compare: "Country vs Country", wildlife: "Wildlife Gallery", quiz: "Planet Quiz", iss: "Space Station Tracker", city: "City Stories", mystery: "Mystery Country", hotornot: "Hot or Not", flags: "Flag Flash", rightnow: "Planet Right Now", sky: "Sky Tonight", asteroids: "Asteroid Watch", onthisday: "On This Day on Earth", nearby: "Wildlife Near You", outside: "Best Hour Outside"
+                weather: "Weather History Vault", ocean: "Ocean Pulse Vault", univ: "University Access Vault", forest: "Forest Heritage Vault", agri: "Agriculture Vault", human_span: "Human Span Vault", energy: "Energy & Renewables Vault", water: "Water Quality & Safety Vault", mental: "Mental Health Vault", happiness: "Happiness & Wellbeing Vault", carbon: "Carbon Emissions Vault", generations: "Generations Vault", internet: "Internet Access Vault", music: "Music Culture Vault", cinema: "Cinema Discovery Vault", endangered: "Endangered Species Vault", migration: "Migration & Diaspora Vault", public_private: "Education: Public vs Private Vault", health_private: "Health: Public vs Private Vault", economy: "Economy & Labor Market Vault", trends: "Internet Trends Vault", waste: "Waste & Recycling Vault", power: "Power Mix Vault", air: "Air Quality Vault", waterstress: "Water Stress Vault", alerts: "Planet Alerts", space: "Space Weather Vault", compare: "Country vs Country", wildlife: "Wildlife Gallery", quiz: "Planet Quiz", iss: "Space Station Tracker", city: "City Stories", mystery: "Mystery Country", hotornot: "Hot or Not", flags: "Flag Flash", rightnow: "Planet Right Now", sky: "Sky Tonight", asteroids: "Asteroid Watch", onthisday: "On This Day on Earth", nearby: "Wildlife Near You", outside: "Best Hour Outside", twins: "Country Twins", born: "The Planet Since You Were Born", perfect: "Perfect Weather Finder"
             };
             set('main-title', trv('titles', mode, titles[mode] || 'EarthVault'));
             set('main-subtitle', trv('desc', mode, (MODE_INFO[mode] && MODE_INFO[mode].desc) || t('subtitle_default')));

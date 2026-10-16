@@ -8,7 +8,7 @@
 
 ## ✨ Features
 
-#### 📊 **41 Data Visualization Sections**
+#### 📊 **44 Data Visualization Sections**
 EarthVault provides comprehensive insights across environmental, social, economic, and cultural dimensions:
 
 #### 🌍 **Environmental Data (13 sections)**
@@ -44,7 +44,7 @@ EarthVault provides comprehensive insights across environmental, social, economi
 - 🚩 **Flag Flash** - Thirty seconds, four choices per flag, with distractors from the same region. Personal best and share
 - ⚔️ **Challenge a friend** - Planet Quiz, Hot or Not and Flag Flash each have a "Challenge a friend" button. It starts a seeded round (10 questions, or the same flag deck for 30 seconds), then gives you a link with your score. Your friend opens it, plays the exact same questions, and both scores appear side by side with a winner. They can send their result back and you see who won without playing again. No account and no server: everything is encoded in the link (`?vault=quiz&ch=<seed>&cs=<score>&cb=<name>`)
 
-#### 🛰️ **Live Earth (9 sections)**
+#### 🛰️ **Live Earth (10 sections)**
 - 🌍 **Planet Right Now** - Live leaderboards across 56 cities: hottest, coldest, windiest, cleanest and most polluted air, strongest UV, plus how many are clear, raining, snowing or in night. Refreshes every 10 minutes
 - 🛰️ **Planet Alerts** - Worldwide wildfires, floods, cyclones, volcanic eruptions and droughts from GDACS (the EU and UN disaster alert system, with green/orange/red impact levels), icebergs and US fire incidents from NASA EONET, and the last 24 hours of M4.5+ earthquakes from USGS. Tap a category tile to list every event in it, or filter by country or place ("Greece", "Australia"). No search needed
 - ☀️ **Space Weather** - NOAA geomagnetic, radio and radiation scales, Kp history and forecast, aurora outlook, solar wind and the latest bulletins
@@ -54,9 +54,12 @@ EarthVault provides comprehensive insights across environmental, social, economi
 - 📅 **On This Day on Earth** - Wikipedia's events for today, with planet, nature and space moments highlighted, and a random-day button
 - 🐾 **Wildlife Near You** - iNaturalist sightings within 40 km of any city in the last 30 days: most-seen species and the latest photos
 - 🏃 **Best Hour Outside** - The next 48 hours for any city scored 0-100 for being outdoors, blending feels-like temperature, rain chance, wind, UV, European air-quality index and pollen. Shows the best two-hour window today and tomorrow, the hour to avoid, a 48-hour score chart, and the best hour for a walk, run, ride or picnic
+- 🌴 **Perfect Weather Finder** - Pick your ideal temperature on a slider and see which of 208 capital cities have it at this very moment, with sunny-only, daytime-only and region filters. Live readings from Open-Meteo for every capital in two calls, refreshed every 10 minutes
 
-#### 🧰 **Tools (1 section)**
+#### 🧰 **Tools (3 sections)**
 - ⚖️ **Country vs Country** - Any two countries side by side on 16 World Bank metrics, with a two-line history chart and a plain-language verdict
+- 👯 **Country Twins** - Type a country and get its five closest twins across 25 measures drawn from the other vaults: fertility, life expectancy, ageing, population, GDP per person, unemployment, inequality, internet, degrees, education and health spending, suicide rate, happiness, migrants, forest, farmland, rainfall, water, water stress, air pollution, renewables, fossil power, electricity use, emissions per person and threatened species. Every number is shown side by side with a green/amber/red closeness dot, plus the least similar country and a jump to Country vs Country. Each measure is scaled by the interquartile range across all countries (log scale for money, population and pollution), so the match is a fair average
+- 🎂 **The Planet Since You Were Born** - Enter your birth date (and optionally your city) for a personal Earth report: days alive, orbits around the Sun, distance travelled through space, full moons, ISS orbits, then-and-now tiles for CO₂ (NOAA Mauna Loa), global temperature (NASA GISTEMP), world population, life expectancy, urbanisation, internet, renewables, forest and emissions, and the actual weather in your city on the day you were born versus your last birthday (Open-Meteo ERA5 archive, 1940 onwards)
 
 #### 🌐 **Digital & Cultural (5 sections)**
 - 🌐 **Internet Access** - Digital connectivity and internet penetration with gender breakdowns
@@ -73,13 +76,13 @@ EarthVault provides comprehensive insights across environmental, social, economi
 - 🛂 **Country Passport** - Every country result opens with the flag, capital, region, income group and population
 - 🎲 **Surprise Me** - A dice button next to the search box picks a random place for the current vault
 - 📸 **Share Cards** - One click turns any result into a shareable 1200×630 image (native share sheet on phones, download on desktop)
-- 🧭 **Explorer Progress** - A counter in the header tracks how many of the 41 vaults you have opened, with milestone celebrations
+- 🧭 **Explorer Progress** - A counter in the header tracks how many of the 44 vaults you have opened, with milestone celebrations
 - 🛰️ **Earth Today** - The splash screen shows the latest full-disc photo of Earth from NASA's EPIC camera
 - 💡 **First-visit Tips** - A dismissable three-step guide; press `/` anywhere to jump to the search box
 - 🌊 **Tides in Ocean Pulse** - Current tide height and the next high or low water for any coastal city
 - 🌼 **Pollen & UV in Air Quality** - The live capital reading now includes UV and pollen levels (Europe)
 - 🛰️ **Live splash counters** - Earthquakes in the last 24 hours, wildfires burning now and the current Kp index, next to the statistical daily estimates
-- 🔎 **Vault Finder** - Type to filter the 41 vaults in the menu; the last vault you used is remembered
+- 🔎 **Vault Finder** - Type to filter the 44 vaults in the menu; the last vault you used is remembered
 - 💬 **Friendly Feedback** - Non-blocking toasts replace browser alerts; empty or failed searches never leave stale data on screen
 - 🧭 **Guided Search** - Every vault shows a one-line description and "Try" example chips; Enter submits, and results scroll into view on phones
 - 📱 **Phone-first Checks** - Verified at 390px: no horizontal overflow, 44px tap targets in the menu, 3-column timeline grid
@@ -130,7 +133,7 @@ The pieces behind it: `manifest.json` (name, icons, theme, shortcuts), `sw.js` (
 ### 🔌 **External APIs**
 
 #### **World Bank Open Data**
-Social, economic, and environmental indicators:
+Social, economic, and environmental indicators (Country Twins pulls 21 of them for every country in four multi-indicator calls with `source=2&mrnev=1`, plus the four threatened-species counts one by one; the capital-city coordinates from the country list power the Perfect Weather Finder):
 - Forest coverage (AG.LND.FRST.ZS)
 - Agricultural land (AG.LND.AGRI.ZS)
 - Renewable energy (EG.ELC.RNEW.ZS)
@@ -247,6 +250,9 @@ Wildlife Near You queries recent observations and species counts around a coordi
 #### **Open-Meteo hourly forecasts**
 
 Best Hour Outside combines the forecast API (hourly temperature, apparent temperature, precipitation probability, wind, UV, weather code, daylight) with the air-quality API (hourly European AQI and five pollen types, Europe only) for three days. No key required.
+
+#### **NOAA GML & NASA GISTEMP**
+The Planet Since You Were Born reads the Mauna Loa annual CO₂ means (`gml.noaa.gov/webdata/ccgg/trends/co2/co2_annmean_mlo.csv`, from 1959) and the GISTEMP land-ocean monthly anomalies relayed by global-warming.org (`/api/temperature-api`, from 1880), both without a key.
 
 #### **NASA EPIC**
 
@@ -376,7 +382,7 @@ The following API keys are included in the code:
 - ✅ **TMDB** - Key included (free tier)
 - ✅ **OECD** - No key required (public API)
 - ✅ **reddit** - No key required (public API)
-- ✅ **Our World in Data, GDACS, NASA EONET, USGS, NOAA SWPC, NASA EPIC, GBIF, iNaturalist, Where the ISS at?, BigDataCloud, Wikipedia, Wikidata, sunrise-sunset.org** - No key required (public APIs with open CORS)
+- ✅ **Our World in Data, GDACS, NOAA GML, NASA EONET, USGS, NOAA SWPC, NASA EPIC, GBIF, iNaturalist, Where the ISS at?, BigDataCloud, Wikipedia, Wikidata, sunrise-sunset.org** - No key required (public APIs with open CORS)
 - ⚠️ **NASA NeoWs** - Uses the public DEMO_KEY (rate limited per visitor); swap in a free key for production
 
 
