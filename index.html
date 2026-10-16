@@ -4160,9 +4160,20 @@ function displayMovies(data, query) {
         async function cachedJson(url, ttlMs = 10 * 60 * 1000) {
             const hit = liveCache[url];
             if (hit && Date.now() - hit.t < ttlMs) return hit.data;
-            const res = await fetch(url);
-            if (!res.ok) throw new Error(`${res.status} from ${url.split('/')[2]}`);
-            const data = await res.json();
+            const host = url.split('/')[2];
+            // Mobile networks and the World Bank API sometimes leave a request hanging; give up after 20 s, retry once, fall back to an older copy.
+            const attempt = async ms => {
+                const ctrl = new AbortController(); const timer = setTimeout(() => ctrl.abort(), ms);
+                try { const res = await fetch(url, { signal: ctrl.signal }); if (!res.ok) throw new Error(`${res.status} from ${host}`); return await res.json(); }
+                finally { clearTimeout(timer); }
+            };
+            let data;
+            try { data = await attempt(20000); }
+            catch (e) {
+                if (hit) { console.warn('Using an older cached copy from', host, '-', e.message); return hit.data; }
+                try { data = await attempt(25000); }
+                catch (e2) { throw new Error(e2 && e2.name === 'AbortError' ? `${host} did not answer in time` : (e2 && e2.message) || String(e2)); }
+            }
             liveCache[url] = { t: Date.now(), data };
             return data;
         }
@@ -4195,7 +4206,12 @@ function displayMovies(data, query) {
             if (pulse) { pulse.classList.add('hidden'); pulse.style.display = 'none'; }
             document.getElementById('app-content').classList.add('hidden');
             live.classList.remove('hidden');
-            live.innerHTML = `<div class="text-center py-16 text-slate-500 text-xs font-bold uppercase tracking-widest animate-pulse">${t('contacting')}</div>`;
+            const waitSeq = (runLiveMode.seq = (runLiveMode.seq || 0) + 1);
+            live.innerHTML = `<div id="live-wait" data-seq="${waitSeq}" class="text-center py-16 text-slate-500 text-xs font-bold uppercase tracking-widest animate-pulse">${t('contacting')}</div>`;
+            setTimeout(() => {
+                const w = document.getElementById('live-wait');
+                if (w && w.dataset.seq === String(waitSeq) && currentMode === mode) w.insertAdjacentHTML('beforeend', `<div class="mt-5 normal-case tracking-normal font-normal animate-none"><p class="text-slate-500 text-xs mb-3">${L('Taking longer than usual. The data source may be slow.', 'Αργεί περισσότερο από το συνηθισμένο. Η πηγή δεδομένων μπορεί να είναι αργή.')}</p><button type="button" onclick="runLiveMode('${mode}')" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold text-white">${t('retry')}</button></div>`);
+            }, 8000);
             if (CH.active && CH.game !== mode) CH.active = false;
             if (CH.pending && CH.pending.game === mode) { const p = CH.pending; CH.pending = null; renderChallengeIntro(p); return; }
             const loader = { alerts: loadPlanetAlerts, space: loadSpaceWeather, quiz: loadQuiz, iss: loadISS, mystery: loadMystery, hotornot: loadHotOrNot, flags: loadFlags, rightnow: loadRightNow, asteroids: loadAsteroids, onthisday: () => loadOnThisDay(), born: loadBorn, perfect: loadPerfect }[mode] || loadPlanetAlerts;
@@ -5172,6 +5188,10 @@ function displayMovies(data, query) {
             while ((b.c.id === a.c.id || b.val === a.val) && guard++ < 25) b = pick(pool);
             QUIZ.current = { metric, a, b, answered: false };
             renderQuiz(live);
+            if (!QUIZ.prefetched) { // warm the cache for the other metrics in the background so the next questions appear instantly
+                QUIZ.prefetched = true;
+                COMPARE_METRICS.forEach((m, i) => setTimeout(() => { if (currentMode === 'quiz') cachedJson(`https://api.worldbank.org/v2/country/all/indicator/${m.ind}?format=json&mrnev=1&per_page=400`, 24 * 3600 * 1000).catch(() => {}); }, 600 + i * 500));
+            }
         }
         const quizFmt = (m, v) => m.money ? '$' + Math.round(v).toLocaleString() : (Math.abs(v) >= 100 ? Math.round(v).toLocaleString() : (+v).toFixed(1)) + m.unit;
         function quizHeader() {
