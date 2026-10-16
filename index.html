@@ -6427,7 +6427,7 @@ function displayMovies(data, query) {
                 el.innerHTML = `<div class="mt-5 bg-white/5 border border-white/10 rounded-2xl p-4 text-left">
                     <div class="flex flex-wrap items-center justify-between gap-2">
                         <div class="text-[10px] font-black text-amber-300 uppercase tracking-widest">🌍 ${L('Global leaderboard', 'Παγκόσμια κατάταξη')} · ${L(g.metric[0], g.metric[1])}</div>
-                        ${total !== null ? `<div class="text-[10px] text-slate-500">${total} ${L('players', 'παίκτες')}</div>` : ''}
+                        ${total !== null ? `<div class="text-[10px] text-slate-500">${total} ${L('rounds', 'γύροι')}</div>` : ''}
                     </div>
                     ${score > 0 ? `<p class="text-xs mt-2 ${posted ? 'text-emerald-300' : 'text-slate-400'}">${posted ? '✅ ' : ''}${L('Your result', 'Το αποτέλεσμά σου')}: <b class="text-white">${g.fmt(score)}</b>${rank ? ` · ${L('rank', 'θέση')} <b class="text-white">#${rank}</b> ${L('of', 'από')} ${total}` : ''}${name ? ` · ${escapeHtml(name)} <button type="button" onclick="lsSet('ev_player_name', ''); showToast('${L('Name cleared. You will be asked again next time.', 'Το όνομα διαγράφηκε. Θα ερωτηθείς ξανά.')}', 'info', 3000)" class="text-slate-500 hover:text-white">✎</button>` : ''}</p>` : ''}
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 mt-3">
