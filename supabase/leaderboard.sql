@@ -17,11 +17,9 @@ alter table public.scores enable row level security;
 -- visitors may only insert; reading goes through the view below
 create policy "insert scores" on public.scores for insert to anon with check (true);
 
--- best score per device and game, so one player cannot fill the top 5
+-- every round counts on its own (one strong player may hold several places)
 create view public.leaderboard as
-  select distinct on (game, device) game, name, score, country, created_at
-  from public.scores
-  order by game, device, score desc, created_at asc;
+  select game, name, score, country, created_at from public.scores;
 grant select on public.leaderboard to anon;
 
 -- spam guard: one score per device every 20 seconds, 200 a day, clean names
