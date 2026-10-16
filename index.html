@@ -2705,6 +2705,8 @@ function displayMovies(data, query) {
                 // Fetch additional indicators based on mode
                 if (currentMode === 'energy') {
                     ind2 = 'EG.ELC.HYRO.ZS';
+                    ind3 = 'EG.ELC.FOSL.ZS';  // fossil share, runs years beyond the renewable series
+                    ind4 = 'EG.ELC.NUCL.ZS';  // nuclear share, same
                 } else if (currentMode === 'endangered') {
                     ind2 = 'EN.BRD.THRD.NO';  // Birds
                     ind3 = 'EN.FSH.THRD.NO';  // Fish
@@ -2758,6 +2760,12 @@ function displayMovies(data, query) {
 
         function processWBResults(percData, secondData, thirdData, name, fourthData) {
             const history = (percData || []).filter(d => d.value !== null).map(d => ({ year: d.date, val: parseFloat(d.value.toFixed(2)) })).reverse();
+            if (currentMode === 'energy' && thirdData) {
+                // The World Bank renewable share stops in 2021 (IEA licence) while fossil, nuclear and hydro shares run on; the three sum to ~100, so later years are derived.
+                const fossil = toHist(thirdData), nuclear = toHist(fourthData);
+                const lastYear = history.length ? +history[history.length - 1].year : 0;
+                fossil.filter(f => +f.year > lastYear).forEach(f => { const n = nuclear.find(x => x.year === f.year); const v = 100 - f.val - (n ? n.val : 0); if (v >= 0 && v <= 100) history.push({ year: f.year, val: parseFloat(v.toFixed(2)), derived: true }); });
+            }
             if (!history || history.length === 0) return showToast("Data unavailable.");
             const latest = history[history.length-1];
             const growth = latest.val - history[0].val;
@@ -2793,7 +2801,7 @@ function displayMovies(data, query) {
             <h5 class="text-[10px] font-black text-orange-400 mb-2 uppercase tracking-widest">Renewable Share</h5>
             <p class="text-3xl font-black text-white">${renewableTotal}%</p>
             <p class="text-[9px] text-slate-500 mt-2 leading-tight">
-                Percentage of electricity from solar, wind, and hydro.
+                Percentage of electricity from solar, wind, and hydro.${latest.derived ? ` Years after ${history.filter(h => !h.derived).slice(-1)[0].year} are derived as 100% minus the fossil and nuclear shares.` : ''}
             </p>
         </div>
 
@@ -5204,6 +5212,7 @@ function displayMovies(data, query) {
             const higher = q.a.val > q.b.val ? 'a' : 'b';
             const correct = side === higher;
             QUIZ.asked++;
+            const endedStreak = correct ? 0 : QUIZ.streak;
             if (correct) { QUIZ.score++; QUIZ.streak++; } else QUIZ.streak = 0;
             let newBest = false;
             if (QUIZ.streak > QUIZ.best) { QUIZ.best = QUIZ.streak; newBest = QUIZ.best >= 3; try { localStorage.setItem('ev_quiz_best', String(QUIZ.best)); } catch (e) {} }
@@ -5225,6 +5234,7 @@ function displayMovies(data, query) {
         </div>`;
             const header = verdict.closest('.vault-card').querySelector('div');
             if (header) header.outerHTML = quizHeader();
+            if (!correct) { const slot = document.createElement('div'); verdict.appendChild(slot); lbShow('quiz', endedStreak, slot); }
             if (correct && [3, 5, 10, 15, 20].includes(QUIZ.streak)) { burst({ particleCount: 60 + QUIZ.streak * 10 }); showToast(`🔥 ${QUIZ.streak} in a row!`, 'success', 3000); }
             else if (newBest) { burst({ particleCount: 80, spread: 100 }); showToast(`🏆 New best streak: ${QUIZ.best}`, 'success', 3000); }
         }
@@ -5670,8 +5680,10 @@ function displayMovies(data, query) {
         ${st.done ? `<div class="text-center mb-6"><p class="text-2xl font-black ${st.won ? 'text-emerald-400' : 'text-rose-400'}">${st.won ? `You got it in ${st.guesses.length}! 🎉` : 'Out of guesses 😅'}</p><p class="text-lg text-white mt-1">${flagEmoji(d.answer.iso2Code)} ${escapeHtml(d.answer.name)}</p><div class="flex flex-wrap justify-center gap-3 mt-4"><button type="button" onclick="shareMystery()" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-sm font-bold text-white">Share result</button><button type="button" onclick="jumpTo('forest', '${escapeHtml(d.answer.name).replace(/'/g, '&#39;')}')" class="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-sm font-bold text-slate-200">Explore ${escapeHtml(d.answer.name)} →</button></div><p class="text-[10px] text-slate-500 mt-4">A new country arrives at midnight.</p></div>` :
         `<div class="max-w-xl mx-auto flex gap-2 mb-5"><input id="mystery-input" list="mystery-list" placeholder="Type a country..." autocomplete="off" class="flex-1 min-w-0 bg-slate-900/90 border border-white/10 px-4 py-3 rounded-2xl text-white outline-none focus:ring-2 focus:ring-emerald-500"><datalist id="mystery-list">${d.pool.map(c => `<option value="${escapeHtml(c.name)}">`).join('')}</datalist><button type="button" onclick="guessMystery()" class="px-5 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-sm font-bold text-white whitespace-nowrap">Guess</button></div>`}
         <div class="space-y-2 max-w-xl mx-auto">${st.guesses.map(guessRow).join('')}</div>
+        <div id="lb-mystery" class="max-w-xl mx-auto"></div>
         <p class="text-center text-[10px] text-slate-500 mt-5">Clues come from live World Bank data and Wikidata. Distances are between capital cities.</p>
     </div>`;
+            if (st.done) lbShow('mystery', st.won ? 7 - st.guesses.length : 0, document.getElementById('lb-mystery'), { once: 'mystery_' + d.dateKey });
             const inp = document.getElementById('mystery-input');
             if (inp) { inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); guessMystery(); } }); if (window.innerWidth >= 768) inp.focus(); }
         }
@@ -5734,6 +5746,7 @@ function displayMovies(data, query) {
             if (chActive('hotornot')) CH.idx++;
             const ta = q.a.wx.current.temperature_2m, tb = q.b.wx.current.temperature_2m;
             const warmer = ta >= tb ? 'a' : 'b', correct = side === warmer;
+            const endedStreak = correct ? 0 : HOT.streak;
             if (correct) { HOT.score++; HOT.streak++; } else HOT.streak = 0;
             let newBest = false; if (HOT.streak > HOT.best) { HOT.best = HOT.streak; newBest = HOT.best >= 3; lsSet('ev_hot_best', HOT.best); }
             ['a', 'b'].forEach(s => { const it = q[s], v = document.getElementById(`hot-val-${s}`), btn = document.getElementById(`hot-${s}`); if (v) { v.textContent = `${it.wx.current.temperature_2m.toFixed(1)}°C ${WX_EMOJI(it.wx.current.weather_code)}`; v.classList.remove('opacity-0'); } if (btn) { btn.disabled = true; btn.classList.add(s === warmer ? 'border-emerald-400/70' : 'border-rose-500/40'); if (s === side) btn.classList.add(correct ? 'bg-emerald-500/10' : 'bg-rose-500/10'); } });
@@ -5742,6 +5755,7 @@ function displayMovies(data, query) {
         <p class="text-sm text-slate-300 mt-1">${w.city[0]} is ${Math.abs(ta - tb).toFixed(1)}°C warmer than ${l.city[0]} right now. ${WX_TEXT(w.wx.current.weather_code)} there, ${WX_TEXT(l.wx.current.weather_code).toLowerCase()} in ${l.city[0]}.</p>
         <div class="flex flex-wrap justify-center gap-3 mt-4">${chNext('hotornot', HOT.score, 'Next duel →', 'bg-orange-600 hover:bg-orange-500')}${chActive('hotornot') ? '' : `<button type="button" onclick="jumpTo('weather', '${w.city[0].replace(/'/g, '&#39;')}')" class="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-sm font-bold text-slate-200">50 years of ${w.city[0]} weather →</button>`}</div>`;
             const header = document.querySelector('#live-section .vault-card > div'); if (header) header.outerHTML = scoreHeader(HOT.score, HOT.streak, HOT.best, 'orange');
+            if (!correct) { const slot = document.createElement('div'); document.getElementById('hot-verdict').appendChild(slot); lbShow('hotornot', endedStreak, slot); }
             if (correct && [3, 5, 10, 15].includes(HOT.streak)) { burst({ particleCount: 60 + HOT.streak * 10 }); showToast(`🔥 ${HOT.streak} in a row!`, 'success', 3000); }
             else if (newBest) { burst({ particleCount: 80 }); showToast(`🏆 New best streak: ${HOT.best}`, 'success', 3000); }
         }
@@ -5809,7 +5823,9 @@ function displayMovies(data, query) {
         <p class="text-6xl font-black text-white font-mono-data">${FLAGS.score}</p>
         <p class="text-sm text-slate-400 mt-2">flags in 30 seconds · ${acc}% accuracy${newBest ? ' · <b class="text-yellow-300">new personal best!</b>' : ` · best ${FLAGS.best}`}</p>
         <div class="flex flex-wrap justify-center gap-3 mt-6"><button type="button" onclick="startFlags()" class="px-6 py-3 rounded-2xl bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-black">Play again</button><button type="button" onclick="(async()=>{const t='I named ${FLAGS.score} flags in 30 seconds on EarthVault Flag Flash 🚩 https://chamitro.github.io/EarthVault/'; try { if (navigator.share) await navigator.share({ text: t }); else { await navigator.clipboard.writeText(t); showToast('Copied!', 'success'); } } catch(e) {} })()" class="px-6 py-3 rounded-2xl bg-white/5 hover:bg-white/10 text-sm font-bold text-slate-200">Share</button></div>
+        <div id="lb-flags"></div>
     </div>`;
+            lbShow('flags', FLAGS.score, document.getElementById('lb-flags'));
         }
 
         // ---- Challenge a friend: seeded rounds of Planet Quiz, Hot or Not and Flag Flash, shared by link ----
@@ -6314,6 +6330,95 @@ function displayMovies(data, query) {
         <p class="text-[10px] text-slate-500 mt-5">${L(`Live readings for ${rows.length} capital cities from Open-Meteo, refreshed every 10 minutes. Tap a city for its 50-year weather history.`, `Ζωντανές μετρήσεις για ${rows.length} πρωτεύουσες από το Open-Meteo, ανανέωση κάθε 10 λεπτά. Πάτησε μια πόλη για 50 χρόνια ιστορίας καιρού.`)}</p>
         ${liveFooter('perfect')}
     </div>`;
+        }
+
+        // ---- Global leaderboard (Supabase, publishable key: the database rules only allow inserting a score and reading the top lists) ----
+        const LB = {
+            url: 'https://qslofkasphxcmfzgsdry.supabase.co',
+            key: 'sb_publishable_w6gn-2QkaS6eDAcsryYh-A_xJIFDMBo',
+            games: {
+                quiz: { name: ['Planet Quiz', 'Κουίζ Πλανήτη'], metric: ['longest streak', 'μεγαλύτερο σερί'], fmt: s => `${s} 🔥` },
+                hotornot: { name: ['Hot or Not', 'Ζεστό ή Κρύο'], metric: ['longest streak', 'μεγαλύτερο σερί'], fmt: s => `${s} 🔥` },
+                flags: { name: ['Flag Flash', 'Σημαίες Αστραπή'], metric: ['flags in 30 seconds', 'σημαίες σε 30 δευτερόλεπτα'], fmt: s => `${s} 🚩` },
+                mystery: { name: ['Mystery Country', 'Μυστήρια Χώρα'], metric: ['fewest guesses', 'λιγότερες προσπάθειες'], fmt: s => L(`${7 - s} guess${7 - s === 1 ? '' : 'es'}`, `${7 - s} προσπ.`) }
+            }
+        };
+        const lbHeaders = extra => Object.assign({ apikey: LB.key, Authorization: 'Bearer ' + LB.key, 'Content-Type': 'application/json' }, extra || {});
+        const lbDevice = () => { let id = lsGet('ev_device', null); if (!id || typeof id !== 'string' || id.length < 8) { id = (Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2) + Date.now().toString(36)).slice(0, 32); lsSet('ev_device', id); } return id; };
+        const lbCountry = () => { try { const r = new Intl.Locale(navigator.language).region; return r && /^[A-Z]{2}$/.test(r) ? r : null; } catch (e) { return null; } };
+        async function lbFetch(path, opts = {}) {
+            const ctrl = new AbortController(); const timer = setTimeout(() => ctrl.abort(), 12000);
+            try { return await fetch(LB.url + path, Object.assign({ signal: ctrl.signal }, opts)); } finally { clearTimeout(timer); }
+        }
+        async function lbPost(game, score, name) {
+            const res = await lbFetch('/rest/v1/scores', { method: 'POST', headers: lbHeaders({ Prefer: 'return=minimal' }), body: JSON.stringify({ game, score: Math.round(score), name: name.slice(0, 20), country: lbCountry(), device: lbDevice() }) });
+            if (!res.ok) { let msg = ''; try { msg = (await res.json()).message || ''; } catch (e) {} if (!/too fast|daily limit/i.test(msg)) console.warn('Score not posted:', res.status, msg); return false; }
+            return true;
+        }
+        async function lbTop(game, sinceIso) {
+            const q = `/rest/v1/leaderboard?game=eq.${game}&select=name,score,country,created_at&order=score.desc,created_at.asc&limit=5${sinceIso ? `&created_at=gte.${encodeURIComponent(sinceIso)}` : ''}`;
+            const res = await lbFetch(q, { headers: lbHeaders() }); if (!res.ok) throw new Error('leaderboard ' + res.status);
+            return res.json();
+        }
+        async function lbCount(game, aboveScore) {
+            const res = await lbFetch(`/rest/v1/leaderboard?game=eq.${game}&select=score&limit=1${aboveScore === undefined ? '' : `&score=gt.${aboveScore}`}`, { headers: lbHeaders({ Prefer: 'count=exact' }) });
+            const cr = res.headers.get('content-range') || ''; const n = parseInt(cr.split('/')[1], 10); return isNaN(n) ? null : n;
+        }
+        // Shows the global top 5 for a game inside `el`, posting `score` first when it is worth posting.
+        async function lbShow(game, score, el, opts = {}) {
+            if (!el || !LB.url || !LB.games[game]) return;
+            if (typeof CH !== 'undefined' && CH.active) return; // seeded challenge rounds are not fair for a global board
+            const once = lsGet('ev_lb_once', {});
+            const alreadyPosted = opts.once && once[opts.once];
+            const canPost = score > 0 && !alreadyPosted;
+            const name = lsGet('ev_player_name', '');
+            if (canPost && !name) {
+                el.innerHTML = `<div class="mt-5 bg-white/5 border border-white/10 rounded-2xl p-4 text-left">
+                    <div class="text-[10px] font-black text-amber-300 uppercase tracking-widest">🌍 ${L('Global leaderboard', 'Παγκόσμια κατάταξη')} · ${L(LB.games[game].name[0], LB.games[game].name[1])}</div>
+                    <p class="text-xs text-slate-400 mt-1">${L(`Post your ${LB.games[game].fmt(score)} and see the top 5 players in the world. Pick a name once; it is all that gets stored.`, `Ανέβασε το ${LB.games[game].fmt(score)} και δες τους 5 κορυφαίους παίκτες στον κόσμο. Διάλεξε ένα όνομα μία φορά, μόνο αυτό αποθηκεύεται.`)}</p>
+                    <div class="flex gap-2 mt-3"><input id="lb-name-${game}" maxlength="20" placeholder="${L('Your name', 'Το όνομά σου')}" autocomplete="off" class="flex-1 min-w-0 bg-slate-900/90 border border-white/10 px-3 py-2.5 rounded-xl text-white outline-none focus:ring-2 focus:ring-amber-500 text-sm"><button type="button" onclick="lbPostFromForm('${game}', ${score}, ${opts.once ? `'${opts.once}'` : 'null'})" class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-900 text-sm font-black whitespace-nowrap">${L('Post score', 'Ανέβασέ το')}</button></div>
+                    <button type="button" onclick="lbRender('${game}', ${score}, this.closest('.mt-5').parentElement, false)" class="text-[10px] text-slate-500 hover:text-white mt-2">${L('Just show me the board', 'Απλώς δείξε μου την κατάταξη')}</button>
+                </div>`;
+                const inp = document.getElementById(`lb-name-${game}`); if (inp) inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); lbPostFromForm(game, score, opts.once || null); } });
+                return;
+            }
+            el.innerHTML = `<div class="mt-5 bg-white/5 border border-white/10 rounded-2xl p-4 text-center text-[10px] text-slate-500 uppercase tracking-widest animate-pulse">🌍 ${L('Checking the global leaderboard…', 'Έλεγχος παγκόσμιας κατάταξης…')}</div>`;
+            let posted = false;
+            if (canPost) { try { posted = await lbPost(game, score, name); } catch (e) { console.warn('Score post failed:', e.message); } if (posted && opts.once) { once[opts.once] = true; lsSet('ev_lb_once', once); } }
+            await lbRender(game, score, el, posted || alreadyPosted);
+        }
+        async function lbPostFromForm(game, score, onceKey) {
+            const inp = document.getElementById(`lb-name-${game}`); const name = ((inp && inp.value) || '').trim().slice(0, 20);
+            if (!name) { showToast(L('Type a name first.', 'Γράψε πρώτα ένα όνομα.')); return; }
+            lsSet('ev_player_name', name);
+            const el = inp.closest('.mt-5').parentElement;
+            await lbShow(game, score, el, onceKey ? { once: onceKey } : {});
+        }
+        async function lbRender(game, score, el, posted) {
+            if (!el) return;
+            const g = LB.games[game], name = lsGet('ev_player_name', '');
+            try {
+                const since = new Date(Date.now() - 86400000).toISOString();
+                const [top, today, above, total] = await Promise.all([lbTop(game), lbTop(game, since), score > 0 ? lbCount(game, score) : Promise.resolve(null), lbCount(game)]);
+                const medal = i => ['🥇', '🥈', '🥉', '4.', '5.'][i] || `${i + 1}.`;
+                const row = (r, i) => `<div class="flex items-center gap-2 py-1.5 border-b border-white/5 last:border-0"><span class="w-6 text-sm">${medal(i)}</span><span class="text-sm">${r.country ? flagEmoji(r.country) : '🌍'}</span><span class="flex-1 min-w-0 truncate text-sm font-bold ${r.name === name ? 'text-amber-300' : 'text-white'}">${escapeHtml(r.name)}</span><span class="text-sm font-black font-mono-data text-slate-200">${g.fmt(r.score)}</span></div>`;
+                const empty = `<p class="text-xs text-slate-500 py-2">${L('No scores yet. Be the first!', 'Κανένα σκορ ακόμα. Γίνε ο πρώτος!')}</p>`;
+                const rank = above !== null && total ? above + 1 : null;
+                el.innerHTML = `<div class="mt-5 bg-white/5 border border-white/10 rounded-2xl p-4 text-left">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <div class="text-[10px] font-black text-amber-300 uppercase tracking-widest">🌍 ${L('Global leaderboard', 'Παγκόσμια κατάταξη')} · ${L(g.metric[0], g.metric[1])}</div>
+                        ${total !== null ? `<div class="text-[10px] text-slate-500">${total} ${L('players', 'παίκτες')}</div>` : ''}
+                    </div>
+                    ${score > 0 ? `<p class="text-xs mt-2 ${posted ? 'text-emerald-300' : 'text-slate-400'}">${posted ? '✅ ' : ''}${L('Your result', 'Το αποτέλεσμά σου')}: <b class="text-white">${g.fmt(score)}</b>${rank ? ` · ${L('rank', 'θέση')} <b class="text-white">#${rank}</b> ${L('of', 'από')} ${total}` : ''}${name ? ` · ${escapeHtml(name)} <button type="button" onclick="lsSet('ev_player_name', ''); showToast('${L('Name cleared. You will be asked again next time.', 'Το όνομα διαγράφηκε. Θα ερωτηθείς ξανά.')}', 'info', 3000)" class="text-slate-500 hover:text-white">✎</button>` : ''}</p>` : ''}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 mt-3">
+                        <div><div class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">${L('All time', 'Όλων των εποχών')}</div>${top.map(row).join('') || empty}</div>
+                        <div><div class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">${L('Last 24 hours', 'Τελευταίες 24 ώρες')}</div>${today.map(row).join('') || empty}</div>
+                    </div>
+                </div>`;
+            } catch (e) {
+                console.warn('Leaderboard unavailable:', e.message);
+                el.innerHTML = `<p class="text-[10px] text-slate-500 mt-4">🌍 ${L('Global leaderboard unavailable right now.', 'Η παγκόσμια κατάταξη δεν είναι διαθέσιμη αυτή τη στιγμή.')}</p>`;
+            }
         }
 
         // ---- Planet Right Now: live extremes across 56 cities ----

@@ -16,7 +16,7 @@ EarthVault provides comprehensive insights across environmental, social, economi
 - 🌊 **Ocean Pulse** - Live sea surface temperature, wave height and marine heatwave tracking for any coastal city, with a daily record back to late 2022
 - 🌳 **Forest Heritage** - Global deforestation rates and forest coverage trends
 - 🌾 **Agriculture** - Agricultural land use intensity and farming trends
-- ⚡ **Energy & Renewables** - Clean energy transition tracking and renewable adoption rates
+- ⚡ **Energy & Renewables** - Clean energy transition tracking and renewable adoption rates The World Bank renewable series ends in 2021, so later years are derived as 100% minus the fossil and nuclear shares, which run to the latest year and sum to within half a point of the published figure
 - 💧 **Water Safety** - Access to safely managed drinking water sources
 - 🏭 **Carbon Emissions** - CO₂ emissions tracking per capita and environmental impact
 - 🐾 **Endangered Species** - Threatened mammals, birds, fish, and plants (% of global threatened species)
@@ -43,6 +43,7 @@ EarthVault provides comprehensive insights across environmental, social, economi
 - 🌡️ **Hot or Not** - Two cities, live temperatures from Open-Meteo: which one is warmer at this moment? The answer changes through the day
 - 🚩 **Flag Flash** - Thirty seconds, four choices per flag, with distractors from the same region. Personal best and share
 - ⚔️ **Challenge a friend** - Planet Quiz, Hot or Not and Flag Flash each have a "Challenge a friend" button. It starts a seeded round (10 questions, or the same flag deck for 30 seconds), then gives you a link with your score. Your friend opens it, plays the exact same questions, and both scores appear side by side with a winner. They can send their result back and you see who won without playing again. No account and no server: everything is encoded in the link (`?vault=quiz&ch=<seed>&cs=<score>&cb=<name>`)
+- 🌍 **Global leaderboard** - When a Planet Quiz or Hot or Not streak ends, a Flag Flash round finishes or the daily Mystery Country is solved, the page posts the result (name, score, country of the browser language, a random device id) to a small Supabase table and shows the top 5 players all time and in the last 24 hours, plus your rank. The publishable key in the page can only insert scores and read the `leaderboard` view (best score per device); a database trigger limits one score per device every 20 seconds and 200 a day and cleans names. Seeded challenge rounds are never posted
 
 #### 🛰️ **Live Earth (10 sections)**
 - 🌍 **Planet Right Now** - Live leaderboards across 56 cities: hottest, coldest, windiest, cleanest and most polluted air, strongest UV, plus how many are clear, raining, snowing or in night. Refreshes every 10 minutes
@@ -250,6 +251,9 @@ Wildlife Near You queries recent observations and species counts around a coordi
 #### **Open-Meteo hourly forecasts**
 
 Best Hour Outside combines the forecast API (hourly temperature, apparent temperature, precipitation probability, wind, UV, weather code, daylight) with the air-quality API (hourly European AQI and five pollen types, Europe only) for three days. No key required.
+
+#### **Supabase (leaderboard)**
+A free Supabase project holds the `scores` table behind row-level security. The page talks to the REST endpoint directly (`/rest/v1/scores` for inserts, `/rest/v1/leaderboard` for reads with `Prefer: count=exact` for ranks). The SQL that creates the table, the view and the spam-guard trigger is in `supabase/leaderboard.sql`.
 
 #### **NOAA GML & NASA GISTEMP**
 The Planet Since You Were Born reads the Mauna Loa annual CO₂ means (`gml.noaa.gov/webdata/ccgg/trends/co2/co2_annmean_mlo.csv`, from 1959) and the GISTEMP land-ocean monthly anomalies relayed by global-warming.org (`/api/temperature-api`, from 1880), both without a key.
