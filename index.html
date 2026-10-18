@@ -5183,14 +5183,16 @@ function displayMovies(data, query) {
             later:    { label: ['Local time', 'Τοπική ώρα'], live: true }
         };
         // Measures with a range people can picture, for the slider questions
-        const QUIZ_ESTIMATES = { 'SP.DYN.LE00.IN': { min: 45, max: 90, step: 1, tol: 3 }, 'SP.DYN.TFRT.IN': { min: 0.5, max: 8, step: 0.1, tol: 0.5 }, 'IT.NET.USER.ZS': { min: 0, max: 100, step: 1, tol: 10 }, 'AG.LND.FRST.ZS': { min: 0, max: 100, step: 1, tol: 10 }, 'EG.ELC.RNEW.ZS': { min: 0, max: 100, step: 1, tol: 10 }, 'SP.POP.65UP.TO.ZS': { min: 0, max: 35, step: 0.5, tol: 3 }, 'SL.UEM.TOTL.ZS': { min: 0, max: 40, step: 0.5, tol: 3 }, 'AG.LND.AGRI.ZS': { min: 0, max: 100, step: 1, tol: 10 }, 'owid_ladder': { min: 2, max: 8, step: 0.1, tol: 0.7 } };
+        const QUIZ_ESTIMATES = { 'SP.DYN.LE00.IN': { min: 45, max: 90, step: 1 }, 'SP.DYN.TFRT.IN': { min: 0.5, max: 8, step: 0.1 }, 'IT.NET.USER.ZS': { min: 0, max: 100, step: 1 }, 'AG.LND.FRST.ZS': { min: 0, max: 100, step: 1 }, 'EG.ELC.RNEW.ZS': { min: 0, max: 100, step: 1 }, 'SP.POP.65UP.TO.ZS': { min: 0, max: 35, step: 0.5 }, 'SL.UEM.TOTL.ZS': { min: 0, max: 40, step: 0.5 }, 'AG.LND.AGRI.ZS': { min: 0, max: 100, step: 1 }, 'owid_ladder': { min: 2, max: 8, step: 0.1 } };
+        // Same rule for every measure: a guess within 10% of the slider's range counts (so ±10 on the 0–100 ones)
+        const quizTol = cfg => Number((Math.round((cfg.max - cfg.min) / 10 / cfg.step) * cfg.step).toFixed(2));
         const BORDERS_URL = 'https://query.wikidata.org/sparql?format=json&query=' + encodeURIComponent('SELECT ?a ?b WHERE { ?x wdt:P47 ?y . ?x wdt:P297 ?a . ?y wdt:P297 ?b . ?x wdt:P31 wd:Q6256 . ?y wdt:P31 wd:Q6256 }');
         async function loadCapitalWeather() {
             const capitals = (await wbCountries()).filter(c => c.capitalCity && c.latitude && c.longitude && /^[A-Z]{2}$/.test(c.iso2Code || ''));
             const chunks = []; for (let i = 0; i < capitals.length; i += 104) chunks.push(capitals.slice(i, i + 104));
             const parts = await Promise.all(chunks.map(ch => cachedJson(`https://api.open-meteo.com/v1/forecast?latitude=${ch.map(c => c.latitude).join(',')}&longitude=${ch.map(c => c.longitude).join(',')}&current=temperature_2m,apparent_temperature,weather_code,is_day,wind_speed_10m,relative_humidity_2m&timezone=auto`, 10 * 60 * 1000)));
             const rows = [];
-            chunks.forEach((ch, ci) => { const list = Array.isArray(parts[ci]) ? parts[ci] : [parts[ci]]; ch.forEach((c, i) => { const w = list[i] && list[i].current; if (!w || w.temperature_2m === null || w.temperature_2m === undefined) return; rows.push({ city: c.capitalCity, country: c.name, iso2: c.iso2Code, region: c.region.value, t: w.temperature_2m, feel: w.apparent_temperature, code: w.weather_code, day: !!w.is_day, wind: w.wind_speed_10m, hum: w.relative_humidity_2m, tz: list[i].timezone, offset: list[i].utc_offset_seconds || 0 }); }); });
+            chunks.forEach((ch, ci) => { const list = Array.isArray(parts[ci]) ? parts[ci] : [parts[ci]]; ch.forEach((c, i) => { const w = list[i] && list[i].current; if (!w || w.temperature_2m === null || w.temperature_2m === undefined) return; rows.push({ city: c.capitalCity, country: c.name, iso2: c.iso2Code, region: c.region.value, t: w.temperature_2m, feel: w.apparent_temperature, code: w.weather_code, day: !!w.is_day, wind: w.wind_speed_10m, hum: w.relative_humidity_2m, tz: list[i].timezone, offset: list[i].utc_offset_seconds || 0, lon: Number(c.longitude), lat: Number(c.latitude) }); }); });
             if (!rows.length) throw new Error('No weather for the capitals');
             return rows;
         }
@@ -5275,10 +5277,10 @@ function displayMovies(data, query) {
             },
             estimate(d, pick) {
                 const keys = Object.keys(QUIZ_ESTIMATES).filter(k => d.metrics.some(m => m.key === k)); const key = pick(keys); const m = d.metrics.find(x => x.key === key), cfg = QUIZ_ESTIMATES[key];
-                const pool = quizWithMetric(d, key); const c = pick(pool); const v = d.val[c.id][key];
+                const pool = quizWithMetric(d, key); const c = pick(pool); const v = d.val[c.id][key]; const tol = quizTol(cfg);
                 return { kind: 'estimate', prompt: `${L('Your estimate:', 'Η εκτίμησή σου:')} <span class="text-pink-300">${L(m.mt.l[0], m.mt.l[1])}</span> ${L('in', 'σε')} ${quizName(c)}?`, layout: 'slider',
-                    slider: Object.assign({ value: (cfg.min + cfg.max) / 2, fmt: x => twinFmt(m.mt, x) }, cfg), actual: v.v, answer: 'ok',
-                    explain: `${L('Actual value', 'Πραγματική τιμή')}: <b class="text-white">${twinFmt(m.mt, v.v)}</b> (${v.y}). ${L('Within', 'Μέσα σε')} ±${cfg.tol} ${L('counts as correct.', 'μετράει ως σωστό.')}`, explore: { mode: m.mt.v, name: c.name } };
+                    slider: Object.assign({ value: (cfg.min + cfg.max) / 2, fmt: x => twinFmt(m.mt, x), tol }, cfg), actual: v.v, answer: 'ok',
+                    explain: `${L('Actual value', 'Πραγματική τιμή')}: <b class="text-white">${twinFmt(m.mt, v.v)}</b> (${v.y}). ${L('Within', 'Μέσα σε')} ±${tol} ${L('counts as correct.', 'μετράει ως σωστό.')}`, explore: { mode: m.mt.v, name: c.name } };
             },
             warmer(d, pick, weather) {
                 if (!weather) throw new Error('no weather');
@@ -5295,7 +5297,9 @@ function displayMovies(data, query) {
                 const w = tod(a) > tod(b) ? a : b;
                 const lt = r => { try { return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', timeZone: r.tz }); } catch (e) { return ''; } };
                 const card = r => ({ id: r.iso2, html: `<div class="text-5xl md:text-6xl mb-3">${flagEmoji(r.iso2)}</div><div class="text-lg md:text-xl font-black text-white">${escapeHtml(r.city)}</div><div class="text-[10px] text-slate-500 uppercase tracking-widest mt-1">${escapeHtml(r.country)}</div>`, reveal: `🕒 ${lt(r)}` });
+                const where = r => { const x = r.lon; const band = x > 105 ? L('far to the east', 'πολύ ανατολικά') : x > 35 ? L('to the east', 'ανατολικά') : x >= -35 ? L('near the Greenwich line', 'κοντά στη γραμμή του Γκρίνουιτς') : x >= -105 ? L('to the west', 'δυτικά') : L('far to the west', 'πολύ δυτικά'); return `${flagEmoji(r.iso2)} <b class="text-white">${escapeHtml(r.city)}</b> ${L('lies', 'βρίσκεται')} ${band} (${Math.abs(Math.round(x))}°${x >= 0 ? L('E', 'Α') : L('W', 'Δ')})`; };
                 return { kind: 'later', prompt: `${L('Where is it', 'Πού είναι')} <span class="text-pink-300">${L('later in the day', 'αργότερα μέσα στη μέρα')}</span> ${L('right now?', 'αυτή τη στιγμή;')}`, layout: 'cards', choices: [card(a), card(b)], answer: w.iso2,
+                    hint: `${L('The day begins in the east: the further east a city lies, the later its clock reads.', 'Η μέρα ξεκινά από την ανατολή: όσο πιο ανατολικά βρίσκεται μια πόλη, τόσο πιο αργά δείχνει το ρολόι της.')}<br>${where(a)} · ${where(b)}.`,
                     explain: `${escapeHtml(w.city)}: ${lt(w)} · ${escapeHtml(w === a ? b.city : a.city)}: ${lt(w === a ? b : a)}.`, explore: { mode: 'sky', name: w.city } };
             }
         };
@@ -5319,6 +5323,7 @@ function displayMovies(data, query) {
         <div class="text-center text-4xl font-black font-mono-data text-pink-300 mb-3" id="quiz-slider-val">${s.fmt(s.value)}</div>
         <input id="quiz-slider" type="range" min="${s.min}" max="${s.max}" step="${s.step}" value="${s.value}" oninput="document.getElementById('quiz-slider-val').textContent = QUIZ.current.slider.fmt(Number(this.value))" class="w-full accent-pink-400">
         <div class="flex justify-between text-[10px] text-slate-500 mt-1"><span>${s.fmt(s.min)}</span><span>${s.fmt(s.max)}</span></div>
+        <div class="text-center text-[10px] text-slate-400 mt-3">🎯 ${L('Within', 'Μέσα σε')} ±${s.tol} ${L('of the real value counts as correct.', 'από την πραγματική τιμή μετράει ως σωστό.')}</div>
         <div class="text-center mt-4"><button type="button" onclick="answerQuiz(Number(document.getElementById('quiz-slider').value))" class="quiz-choice px-8 py-3 rounded-2xl bg-pink-600 hover:bg-pink-500 text-white font-black">${L('Lock it in', 'Κλείδωσέ το')}</button></div>
     </div>`;
             }
@@ -5328,6 +5333,7 @@ function displayMovies(data, query) {
         ${chActive('quiz') ? chBanner('pink') : `<p class="text-center text-[10px] font-black text-pink-400 uppercase tracking-[0.3em] mb-2">Question ${QUIZ.asked + 1} · ${L(kind.label[0], kind.label[1])}</p>`}
         <h3 class="text-center text-xl md:text-3xl font-black text-white mb-6 md:mb-8">${q.prompt}</h3>
         ${body}
+        ${q.hint ? `<div class="text-center mt-4"><button type="button" id="quiz-hint-btn" onclick="quizHint()" class="px-4 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-xs font-bold text-amber-300">💡 ${L('Hint', 'Βοήθεια')}</button><div id="quiz-hint" class="hidden max-w-xl mx-auto mt-3 px-4 py-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-100 leading-relaxed">${q.hint}</div></div>` : ''}
         <div id="quiz-verdict" class="text-center mt-6 min-h-[2rem]"></div>
         ${chActive('quiz') ? '' : `<div class="flex flex-wrap justify-center gap-3 mt-4">
             <button type="button" onclick="runLiveMode('quiz')" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-300">Skip</button>
@@ -5337,6 +5343,10 @@ function displayMovies(data, query) {
         </div>`}
         <p class="text-center text-[10px] text-slate-500 mt-5">${L('Eight kinds of question, drawn from the World Bank, Wikidata, Our World in Data and live Open-Meteo readings.', 'Οκτώ είδη ερωτήσεων από την Παγκόσμια Τράπεζα, το Wikidata, το Our World in Data και ζωντανές μετρήσεις Open-Meteo.')}</p>
     </div>`;
+        }
+        function quizHint() {
+            const box = document.getElementById('quiz-hint'), btn = document.getElementById('quiz-hint-btn');
+            if (box) box.classList.remove('hidden'); if (btn) btn.remove();
         }
         function answerQuiz(choice) {
             const q = QUIZ.current; if (!q || q.answered) return;
