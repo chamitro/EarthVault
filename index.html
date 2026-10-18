@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-73036WSLVP"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-6QPXBFJYT2"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
@@ -4077,7 +4077,7 @@ function displayMovies(data, query) {
             waste:          { desc: 'Recycling, composting and landfill rates from the OECD', examples: ['Germany', 'Japan', 'Greece'] },
             power:          { desc: 'Fossil, coal and nuclear shares of the grid, plus electricity use per person', examples: ['Poland', 'France', 'Iceland'] },
             wildlife:       { desc: 'Real wildlife photos spotted by citizen scientists, plus what lives there', examples: ['Greece', 'Costa Rica', 'Australia'] },
-            quiz:           { desc: 'Higher or lower? Guess which country wins on real planet data, then challenge a friend by link', examples: [] },
+            quiz:           { desc: 'Eight kinds of question on real planet data: higher or lower, top of four, capitals, flags, borders, estimates and live weather. Then challenge a friend by link', examples: [] },
             iss:            { desc: 'Where the International Space Station is right now, live on a map', examples: [] },
             city:           { desc: 'When a city was founded, who was born there and the moments that shaped it', examples: ['Athens', 'Kyoto', 'Istanbul', 'Lisbon'] },
             mystery:        { desc: 'One secret country a day. Six guesses, a new clue after every miss', examples: [] },
@@ -5170,30 +5170,135 @@ function displayMovies(data, query) {
         }
 
         // ---- Planet Quiz: higher or lower, powered by live World Bank numbers ----
-        const QUIZ = { score: 0, streak: 0, best: 0, asked: 0, current: null };
+        const QUIZ = { score: 0, streak: 0, best: 0, asked: 0, current: null, lastKind: null, data: null };
         try { QUIZ.best = parseInt(localStorage.getItem('ev_quiz_best') || '0', 10) || 0; } catch (e) {}
+        const QUIZ_KINDS = {
+            higher:   { label: ['Higher or lower', 'Περισσότερο ή λιγότερο'], live: false },
+            top4:     { label: ['Top of four', 'Ο πρώτος από τέσσερις'], live: false },
+            capital:  { label: ['Capitals', 'Πρωτεύουσες'], live: false },
+            flag:     { label: ['Flags', 'Σημαίες'], live: false },
+            border:   { label: ['Borders', 'Σύνορα'], live: false },
+            estimate: { label: ['Estimate', 'Εκτίμηση'], live: false },
+            warmer:   { label: ['Warmer right now', 'Πιο ζεστά τώρα'], live: true },
+            later:    { label: ['Local time', 'Τοπική ώρα'], live: true }
+        };
+        // Measures with a range people can picture, for the slider questions
+        const QUIZ_ESTIMATES = { 'SP.DYN.LE00.IN': { min: 45, max: 90, step: 1, tol: 3 }, 'SP.DYN.TFRT.IN': { min: 0.5, max: 8, step: 0.1, tol: 0.5 }, 'IT.NET.USER.ZS': { min: 0, max: 100, step: 1, tol: 10 }, 'AG.LND.FRST.ZS': { min: 0, max: 100, step: 1, tol: 10 }, 'EG.ELC.RNEW.ZS': { min: 0, max: 100, step: 1, tol: 10 }, 'SP.POP.65UP.TO.ZS': { min: 0, max: 35, step: 0.5, tol: 3 }, 'SL.UEM.TOTL.ZS': { min: 0, max: 40, step: 0.5, tol: 3 }, 'AG.LND.AGRI.ZS': { min: 0, max: 100, step: 1, tol: 10 }, 'owid_ladder': { min: 2, max: 8, step: 0.1, tol: 0.7 } };
+        const BORDERS_URL = 'https://query.wikidata.org/sparql?format=json&query=' + encodeURIComponent('SELECT ?a ?b WHERE { ?x wdt:P47 ?y . ?x wdt:P297 ?a . ?y wdt:P297 ?b . ?x wdt:P31 wd:Q6256 . ?y wdt:P31 wd:Q6256 }');
+        async function loadCapitalWeather() {
+            const capitals = (await wbCountries()).filter(c => c.capitalCity && c.latitude && c.longitude && /^[A-Z]{2}$/.test(c.iso2Code || ''));
+            const chunks = []; for (let i = 0; i < capitals.length; i += 104) chunks.push(capitals.slice(i, i + 104));
+            const parts = await Promise.all(chunks.map(ch => cachedJson(`https://api.open-meteo.com/v1/forecast?latitude=${ch.map(c => c.latitude).join(',')}&longitude=${ch.map(c => c.longitude).join(',')}&current=temperature_2m,apparent_temperature,weather_code,is_day,wind_speed_10m,relative_humidity_2m&timezone=auto`, 10 * 60 * 1000)));
+            const rows = [];
+            chunks.forEach((ch, ci) => { const list = Array.isArray(parts[ci]) ? parts[ci] : [parts[ci]]; ch.forEach((c, i) => { const w = list[i] && list[i].current; if (!w || w.temperature_2m === null || w.temperature_2m === undefined) return; rows.push({ city: c.capitalCity, country: c.name, iso2: c.iso2Code, region: c.region.value, t: w.temperature_2m, feel: w.apparent_temperature, code: w.weather_code, day: !!w.is_day, wind: w.wind_speed_10m, hum: w.relative_humidity_2m, tz: list[i].timezone, offset: list[i].utc_offset_seconds || 0 }); }); });
+            if (!rows.length) throw new Error('No weather for the capitals');
+            return rows;
+        }
+        async function loadQuizData() {
+            if (QUIZ.data) return QUIZ.data;
+            const safe = p => p.catch(e => { console.warn('Quiz source failed:', e.message); return null; });
+            const [twin, bordersRaw] = await Promise.all([loadTwinData(), safe(cachedJson(BORDERS_URL, 24 * 3600 * 1000))]);
+            const countries = twin.countries.filter(c => /^[A-Z]{2}$/.test(c.iso2Code || '') && c.region && c.region.value);
+            const pop = c => (twin.val[c.id] && twin.val[c.id]['SP.POP.TOTL'] && twin.val[c.id]['SP.POP.TOTL'].v) || 0;
+            const main = countries.filter(c => pop(c) >= 1e6); // skip micro-states so questions stay recognisable
+            const byIso2 = {}; countries.forEach(c => { byIso2[c.iso2Code] = c; });
+            const borders = {};
+            ((bordersRaw && bordersRaw.results && bordersRaw.results.bindings) || []).forEach(r => { const a = r.a.value, b = r.b.value; if (!byIso2[a] || !byIso2[b]) return; (borders[a] = borders[a] || new Set()).add(b); (borders[b] = borders[b] || new Set()).add(a); });
+            const metrics = TWIN_METRICS.map(mt => ({ mt, key: twinKey(mt) }));
+            QUIZ.data = { countries, main, byIso2, val: twin.val, borders, hasBorders: Object.keys(borders).length > 50, metrics, weather: null, weatherLoading: false };
+            return QUIZ.data;
+        }
+        function quizWeather(d) {
+            if (d.weather || d.weatherLoading) return d.weather;
+            d.weatherLoading = true;
+            loadCapitalWeather().then(rows => { d.weather = rows; }).catch(e => console.warn('Capital weather unavailable for the quiz:', e.message)).finally(() => { d.weatherLoading = false; });
+            return null;
+        }
         async function loadQuiz() {
             const live = document.getElementById('live-section');
+            const d = await loadQuizData();
+            if (currentMode !== 'quiz') return;
             const pick = chPick('quiz');
-            const metric = pick(COMPARE_METRICS);
-            const [countries, rows] = await Promise.all([
-                wbCountries(),
-                cachedJson(`https://api.worldbank.org/v2/country/all/indicator/${metric.ind}?format=json&mrnev=1&per_page=400`, 24 * 3600 * 1000)
-            ]);
-            const byId = {}; countries.forEach(c => { byId[c.id] = c; });
-            const pool = (rows[1] || []).filter(r => r.value !== null && byId[r.countryiso3code]).map(r => ({ c: byId[r.countryiso3code], val: r.value, year: r.date })).sort((p, q) => p.c.id < q.c.id ? -1 : p.c.id > q.c.id ? 1 : 0);
-            if (pool.length < 2) throw new Error('Not enough data for this question. Try again.');
-            const a = pick(pool);
-            let b = pick(pool), guard = 0;
-            while ((b.c.id === a.c.id || b.val === a.val) && guard++ < 25) b = pick(pool);
-            QUIZ.current = { metric, a, b, answered: false };
+            const inChallenge = chActive('quiz');
+            const weather = inChallenge ? null : quizWeather(d);
+            let kinds = Object.keys(QUIZ_KINDS).filter(k => (!QUIZ_KINDS[k].live || weather) && (k !== 'border' || d.hasBorders));
+            if (kinds.length > 1 && QUIZ.lastKind) kinds = kinds.filter(k => k !== QUIZ.lastKind);
+            let q = null, guard = 0;
+            while (!q && guard++ < 12) { const kind = pick(kinds); try { q = quizMake[kind](d, pick, weather); } catch (e) { console.warn('Question skipped:', kind, e.message); q = null; } }
+            if (!q) throw new Error('Could not build a question. Try again.');
+            QUIZ.lastKind = q.kind;
+            QUIZ.current = Object.assign({ answered: false }, q);
             renderQuiz(live);
-            if (!QUIZ.prefetched) { // warm the cache for the other metrics in the background so the next questions appear instantly
-                QUIZ.prefetched = true;
-                COMPARE_METRICS.forEach((m, i) => setTimeout(() => { if (currentMode === 'quiz') cachedJson(`https://api.worldbank.org/v2/country/all/indicator/${m.ind}?format=json&mrnev=1&per_page=400`, 24 * 3600 * 1000).catch(() => {}); }, 600 + i * 500));
-            }
         }
-        const quizFmt = (m, v) => m.money ? '$' + Math.round(v).toLocaleString() : (Math.abs(v) >= 100 ? Math.round(v).toLocaleString() : (+v).toFixed(1)) + m.unit;
+        const quizName = c => `${flagEmoji(c.iso2Code)} ${escapeHtml(c.name)}`;
+        const quizSameRegion = (d, c, n, pick, exclude) => { const ex = new Set([c.id, ...(exclude || [])]); const out = []; const pool = d.main.filter(x => x.region.id === c.region.id && !ex.has(x.id)); let g = 0; while (out.length < n && g++ < 60) { const src = pool.length >= n && pick([1, 1, 1, 0]) ? pool : d.main; const x = pick(src); if (!ex.has(x.id)) { ex.add(x.id); out.push(x); } } return out; };
+        const quizWithMetric = (d, key) => d.main.filter(c => d.val[c.id] && d.val[c.id][key]);
+        const quizMake = {
+            higher(d, pick) {
+                const m = pick(d.metrics), pool = quizWithMetric(d, m.key); if (pool.length < 10) throw new Error('thin metric');
+                const a = pick(pool); let b = pick(pool), g = 0; while ((b.id === a.id || d.val[b.id][m.key].v === d.val[a.id][m.key].v) && g++ < 25) b = pick(pool);
+                const va = d.val[a.id][m.key], vb = d.val[b.id][m.key], hi = va.v > vb.v ? a : b, lo = hi === a ? b : a;
+                const ratio = d.val[lo.id][m.key].v ? d.val[hi.id][m.key].v / d.val[lo.id][m.key].v : null;
+                return { kind: 'higher', prompt: `${L('Which country has the higher', 'Ποια χώρα έχει μεγαλύτερο')}<br><span class="text-pink-300">${L(m.mt.l[0], m.mt.l[1])}</span>?`, layout: 'cards',
+                    choices: [a, b].map(c => ({ id: c.id, html: `<div class="text-5xl md:text-6xl mb-3">${flagEmoji(c.iso2Code)}</div><div class="text-lg md:text-xl font-black text-white">${escapeHtml(c.name)}</div><div class="text-[10px] text-slate-500 uppercase tracking-widest mt-1">${escapeHtml(c.region.value)}</div>`, reveal: `${twinFmt(m.mt, d.val[c.id][m.key].v)} <span class="text-xs text-slate-500">(${d.val[c.id][m.key].y})</span>` })),
+                    answer: hi.id, explain: `${escapeHtml(hi.name)} ${L('is higher', 'είναι πιο ψηλά')}${ratio && ratio > 1.05 ? ` - ${L('about', 'περίπου')} ${ratio >= 10 ? Math.round(ratio) : ratio.toFixed(1)}× ${escapeHtml(lo.name)}` : ''}.`, explore: { mode: m.mt.v, name: hi.name } };
+            },
+            top4(d, pick) {
+                const m = pick(d.metrics), pool = quizWithMetric(d, m.key); if (pool.length < 12) throw new Error('thin metric');
+                const set = [], ids = new Set(); let g = 0; while (set.length < 4 && g++ < 40) { const c = pick(pool); if (!ids.has(c.id) && !set.some(x => d.val[x.id][m.key].v === d.val[c.id][m.key].v)) { ids.add(c.id); set.push(c); } }
+                if (set.length < 4) throw new Error('no set');
+                const sorted = [...set].sort((x, y) => d.val[y.id][m.key].v - d.val[x.id][m.key].v);
+                return { kind: 'top4', prompt: `${L('Which of these four has the highest', 'Ποια από τις τέσσερις έχει το μεγαλύτερο')}<br><span class="text-pink-300">${L(m.mt.l[0], m.mt.l[1])}</span>?`, layout: 'buttons',
+                    choices: set.map(c => ({ id: c.id, html: quizName(c) })), answer: sorted[0].id,
+                    explain: sorted.map((c, i) => `${i + 1}. ${quizName(c)} <b class="text-white">${twinFmt(m.mt, d.val[c.id][m.key].v)}</b>`).join('<br>'), explore: { mode: m.mt.v, name: sorted[0].name } };
+            },
+            capital(d, pick) {
+                const pool = d.main.filter(c => c.capitalCity); const c = pick(pool);
+                const others = quizSameRegion(d, c, 3, pick).filter(x => x.capitalCity && x.capitalCity !== c.capitalCity); if (others.length < 3) throw new Error('no distractors');
+                const set = chShuffle([c, ...others], () => pick([0.1, 0.3, 0.5, 0.7, 0.9]));
+                return { kind: 'capital', prompt: `${L('What is the capital of', 'Ποια είναι η πρωτεύουσα της')} ${quizName(c)}?`, layout: 'buttons',
+                    choices: set.map(x => ({ id: x.id, html: escapeHtml(x.capitalCity) })), answer: c.id, explain: `${quizName(c)}: <b class="text-white">${escapeHtml(c.capitalCity)}</b>.`, explore: { mode: 'city', name: c.capitalCity } };
+            },
+            flag(d, pick) {
+                const c = pick(d.main); const others = quizSameRegion(d, c, 3, pick); if (others.length < 3) throw new Error('no distractors');
+                const set = chShuffle([c, ...others], () => pick([0.1, 0.3, 0.5, 0.7, 0.9]));
+                return { kind: 'flag', prompt: `${L('Which flag belongs to', 'Ποια σημαία ανήκει στη χώρα')} <span class="text-pink-300">${escapeHtml(c.name)}</span>?`, layout: 'buttons', big: true,
+                    choices: set.map(x => ({ id: x.id, html: `<span class="text-6xl md:text-7xl leading-none">${flagEmoji(x.iso2Code)}</span>` })), answer: c.id, explain: set.map(x => `${flagEmoji(x.iso2Code)} ${escapeHtml(x.name)}`).join(' · '), explore: { mode: 'flags' } };
+            },
+            border(d, pick) {
+                const pool = d.main.filter(c => d.borders[c.iso2Code] && d.borders[c.iso2Code].size >= 1); if (!pool.length) throw new Error('no borders');
+                const c = pick(pool); const nb = [...d.borders[c.iso2Code]].map(i => d.byIso2[i]).filter(Boolean); const right = pick(nb);
+                const others = quizSameRegion(d, c, 3, pick, nb.map(x => x.id)); if (others.length < 3) throw new Error('no distractors');
+                const set = chShuffle([right, ...others], () => pick([0.1, 0.3, 0.5, 0.7, 0.9]));
+                return { kind: 'border', prompt: `${L('Which of these shares a land border with', 'Ποια από αυτές συνορεύει με')} ${quizName(c)}?`, layout: 'buttons',
+                    choices: set.map(x => ({ id: x.id, html: quizName(x) })), answer: right.id, explain: `${quizName(c)} ${L('borders', 'συνορεύει με')}: ${nb.map(x => `${flagEmoji(x.iso2Code)} ${escapeHtml(x.name)}`).join(', ')}.`, explore: { mode: 'twins', name: c.name } };
+            },
+            estimate(d, pick) {
+                const keys = Object.keys(QUIZ_ESTIMATES).filter(k => d.metrics.some(m => m.key === k)); const key = pick(keys); const m = d.metrics.find(x => x.key === key), cfg = QUIZ_ESTIMATES[key];
+                const pool = quizWithMetric(d, key); const c = pick(pool); const v = d.val[c.id][key];
+                return { kind: 'estimate', prompt: `${L('Your estimate:', 'Η εκτίμησή σου:')} <span class="text-pink-300">${L(m.mt.l[0], m.mt.l[1])}</span> ${L('in', 'σε')} ${quizName(c)}?`, layout: 'slider',
+                    slider: Object.assign({ value: (cfg.min + cfg.max) / 2, fmt: x => twinFmt(m.mt, x) }, cfg), actual: v.v, answer: 'ok',
+                    explain: `${L('Actual value', 'Πραγματική τιμή')}: <b class="text-white">${twinFmt(m.mt, v.v)}</b> (${v.y}). ${L('Within', 'Μέσα σε')} ±${cfg.tol} ${L('counts as correct.', 'μετράει ως σωστό.')}`, explore: { mode: m.mt.v, name: c.name } };
+            },
+            warmer(d, pick, weather) {
+                if (!weather) throw new Error('no weather');
+                const a = pick(weather); let b = pick(weather), g = 0; while ((b === a || Math.abs(a.t - b.t) < 1.5) && g++ < 30) b = pick(weather);
+                const w = a.t >= b.t ? a : b;
+                const card = r => { let lt = ''; try { lt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', timeZone: r.tz }); } catch (e) {} return { id: r.iso2, html: `<div class="text-5xl md:text-6xl mb-3">${flagEmoji(r.iso2)}</div><div class="text-lg md:text-xl font-black text-white">${escapeHtml(r.city)}</div><div class="text-[10px] text-slate-500 uppercase tracking-widest mt-1">${escapeHtml(r.country)} · ${lt} ${r.day ? '☀️' : '🌙'}</div>`, reveal: `${r.t.toFixed(1)}°C ${WX_EMOJI(r.code)}` }; };
+                return { kind: 'warmer', prompt: `${L('Which capital is', 'Ποια πρωτεύουσα είναι')} <span class="text-pink-300">${L('warmer right now', 'πιο ζεστή αυτή τη στιγμή')}</span>?`, layout: 'cards', choices: [card(a), card(b)], answer: w.iso2,
+                    explain: `${escapeHtml(w.city)} ${L('is', 'είναι')} ${Math.abs(a.t - b.t).toFixed(1)}°C ${L('warmer at this moment.', 'πιο ζεστή αυτή τη στιγμή.')}`, explore: { mode: 'weather', name: w.city } };
+            },
+            later(d, pick, weather) {
+                if (!weather) throw new Error('no weather');
+                const tod = r => (((Date.now() / 1000 + r.offset) % 86400) + 86400) % 86400;
+                const a = pick(weather); let b = pick(weather), g = 0; while ((b === a || Math.abs(tod(a) - tod(b)) < 3600 || Math.abs(tod(a) - tod(b)) > 82800) && g++ < 30) b = pick(weather);
+                const w = tod(a) > tod(b) ? a : b;
+                const lt = r => { try { return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', timeZone: r.tz }); } catch (e) { return ''; } };
+                const card = r => ({ id: r.iso2, html: `<div class="text-5xl md:text-6xl mb-3">${flagEmoji(r.iso2)}</div><div class="text-lg md:text-xl font-black text-white">${escapeHtml(r.city)}</div><div class="text-[10px] text-slate-500 uppercase tracking-widest mt-1">${escapeHtml(r.country)}</div>`, reveal: `🕒 ${lt(r)}` });
+                return { kind: 'later', prompt: `${L('Where is it', 'Πού είναι')} <span class="text-pink-300">${L('later in the day', 'αργότερα μέσα στη μέρα')}</span> ${L('right now?', 'αυτή τη στιγμή;')}`, layout: 'cards', choices: [card(a), card(b)], answer: w.iso2,
+                    explain: `${escapeHtml(w.city)}: ${lt(w)} · ${escapeHtml(w === a ? b.city : a.city)}: ${lt(w === a ? b : a)}.`, explore: { mode: 'sky', name: w.city } };
+            }
+        };
         function quizHeader() {
             return `<div class="flex flex-wrap items-center justify-center gap-3 mb-5 text-[10px] font-black uppercase tracking-widest">
         <span class="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-slate-300">Score <span class="text-white">${QUIZ.score}</span>/${QUIZ.asked}</span>
@@ -5202,20 +5307,27 @@ function displayMovies(data, query) {
     </div>`;
         }
         function renderQuiz(live) {
-            const { metric, a, b } = QUIZ.current;
-            const choice = (side, item) => `
-        <button type="button" onclick="answerQuiz('${side}')" id="quiz-${side}" class="quiz-choice vault-card rounded-[2rem] p-6 md:p-8 text-center border border-white/10 hover:border-pink-400/60">
-            <div class="text-5xl md:text-6xl mb-3">${flagEmoji(item.c.iso2Code)}</div>
-            <div class="text-lg md:text-xl font-black text-white">${item.c.name}</div>
-            <div class="text-[10px] text-slate-500 uppercase tracking-widest mt-1">${item.c.region.value}</div>
-            <div id="quiz-val-${side}" class="mt-4 text-2xl font-black font-mono-data text-pink-300 opacity-0 transition-opacity">?</div>
-        </button>`;
+            const q = QUIZ.current, kind = QUIZ_KINDS[q.kind];
+            let body;
+            if (q.layout === 'cards') {
+                body = `<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 max-w-2xl mx-auto">${q.choices.map(c => `<button type="button" onclick="answerQuiz('${c.id}')" data-choice="${c.id}" class="quiz-choice vault-card rounded-[2rem] p-6 md:p-8 text-center border border-white/10 hover:border-pink-400/60">${c.html}<div class="quiz-reveal mt-4 text-2xl font-black font-mono-data text-pink-300 opacity-0 transition-opacity">?</div></button>`).join('')}</div>`;
+            } else if (q.layout === 'buttons') {
+                body = `<div class="grid grid-cols-2 gap-3 max-w-xl mx-auto">${q.choices.map(c => `<button type="button" onclick="answerQuiz('${c.id}')" data-choice="${c.id}" class="quiz-choice px-4 ${q.big ? 'py-6' : 'py-4'} rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-sm md:text-base font-bold text-white text-center">${c.html}</button>`).join('')}</div>`;
+            } else {
+                const s = q.slider;
+                body = `<div class="max-w-xl mx-auto bg-white/5 border border-white/10 rounded-3xl p-5">
+        <div class="text-center text-4xl font-black font-mono-data text-pink-300 mb-3" id="quiz-slider-val">${s.fmt(s.value)}</div>
+        <input id="quiz-slider" type="range" min="${s.min}" max="${s.max}" step="${s.step}" value="${s.value}" oninput="document.getElementById('quiz-slider-val').textContent = QUIZ.current.slider.fmt(Number(this.value))" class="w-full accent-pink-400">
+        <div class="flex justify-between text-[10px] text-slate-500 mt-1"><span>${s.fmt(s.min)}</span><span>${s.fmt(s.max)}</span></div>
+        <div class="text-center mt-4"><button type="button" onclick="answerQuiz(Number(document.getElementById('quiz-slider').value))" class="quiz-choice px-8 py-3 rounded-2xl bg-pink-600 hover:bg-pink-500 text-white font-black">${L('Lock it in', 'Κλείδωσέ το')}</button></div>
+    </div>`;
+            }
             live.innerHTML = `
     <div class="vault-card rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10">
         ${quizHeader()}
-        ${chActive('quiz') ? chBanner('pink') : `<p class="text-center text-[10px] font-black text-pink-400 uppercase tracking-[0.3em] mb-2">Question ${QUIZ.asked + 1}</p>`}
-        <h3 class="text-center text-xl md:text-3xl font-black text-white mb-6 md:mb-8">Which country has the higher<br><span class="text-pink-300">${metric.label}</span>?</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 max-w-2xl mx-auto">${choice('a', a)}${choice('b', b)}</div>
+        ${chActive('quiz') ? chBanner('pink') : `<p class="text-center text-[10px] font-black text-pink-400 uppercase tracking-[0.3em] mb-2">Question ${QUIZ.asked + 1} · ${L(kind.label[0], kind.label[1])}</p>`}
+        <h3 class="text-center text-xl md:text-3xl font-black text-white mb-6 md:mb-8">${q.prompt}</h3>
+        ${body}
         <div id="quiz-verdict" class="text-center mt-6 min-h-[2rem]"></div>
         ${chActive('quiz') ? '' : `<div class="flex flex-wrap justify-center gap-3 mt-4">
             <button type="button" onclick="runLiveMode('quiz')" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-300">Skip</button>
@@ -5223,34 +5335,39 @@ function displayMovies(data, query) {
             <button type="button" onclick="shareQuiz()" class="px-4 py-2 rounded-xl bg-pink-600/80 hover:bg-pink-500 text-xs font-bold text-white">Share score</button>
             ${chButton('quiz')}
         </div>`}
-        <p class="text-center text-[10px] text-slate-500 mt-5">Latest World Bank value for each country. ${metric.higherBetter === true ? 'Higher is generally better here.' : metric.higherBetter === false ? 'Lower is generally better here.' : ''}</p>
+        <p class="text-center text-[10px] text-slate-500 mt-5">${L('Eight kinds of question, drawn from the World Bank, Wikidata, Our World in Data and live Open-Meteo readings.', 'Οκτώ είδη ερωτήσεων από την Παγκόσμια Τράπεζα, το Wikidata, το Our World in Data και ζωντανές μετρήσεις Open-Meteo.')}</p>
     </div>`;
         }
-        function answerQuiz(side) {
+        function answerQuiz(choice) {
             const q = QUIZ.current; if (!q || q.answered) return;
             q.answered = true;
-            const higher = q.a.val > q.b.val ? 'a' : 'b';
-            const correct = side === higher;
+            let correct, picked = String(choice);
+            if (q.layout === 'slider') { const guess = Number(choice); correct = Math.abs(guess - q.actual) <= q.slider.tol; q.guess = guess; }
+            else correct = picked === String(q.answer);
             QUIZ.asked++;
             const endedStreak = correct ? 0 : QUIZ.streak;
             if (correct) { QUIZ.score++; QUIZ.streak++; } else QUIZ.streak = 0;
             let newBest = false;
             if (QUIZ.streak > QUIZ.best) { QUIZ.best = QUIZ.streak; newBest = QUIZ.best >= 3; try { localStorage.setItem('ev_quiz_best', String(QUIZ.best)); } catch (e) {} }
-            ['a', 'b'].forEach(s => {
-                const item = q[s], v = document.getElementById(`quiz-val-${s}`), btn = document.getElementById(`quiz-${s}`);
-                if (v) { v.textContent = `${quizFmt(q.metric, item.val)} (${item.year})`; v.classList.remove('opacity-0'); }
-                if (btn) { btn.disabled = true; btn.classList.remove('hover:border-pink-400/60'); btn.classList.add(s === higher ? 'border-emerald-400/70' : 'border-rose-500/40'); if (s === side) btn.classList.add(correct ? 'bg-emerald-500/10' : 'bg-rose-500/10'); }
+            document.querySelectorAll('#live-section .quiz-choice').forEach(btn => {
+                btn.disabled = true; btn.classList.remove('hover:border-pink-400/60', 'hover:bg-white/10');
+                const id = btn.dataset.choice; if (id === undefined) return;
+                const isAnswer = id === String(q.answer), isPicked = id === picked;
+                if (q.layout === 'cards') { const c = q.choices.find(x => String(x.id) === id); const rv = btn.querySelector('.quiz-reveal'); if (rv && c) { rv.innerHTML = c.reveal || ''; rv.classList.remove('opacity-0'); } btn.classList.add(isAnswer ? 'border-emerald-400/70' : 'border-rose-500/40'); if (isPicked) btn.classList.add(correct ? 'bg-emerald-500/10' : 'bg-rose-500/10'); }
+                else { if (isAnswer) btn.classList.add('bg-emerald-500/30', 'border-emerald-400/60'); else if (isPicked) btn.classList.add('bg-rose-500/30', 'border-rose-500/50'); }
             });
-            const winner = q[higher], loser = q[higher === 'a' ? 'b' : 'a'];
-            const ratio = loser.val !== 0 ? (winner.val / loser.val) : null;
+            if (q.layout === 'slider') { const v = document.getElementById('quiz-slider-val'); if (v) v.innerHTML = `<span class="${correct ? 'text-emerald-400' : 'text-rose-400'}">${q.slider.fmt(q.guess)}</span> <span class="text-slate-500 text-lg">→</span> <span class="text-white">${q.slider.fmt(q.actual)}</span>`; }
             const verdict = document.getElementById('quiz-verdict');
             if (chActive('quiz')) CH.idx = QUIZ.asked;
-            const canExplore = MODE_INFO[q.metric.key] && !LIVE_MODES.includes(q.metric.key) && !chActive('quiz');
+            const ex = q.explore, canExplore = ex && MODE_INFO[ex.mode] && !chActive('quiz');
+            const exploreBtn = !canExplore ? '' : LIVE_MODES.includes(ex.mode)
+                ? `<button type="button" onclick="selectMode('${ex.mode}')" class="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-sm font-bold text-slate-200">${L('Open', 'Άνοιξε')} ${trv('labels', ex.mode, MODE_LABELS[ex.mode] || ex.mode)} →</button>`
+                : `<button type="button" onclick="jumpTo('${ex.mode}', '${String(ex.name || '').replace(/'/g, "\\'")}')" class="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-sm font-bold text-slate-200">${L('Explore', 'Εξερεύνησε')} ${escapeHtml(ex.name || '')} →</button>`;
             verdict.innerHTML = `<p class="text-lg font-black ${correct ? 'text-emerald-400' : 'text-rose-400'}">${correct ? pickRandom(['Correct! 🎯', 'Nailed it! 🌍', 'Yes! 🙌', 'Spot on! ✨']) : pickRandom(['Not this time 😅', 'Close, but no 🙈', 'Nope! 🌀'])}</p>
-        <p class="text-sm text-slate-300 mt-1">${winner.c.name} is higher${ratio && ratio > 1.05 ? ` - about ${ratio >= 10 ? Math.round(ratio) : ratio.toFixed(1)}× ${loser.c.name}` : ''}.</p>
+        <p class="text-sm text-slate-300 mt-1">${q.explain || ''}</p>
         <div class="flex flex-wrap justify-center gap-3 mt-4">
             ${chNext('quiz', QUIZ.score, 'Next question →', 'bg-pink-600 hover:bg-pink-500')}
-            ${canExplore ? `<button type="button" onclick="jumpTo('${q.metric.key}', '${winner.c.name.replace(/'/g, "\\'")}')" class="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-sm font-bold text-slate-200">Explore ${winner.c.name} →</button>` : ''}
+            ${exploreBtn}
         </div>`;
             const header = verdict.closest('.vault-card').querySelector('div');
             if (header) header.outerHTML = quizHeader();
@@ -5880,7 +5997,7 @@ function displayMovies(data, query) {
             CH.seed = opts.seed || Math.random().toString(36).slice(2, 8);
             CH.by = opts.by || ''; CH.theirScore = (opts.theirScore === undefined || opts.theirScore === null) ? null : opts.theirScore;
             CH.rng = seededRandom(chSeedKey());
-            if (game === 'quiz') { QUIZ.score = 0; QUIZ.streak = 0; QUIZ.asked = 0; }
+            if (game === 'quiz') { QUIZ.score = 0; QUIZ.streak = 0; QUIZ.asked = 0; QUIZ.lastKind = null; }
             if (game === 'hotornot') { HOT.score = 0; HOT.streak = 0; }
             if (currentMode !== game) selectMode(game); else runLiveMode(game);
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -6308,13 +6425,7 @@ function displayMovies(data, query) {
         const PERFECT = { ideal: lsGet('ev_perfect_ideal', 25), sunny: false, day: false, region: 'all', rows: null, limit: 15 };
         const PERFECT_REGIONS = { 'Europe & Central Asia': ['Europe', 'Ευρώπη'], 'East Asia & Pacific': ['Asia-Pacific', 'Ασία-Ειρηνικός'], 'Latin America & Caribbean': ['Latin America', 'Λατ. Αμερική'], 'Middle East & North Africa': ['Middle East', 'Μέση Ανατολή'], 'North America': ['North America', 'Β. Αμερική'], 'South Asia': ['South Asia', 'Ν. Ασία'], 'Sub-Saharan Africa': ['Africa', 'Αφρική'] };
         async function loadPerfect() {
-            const capitals = (await wbCountries()).filter(c => c.capitalCity && c.latitude && c.longitude && /^[A-Z]{2}$/.test(c.iso2Code || ''));
-            const chunks = []; for (let i = 0; i < capitals.length; i += 104) chunks.push(capitals.slice(i, i + 104));
-            const parts = await Promise.all(chunks.map(ch => cachedJson(`https://api.open-meteo.com/v1/forecast?latitude=${ch.map(c => c.latitude).join(',')}&longitude=${ch.map(c => c.longitude).join(',')}&current=temperature_2m,apparent_temperature,weather_code,is_day,wind_speed_10m,relative_humidity_2m&timezone=auto`, 10 * 60 * 1000)));
-            const rows = [];
-            chunks.forEach((ch, ci) => { const list = Array.isArray(parts[ci]) ? parts[ci] : [parts[ci]]; ch.forEach((c, i) => { const w = list[i] && list[i].current; if (!w || w.temperature_2m === null || w.temperature_2m === undefined) return; rows.push({ city: c.capitalCity, country: c.name, iso2: c.iso2Code, region: c.region.value, t: w.temperature_2m, feel: w.apparent_temperature, code: w.weather_code, day: !!w.is_day, wind: w.wind_speed_10m, hum: w.relative_humidity_2m, tz: list[i].timezone }); }); });
-            if (!rows.length) throw new Error('No weather for the capitals');
-            PERFECT.rows = rows; PERFECT.limit = 15;
+            PERFECT.rows = await loadCapitalWeather(); PERFECT.limit = 15;
             renderPerfect();
         }
         function setPerfect(key, value) { PERFECT[key] = value; if (key === 'ideal') lsSet('ev_perfect_ideal', value); if (key !== 'limit') PERFECT.limit = 15; renderPerfect(); }
@@ -6739,7 +6850,7 @@ function displayMovies(data, query) {
             menu: { twins: 'Δίδυμες Χώρες', born: 'Ο Πλανήτης από τη Γέννησή σου', perfect: 'Εύρεση Τέλειου Καιρού', quiz: 'Κουίζ Πλανήτη', mystery: 'Μυστήρια Χώρα (ημερήσιο)', hotornot: 'Ζεστό ή Κρύο (ζωντανή μονομαχία)', flags: 'Σημαίες Αστραπή', rightnow: 'Ο Πλανήτης Τώρα', alerts: 'Συναγερμοί Πλανήτη', space: 'Διαστημικός Καιρός', iss: 'Διαστημικός Σταθμός', sky: 'Ο Ουρανός Απόψε', asteroids: 'Παρατηρητήριο Αστεροειδών', onthisday: 'Σαν Σήμερα στη Γη', nearby: 'Άγρια Ζωή Κοντά σου', outside: 'Καλύτερη Ώρα Έξω', weather: 'Αρχείο Καιρού', ocean: 'Παλμός Ωκεανού', forest: 'Δασική Κληρονομιά', agri: 'Γεωργία', energy: 'Ενέργεια & ΑΠΕ', water: 'Ασφάλεια Νερού', carbon: 'Εκπομπές Άνθρακα', endangered: 'Απειλούμενα Είδη', waste: 'Απορρίμματα & Ανακύκλωση', power: 'Ενεργειακό Μείγμα', air: 'Ποιότητα Αέρα', waterstress: 'Υδατική Πίεση', wildlife: 'Γκαλερί Άγριας Ζωής', human_span: 'Προσδόκιμο Ζωής', mental: 'Ψυχική Υγεία', happiness: 'Ευτυχία & Ευημερία', generations: 'Γενιές', univ: 'Πρόσβαση στο Πανεπιστήμιο', public_private: 'Εκπαίδευση: Δημόσια vs Ιδιωτική', health_private: 'Υγεία: Δημόσια vs Ιδιωτική', migration: 'Μετανάστευση & Διασπορά', economy: 'Οικονομία & Αγορά Εργασίας', internet: 'Πρόσβαση στο Διαδίκτυο', music: 'Μουσική Κουλτούρα', cinema: 'Κινηματογράφος', trends: 'Τάσεις Διαδικτύου', city: 'Ιστορίες Πόλεων', compare: 'Χώρα vs Χώρα' },
             labels: { twins: 'ΔΙΔΥΜΕΣ ΧΩΡΕΣ', born: 'ΑΠΟ ΤΗ ΓΕΝΝΗΣΗ ΣΟΥ', perfect: 'ΤΕΛΕΙΟΣ ΚΑΙΡΟΣ', quiz: 'ΚΟΥΙΖ ΠΛΑΝΗΤΗ', mystery: 'ΜΥΣΤΗΡΙΑ ΧΩΡΑ', hotornot: 'ΖΕΣΤΟ Ή ΚΡΥΟ', flags: 'ΣΗΜΑΙΕΣ ΑΣΤΡΑΠΗ', rightnow: 'Ο ΠΛΑΝΗΤΗΣ ΤΩΡΑ', alerts: 'ΣΥΝΑΓΕΡΜΟΙ ΠΛΑΝΗΤΗ', space: 'ΔΙΑΣΤΗΜΙΚΟΣ ΚΑΙΡΟΣ', iss: 'ΔΙΑΣΤΗΜΙΚΟΣ ΣΤΑΘΜΟΣ', sky: 'Ο ΟΥΡΑΝΟΣ ΑΠΟΨΕ', asteroids: 'ΑΣΤΕΡΟΕΙΔΕΙΣ', onthisday: 'ΣΑΝ ΣΗΜΕΡΑ', nearby: 'ΑΓΡΙΑ ΖΩΗ ΚΟΝΤΑ ΣΟΥ', outside: 'ΚΑΛΥΤΕΡΗ ΩΡΑ ΕΞΩ', weather: 'ΑΡΧΕΙΟ ΚΑΙΡΟΥ', ocean: 'ΠΑΛΜΟΣ ΩΚΕΑΝΟΥ', forest: 'ΔΑΣΙΚΗ ΚΛΗΡΟΝΟΜΙΑ', agri: 'ΓΕΩΡΓΙΑ', energy: 'ΕΝΕΡΓΕΙΑ & ΑΠΕ', water: 'ΑΣΦΑΛΕΙΑ ΝΕΡΟΥ', carbon: 'ΕΚΠΟΜΠΕΣ ΑΝΘΡΑΚΑ', endangered: 'ΑΠΕΙΛΟΥΜΕΝΑ ΕΙΔΗ', waste: 'ΑΠΟΡΡΙΜΜΑΤΑ & ΑΝΑΚΥΚΛΩΣΗ', power: 'ΕΝΕΡΓΕΙΑΚΟ ΜΕΙΓΜΑ', air: 'ΠΟΙΟΤΗΤΑ ΑΕΡΑ', waterstress: 'ΥΔΑΤΙΚΗ ΠΙΕΣΗ', wildlife: 'ΓΚΑΛΕΡΙ ΑΓΡΙΑΣ ΖΩΗΣ', human_span: 'ΠΡΟΣΔΟΚΙΜΟ ΖΩΗΣ', mental: 'ΨΥΧΙΚΗ ΥΓΕΙΑ', happiness: 'ΕΥΤΥΧΙΑ & ΕΥΗΜΕΡΙΑ', generations: 'ΓΕΝΙΕΣ', univ: 'ΠΑΝΕΠΙΣΤΗΜΙΟ', public_private: 'ΕΚΠΑΙΔΕΥΣΗ: ΔΗΜΟΣΙΑ vs ΙΔΙΩΤΙΚΗ', health_private: 'ΥΓΕΙΑ: ΔΗΜΟΣΙΑ vs ΙΔΙΩΤΙΚΗ', migration: 'ΜΕΤΑΝΑΣΤΕΥΣΗ & ΔΙΑΣΠΟΡΑ', economy: 'ΟΙΚΟΝΟΜΙΑ & ΕΡΓΑΣΙΑ', internet: 'ΠΡΟΣΒΑΣΗ ΣΤΟ ΔΙΑΔΙΚΤΥΟ', music: 'ΜΟΥΣΙΚΗ ΚΟΥΛΤΟΥΡΑ', cinema: 'ΚΙΝΗΜΑΤΟΓΡΑΦΟΣ', trends: 'ΤΑΣΕΙΣ ΔΙΑΔΙΚΤΥΟΥ', city: 'ΙΣΤΟΡΙΕΣ ΠΟΛΕΩΝ', compare: 'ΧΩΡΑ VS ΧΩΡΑ' },
             titles: { twins: 'Δίδυμες Χώρες', born: 'Ο Πλανήτης από τότε που Γεννήθηκες', perfect: 'Εύρεση Τέλειου Καιρού', weather: 'Ιστορία του Καιρού', ocean: 'Παλμός του Ωκεανού', univ: 'Πρόσβαση στο Πανεπιστήμιο', forest: 'Δασική Κληρονομιά', agri: 'Γεωργία', human_span: 'Προσδόκιμο Ζωής', energy: 'Ενέργεια & Ανανεώσιμες', water: 'Ποιότητα & Ασφάλεια Νερού', mental: 'Ψυχική Υγεία', happiness: 'Ευτυχία & Ευημερία', carbon: 'Εκπομπές Άνθρακα', generations: 'Γενιές', internet: 'Πρόσβαση στο Διαδίκτυο', music: 'Μουσική Κουλτούρα', cinema: 'Ανακάλυψη Κινηματογράφου', endangered: 'Απειλούμενα Είδη', migration: 'Μετανάστευση & Διασπορά', public_private: 'Εκπαίδευση: Δημόσια vs Ιδιωτική', health_private: 'Υγεία: Δημόσια vs Ιδιωτική', economy: 'Οικονομία & Αγορά Εργασίας', trends: 'Τάσεις του Διαδικτύου', waste: 'Απορρίμματα & Ανακύκλωση', power: 'Ενεργειακό Μείγμα', air: 'Ποιότητα Αέρα', waterstress: 'Υδατική Πίεση', alerts: 'Συναγερμοί Πλανήτη', space: 'Διαστημικός Καιρός', compare: 'Χώρα εναντίον Χώρας', wildlife: 'Γκαλερί Άγριας Ζωής', quiz: 'Κουίζ Πλανήτη', iss: 'Εντοπισμός Διαστημικού Σταθμού', city: 'Ιστορίες Πόλεων', mystery: 'Μυστήρια Χώρα', hotornot: 'Ζεστό ή Κρύο', flags: 'Σημαίες Αστραπή', rightnow: 'Ο Πλανήτης Τώρα', sky: 'Ο Ουρανός Απόψε', asteroids: 'Παρατηρητήριο Αστεροειδών', onthisday: 'Σαν Σήμερα στη Γη', nearby: 'Άγρια Ζωή Κοντά σου', outside: 'Καλύτερη Ώρα Έξω' },
-            desc: { twins: 'Ποιες χώρες μοιάζουν πιο πολύ στη δική σου; Σύγκριση σε κάθε θησαυροφυλάκιο, οι πέντε πιο κοντινές με κάθε αριθμό δίπλα-δίπλα', born: 'Βάλε την ημερομηνία γέννησής σου: πώς άλλαξαν ο αέρας, το κλίμα, οι άνθρωποι και ο πλανήτης στη ζωή σου', perfect: 'Διάλεξε την ιδανική σου θερμοκρασία και βρες τις πρωτεύουσες που την έχουν αυτή τη στιγμή', weather: '50 χρόνια ημερήσιας ιστορίας θερμοκρασίας για κάθε πόλη', ocean: 'Ζωντανή θερμοκρασία θάλασσας και θαλάσσιοι καύσωνες για κάθε παράκτια πόλη', forest: 'Δασοκάλυψη και τάσεις αποψίλωσης ανά χώρα', agri: 'Ποσοστό γης που χρησιμοποιείται για καλλιέργειες, ανά χώρα', energy: 'Μερίδιο ανανεώσιμων και υδροηλεκτρικών στην ηλεκτρική ενέργεια ανά χώρα', water: 'Πρόσβαση σε ασφαλές πόσιμο νερό ανά χώρα', carbon: 'Εκπομπές αερίων του θερμοκηπίου σε σχέση με προϋπολογισμό άνθρακα με βάση το 1990', endangered: 'Απειλούμενα θηλαστικά, πουλιά, ψάρια και φυτά ανά χώρα', waste: 'Ποσοστά ανακύκλωσης, κομποστοποίησης και ταφής από τον ΟΟΣΑ', power: 'Μερίδια ορυκτών, άνθρακα και πυρηνικών στο δίκτυο, συν κατανάλωση ρεύματος ανά άτομο', wildlife: 'Αληθινές φωτογραφίες άγριας ζωής από πολίτες-επιστήμονες, και τι ζει εκεί', quiz: 'Περισσότερο ή λιγότερο; Μάντεψε ποια χώρα κερδίζει με αληθινά δεδομένα του πλανήτη και προκάλεσε έναν φίλο με σύνδεσμο', iss: 'Πού βρίσκεται ο Διεθνής Διαστημικός Σταθμός αυτή τη στιγμή, ζωντανά στον χάρτη', city: 'Πότε ιδρύθηκε μια πόλη, ποιοι γεννήθηκαν εκεί και οι στιγμές που τη διαμόρφωσαν', mystery: 'Μία μυστική χώρα κάθε μέρα. Έξι προσπάθειες, νέα ένδειξη μετά από κάθε λάθος', hotornot: 'Δύο πόλεις, ζωντανές θερμοκρασίες: ποια είναι πιο ζεστή αυτή τη στιγμή;', flags: 'Τριάντα δευτερόλεπτα, τέσσερις επιλογές ανά σημαία. Πόσες θα αναγνωρίσεις;', rightnow: 'Οι πιο ζεστές, κρύες, ανεμώδεις και καθαρές πόλεις της Γης αυτό το λεπτό', sky: 'Ηλιοβασίλεμα, ώρα σκότους, φεγγάρι, σύννεφα και πιθανότητα σέλας για κάθε πόλη απόψε', asteroids: 'Κάθε αστεροειδής που περνά κοντά στη Γη αυτή την εβδομάδα, με μέγεθος και απόσταση', onthisday: 'Σεισμοί, αποστολές, εκλείψεις και ανακαλύψεις που έγιναν σαν σήμερα', nearby: 'Τι εντόπισαν οι άνθρωποι στη φύση σε ακτίνα 40 χλμ. από κάθε πόλη αυτόν τον μήνα', outside: 'Οι επόμενες 48 ώρες βαθμολογημένες για περπάτημα, τρέξιμο ή πικνίκ: καιρός, αέρας, UV και γύρη μαζί', air: 'Ετήσια έκθεση σε PM2.5 συν ζωντανή μέτρηση στην πρωτεύουσα', waterstress: 'Πόσο από το ανανεώσιμο γλυκό νερό αντλεί μια χώρα κάθε χρόνο', human_span: 'Προσδόκιμο ζωής, με τη διαφορά ανάμεσα σε γυναίκες και άνδρες', mental: 'Θνησιμότητα από αυτοκτονίες ανά 100.000 κατοίκους, ανά φύλο', happiness: 'Βαθμολογίες της Παγκόσμιας Έκθεσης Ευτυχίας με κατάταξη, ώρες εργασίας και ασφάλεια', generations: 'Δείκτες γονιμότητας και η δημογραφική μετάβαση', univ: 'Πανεπιστημιακή εκπαίδευση, με τον διαχωρισμό ανά φύλο', public_private: 'Εγγραφές σε δημόσια και ιδιωτικά σχολεία και δαπάνες για την εκπαίδευση', health_private: 'Ποιος πληρώνει την υγεία: κράτος, ιδιώτες και από την τσέπη', migration: 'Καθαρή μετανάστευση, μεταναστευτικός πληθυσμός και εμβάσματα', economy: 'ΑΕΠ κατά κεφαλήν, ανεργία, ανισότητα και συμμετοχή στην εργασία', internet: 'Πρόσβαση στο διαδίκτυο, με ανάλυση ανά φύλο', music: 'Οι πιο δημοφιλείς καλλιτέχνες και τραγούδια ανά χώρα', cinema: 'Οι ταινίες με την υψηλότερη βαθμολογία που γυρίστηκαν σε μια χώρα', trends: 'Για τι μιλάει το Reddit, παγκόσμια και σε μια χώρα', alerts: 'Πυρκαγιές, καταιγίδες, πλημμύρες, ηφαίστεια, ξηρασίες και σεισμοί που συμβαίνουν τώρα, παγκοσμίως. Πάτησε μια κατηγορία για όλα τα γεγονότα', space: 'Γεωμαγνητικές καταιγίδες, πιθανότητα σέλας και ηλιακή δραστηριότητα, ζωντανά από τη NOAA', compare: 'Βάλε δύο χώρες δίπλα-δίπλα σε οποιονδήποτε δείκτη' }
+            desc: { twins: 'Ποιες χώρες μοιάζουν πιο πολύ στη δική σου; Σύγκριση σε κάθε θησαυροφυλάκιο, οι πέντε πιο κοντινές με κάθε αριθμό δίπλα-δίπλα', born: 'Βάλε την ημερομηνία γέννησής σου: πώς άλλαξαν ο αέρας, το κλίμα, οι άνθρωποι και ο πλανήτης στη ζωή σου', perfect: 'Διάλεξε την ιδανική σου θερμοκρασία και βρες τις πρωτεύουσες που την έχουν αυτή τη στιγμή', weather: '50 χρόνια ημερήσιας ιστορίας θερμοκρασίας για κάθε πόλη', ocean: 'Ζωντανή θερμοκρασία θάλασσας και θαλάσσιοι καύσωνες για κάθε παράκτια πόλη', forest: 'Δασοκάλυψη και τάσεις αποψίλωσης ανά χώρα', agri: 'Ποσοστό γης που χρησιμοποιείται για καλλιέργειες, ανά χώρα', energy: 'Μερίδιο ανανεώσιμων και υδροηλεκτρικών στην ηλεκτρική ενέργεια ανά χώρα', water: 'Πρόσβαση σε ασφαλές πόσιμο νερό ανά χώρα', carbon: 'Εκπομπές αερίων του θερμοκηπίου σε σχέση με προϋπολογισμό άνθρακα με βάση το 1990', endangered: 'Απειλούμενα θηλαστικά, πουλιά, ψάρια και φυτά ανά χώρα', waste: 'Ποσοστά ανακύκλωσης, κομποστοποίησης και ταφής από τον ΟΟΣΑ', power: 'Μερίδια ορυκτών, άνθρακα και πυρηνικών στο δίκτυο, συν κατανάλωση ρεύματος ανά άτομο', wildlife: 'Αληθινές φωτογραφίες άγριας ζωής από πολίτες-επιστήμονες, και τι ζει εκεί', quiz: 'Οκτώ είδη ερωτήσεων με αληθινά δεδομένα: περισσότερο ή λιγότερο, ο πρώτος από τέσσερις, πρωτεύουσες, σημαίες, σύνορα, εκτιμήσεις και ζωντανός καιρός. Μετά προκάλεσε έναν φίλο με σύνδεσμο', iss: 'Πού βρίσκεται ο Διεθνής Διαστημικός Σταθμός αυτή τη στιγμή, ζωντανά στον χάρτη', city: 'Πότε ιδρύθηκε μια πόλη, ποιοι γεννήθηκαν εκεί και οι στιγμές που τη διαμόρφωσαν', mystery: 'Μία μυστική χώρα κάθε μέρα. Έξι προσπάθειες, νέα ένδειξη μετά από κάθε λάθος', hotornot: 'Δύο πόλεις, ζωντανές θερμοκρασίες: ποια είναι πιο ζεστή αυτή τη στιγμή;', flags: 'Τριάντα δευτερόλεπτα, τέσσερις επιλογές ανά σημαία. Πόσες θα αναγνωρίσεις;', rightnow: 'Οι πιο ζεστές, κρύες, ανεμώδεις και καθαρές πόλεις της Γης αυτό το λεπτό', sky: 'Ηλιοβασίλεμα, ώρα σκότους, φεγγάρι, σύννεφα και πιθανότητα σέλας για κάθε πόλη απόψε', asteroids: 'Κάθε αστεροειδής που περνά κοντά στη Γη αυτή την εβδομάδα, με μέγεθος και απόσταση', onthisday: 'Σεισμοί, αποστολές, εκλείψεις και ανακαλύψεις που έγιναν σαν σήμερα', nearby: 'Τι εντόπισαν οι άνθρωποι στη φύση σε ακτίνα 40 χλμ. από κάθε πόλη αυτόν τον μήνα', outside: 'Οι επόμενες 48 ώρες βαθμολογημένες για περπάτημα, τρέξιμο ή πικνίκ: καιρός, αέρας, UV και γύρη μαζί', air: 'Ετήσια έκθεση σε PM2.5 συν ζωντανή μέτρηση στην πρωτεύουσα', waterstress: 'Πόσο από το ανανεώσιμο γλυκό νερό αντλεί μια χώρα κάθε χρόνο', human_span: 'Προσδόκιμο ζωής, με τη διαφορά ανάμεσα σε γυναίκες και άνδρες', mental: 'Θνησιμότητα από αυτοκτονίες ανά 100.000 κατοίκους, ανά φύλο', happiness: 'Βαθμολογίες της Παγκόσμιας Έκθεσης Ευτυχίας με κατάταξη, ώρες εργασίας και ασφάλεια', generations: 'Δείκτες γονιμότητας και η δημογραφική μετάβαση', univ: 'Πανεπιστημιακή εκπαίδευση, με τον διαχωρισμό ανά φύλο', public_private: 'Εγγραφές σε δημόσια και ιδιωτικά σχολεία και δαπάνες για την εκπαίδευση', health_private: 'Ποιος πληρώνει την υγεία: κράτος, ιδιώτες και από την τσέπη', migration: 'Καθαρή μετανάστευση, μεταναστευτικός πληθυσμός και εμβάσματα', economy: 'ΑΕΠ κατά κεφαλήν, ανεργία, ανισότητα και συμμετοχή στην εργασία', internet: 'Πρόσβαση στο διαδίκτυο, με ανάλυση ανά φύλο', music: 'Οι πιο δημοφιλείς καλλιτέχνες και τραγούδια ανά χώρα', cinema: 'Οι ταινίες με την υψηλότερη βαθμολογία που γυρίστηκαν σε μια χώρα', trends: 'Για τι μιλάει το Reddit, παγκόσμια και σε μια χώρα', alerts: 'Πυρκαγιές, καταιγίδες, πλημμύρες, ηφαίστεια, ξηρασίες και σεισμοί που συμβαίνουν τώρα, παγκοσμίως. Πάτησε μια κατηγορία για όλα τα γεγονότα', space: 'Γεωμαγνητικές καταιγίδες, πιθανότητα σέλας και ηλιακή δραστηριότητα, ζωντανά από τη NOAA', compare: 'Βάλε δύο χώρες δίπλα-δίπλα σε οποιονδήποτε δείκτη' }
         };
         function t(key) { const e = UI[key]; if (!e) return key; return (LANG === 'el' && e[1]) ? e[1] : e[0]; }
         function trv(group, mode, fallback) { return (LANG === 'el' && GR[group] && GR[group][mode]) ? GR[group][mode] : fallback; }
