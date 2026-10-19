@@ -82,6 +82,7 @@ EarthVault provides comprehensive insights across environmental, social, economi
 - 💡 **First-visit Tips** - A dismissable three-step guide; press `/` anywhere to jump to the search box
 - 🌊 **Tides in Ocean Pulse** - Current tide height and the next high or low water for any coastal city
 - 🌼 **Pollen & UV in Air Quality** - The live capital reading now includes UV and pollen levels (Europe)
+- 🔎 **Search-engine ready** - `sitemap.xml` (home, privacy and all 44 `?vault=` links), `robots.txt`, canonical and Open Graph tags, and a title and description that change per vault so each deep link reads as its own page
 - 🛰️ **Live splash counters** - Earthquakes in the last 24 hours, wildfires burning now and the current Kp index, next to the statistical daily estimates
 - 🔎 **Vault Finder** - Type to filter the 44 vaults in the menu; the last vault you used is remembered
 - 💬 **Friendly Feedback** - Non-blocking toasts replace browser alerts; empty or failed searches never leave stale data on screen

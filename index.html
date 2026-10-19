@@ -12,6 +12,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>EarthVault - Explore the Planet in Data</title>
     <meta name="description" content="EarthVault turns open data into 44 interactive vaults: climate, oceans, forests, energy, air, water, happiness, health, culture, games and live planetary data.">
+    <link rel="canonical" href="https://chamitro.github.io/EarthVault/">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="EarthVault">
+    <meta property="og:title" content="EarthVault - Explore the Planet in Data">
+    <meta property="og:description" content="44 interactive vaults built on open data: weather history, oceans, forests, energy, happiness, live planet alerts, country twins and quiz games. Free, no login, English and Greek.">
+    <meta property="og:url" content="https://chamitro.github.io/EarthVault/">
+    <meta property="og:image" content="https://chamitro.github.io/EarthVault/icons/icon-512.png">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:locale:alternate" content="el_GR">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="EarthVault - Explore the Planet in Data">
+    <meta name="twitter:description" content="44 interactive vaults built on open data: weather history, oceans, forests, energy, happiness, live planet alerts, country twins and quiz games.">
+    <meta name="twitter:image" content="https://chamitro.github.io/EarthVault/icons/icon-512.png">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"EarthVault","url":"https://chamitro.github.io/EarthVault/","applicationCategory":"EducationalApplication","operatingSystem":"Any","browserRequirements":"Requires JavaScript","inLanguage":["en","el"],"isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"EarthVault turns open data into 44 interactive vaults: climate, oceans, forests, energy, air, water, happiness, health, culture, games and live planetary data."}</script>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0f172a">
     <meta name="mobile-web-app-capable" content="yes">
@@ -6915,6 +6929,15 @@ function displayMovies(data, query) {
             };
             set('main-title', trv('titles', mode, titles[mode] || 'EarthVault'));
             set('main-subtitle', trv('desc', mode, (MODE_INFO[mode] && MODE_INFO[mode].desc) || t('subtitle_default')));
+            try {
+                const pageTitle = (titles[mode] || 'EarthVault').replace(/ Vault$/, ''), pageDesc = mode === 'weather' ? 'EarthVault turns open data into 44 interactive vaults: climate, oceans, forests, energy, air, water, happiness, health, culture, games and live planetary data.' : (MODE_INFO[mode] && MODE_INFO[mode].desc) || '';
+                document.title = mode === 'weather' ? 'EarthVault - Explore the Planet in Data' : `${pageTitle} · EarthVault`;
+                const setMeta = (sel, val) => { const m = document.querySelector(sel); if (m && val) m.setAttribute('content', val); };
+                if (pageDesc) { setMeta('meta[name="description"]', pageDesc); setMeta('meta[property="og:description"]', pageDesc); setMeta('meta[name="twitter:description"]', pageDesc); }
+                setMeta('meta[property="og:title"]', document.title); setMeta('meta[name="twitter:title"]', document.title);
+                const url = 'https://chamitro.github.io/EarthVault/' + (mode === 'weather' ? '' : `?vault=${mode}`);
+                const canon = document.querySelector('link[rel="canonical"]'); if (canon) canon.href = url; setMeta('meta[property="og:url"]', url);
+            } catch (e) {}
             const btn = document.getElementById('searchBtn');
             if (btn && !btn.disabled) btn.innerText = mode === 'compare' ? t('compare') : t('analyze');
             renderExampleChips(mode);
