@@ -38,7 +38,7 @@ EarthVault provides comprehensive insights across environmental, social, economi
 - 🏛️ **Education: Public vs Private** - School enrollment distribution between public and private sectors
 
 #### 🎮 **Games (4 sections)**
-- 🎯 **Planet Quiz** - Eight kinds of question on real data, mixed at random: higher or lower between two countries (25 measures), top of four, capitals, flags, land borders (Wikidata), estimate-on-a-slider (a guess within 10% of the slider range counts, shown before you lock in), and two live ones from Open-Meteo: which capital is warmer right now and where it is later in the day (with a hint button that explains the east-to-west rule and each city's longitude). Streaks, confetti milestones, an explore button into the matching vault, share, challenge-by-link (seeded, live kinds excluded) and the global leaderboard
+- 🎯 **Planet Quiz** - Seven kinds of question on real data, mixed at random: higher or lower between two countries (25 measures), top of four, capitals, flags, estimate-on-a-slider (a guess within 10% of the slider range counts, shown before you lock in), and two live ones from Open-Meteo: which capital is warmer right now and where it is later in the day (with a hint button that explains the east-to-west rule and each city's longitude). Streaks, confetti milestones, an explore button into the matching vault, share, challenge-by-link (seeded, live kinds excluded) and the global leaderboard
 - 🕵️ **Mystery Country** - One secret country a day, the same for everyone. Six guesses; every miss unlocks a clue (region, population, forest and life expectancy, capital hint, neighbours, flag) and tells you how far off you were and in which direction. Streaks, stats and a Wordle-style share grid
 - 🌡️ **Hot or Not** - Two cities, live temperatures from Open-Meteo: which one is warmer at this moment? The answer changes through the day
 - 🚩 **Flag Flash** - Thirty seconds, four choices per flag, with distractors from the same region. Personal best and share
@@ -229,7 +229,6 @@ Power the Space Station Tracker: live ISS latitude, longitude, altitude, velocit
 **API Documentation:** [wheretheiss.at/w/developer](https://wheretheiss.at/w/developer) · [bigdatacloud.com](https://www.bigdatacloud.com/free-api/free-reverse-geocode-to-city-api)
 
 #### **Wikipedia & Wikidata**
-- Land borders for the quiz: one SPARQL query (`wdt:P47` between sovereign states, ISO codes via `wdt:P297`), 799 pairs, cached for a day
 
 Power City Stories. The city is geocoded with Open-Meteo, matched to its Wikipedia article by proximity, then:
 - Wikipedia REST summary for the description and hero photo, and the article's History section for dated facts
