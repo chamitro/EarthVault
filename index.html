@@ -536,6 +536,17 @@
         @media (hover: none) { .year-item:hover { transform: none; } }
             .globe-tip { background: rgba(2,6,23,.92); color: #e2e8f0; padding: 6px 10px; border-radius: 10px; font-size: 12px; border: 1px solid rgba(255,255,255,.12); max-width: 240px; }
         .story-step { scroll-margin-top: 80px; }
+            .ev-skel { background: linear-gradient(90deg, rgba(255,255,255,.04) 25%, rgba(255,255,255,.12) 50%, rgba(255,255,255,.04) 75%); background-size: 200% 100%; animation: ev-shimmer 1.4s linear infinite; }
+        @keyframes ev-shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+        @keyframes ev-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+        #live-section > * { animation: ev-in .5s cubic-bezier(.2,.7,.2,1) both; }
+        button.vault-card:hover { transform: translateY(-3px); box-shadow: 0 16px 40px rgba(0,0,0,.35); border-color: rgba(255,255,255,.18); }
+        .story-step { opacity: 0; transform: translateY(18px); transition: opacity .6s ease, transform .6s ease; }
+        .story-step.in { opacity: 1; transform: none; }
+        .home-blob { position: absolute; border-radius: 50%; filter: blur(70px); opacity: .4; pointer-events: none; }
+        .home-blob-a { width: 460px; height: 460px; background: #0ea5e9; top: -180px; right: -140px; }
+        .home-blob-b { width: 380px; height: 380px; background: #10b981; bottom: -200px; left: -120px; }
+        @media (prefers-reduced-motion: reduce) { #live-section > *, .story-step { animation: none; transition: none; opacity: 1; transform: none; } .ev-skel { animation: none; } }
     </style>
 </head>
 <body class="min-h-screen relative overflow-x-hidden pb-20">
@@ -791,12 +802,14 @@
 
     <nav class="glass-nav p-3 md:p-4 sticky top-0 z-50">
     <div class="max-w-7xl mx-auto flex justify-between items-center">
-        <h1 class="font-black tracking-tighter text-xl md:text-2xl uppercase italic text-white">
+        <h1 onclick="selectMode('home')" class="font-black tracking-tighter text-xl md:text-2xl uppercase italic text-white cursor-pointer select-none" title="Home">
             Earth<span id="logo-span" class="text-emerald-400">Vault</span>
             <span id="explorer-pill" class="hidden ml-2 align-middle text-[10px] font-bold text-slate-400 bg-white/5 border border-white/10 rounded-full px-2 py-1 not-italic tracking-normal"></span>
         </h1>
 
         <div class="flex items-center gap-2">
+        <button type="button" onclick="selectMode('home')" class="shrink-0 px-2.5 py-2 rounded-xl bg-slate-900/80 ring-1 ring-inset ring-white/10 hover:bg-slate-800 text-sm" title="Home" aria-label="Home">🏠</button>
+        <button type="button" onclick="openPalette()" class="shrink-0 px-2.5 py-2 rounded-xl bg-slate-900/80 ring-1 ring-inset ring-white/10 hover:bg-slate-800 text-sm" title="Search vaults and countries (Ctrl K)" aria-label="Search">🔍</button>
         <button type="button" onclick="installApp()" class="install-btn hidden shrink-0 px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-[10px] font-black text-white tracking-widest transition-all">📲 Install</button>
         <button type="button" onclick="toggleLang()" class="lang-btn shrink-0 px-2.5 py-2 rounded-xl bg-slate-900/80 ring-1 ring-inset ring-white/10 hover:bg-slate-800 text-[10px] font-black text-slate-300 tracking-widest transition-all" title="Αλλαγή στα Ελληνικά" aria-label="Αλλαγή στα Ελληνικά">ΕΛ</button>
         <div class="relative inline-block text-left" id="menu-container">
@@ -990,7 +1003,7 @@
                         </div>
                         <div class="grid grid-cols-1 gap-1 pl-2">
                             <button data-vault="country" role="menuitem" onclick="selectMode('country')" class="flex items-center gap-3 px-4 py-2.5 text-[10px] font-bold text-slate-300 hover:text-emerald-400 hover:bg-white/5 rounded-xl transition-all">
-                                <span>🪪</span> Country Profile
+                                <span>🧭</span> Country Profile
                             </button>
                             <button data-vault="stories" role="menuitem" onclick="selectMode('stories')" class="flex items-center gap-3 px-4 py-2.5 text-[10px] font-bold text-slate-300 hover:text-amber-400 hover:bg-white/5 rounded-xl transition-all">
                                 <span>📖</span> Earth Stories
@@ -1082,12 +1095,12 @@
             twins: 'COUNTRY TWINS',
             born: 'SINCE YOU WERE BORN',
             perfect: 'PERFECT WEATHER FINDER',
-            globe: 'LIVE GLOBE', country: 'COUNTRY PROFILE', stories: 'EARTH STORIES'
+            globe: 'LIVE GLOBE', country: 'COUNTRY PROFILE', stories: 'EARTH STORIES', home: 'HOME'
         };
     function selectMode(mode) {
         document.getElementById('selected-mode-text').innerText = trv('labels', mode, MODE_LABELS[mode]);
         setMode(mode);
-        try { localStorage.setItem('ev_last_mode', mode); } catch (e) {}
+        try { if (mode !== 'home') localStorage.setItem('ev_last_mode', mode); } catch (e) {}
         if (typeof trackVisit === 'function') trackVisit(mode);
         if (LIVE_MODES.includes(mode)) runLiveMode(mode);
         
@@ -1325,6 +1338,7 @@
         }
         
         const facts = {
+            home: ["EarthVault draws from more than twenty open sources and never stores anything about you.", "Press Ctrl K anywhere to jump to any vault or country.", "The splash counters, the globe and the weekly story are live: reload and they change."],
             globe: ["The International Space Station circles the planet every 92 minutes, so it crosses the globe you are looking at about 16 times a day.", "GDACS rates disasters green, orange or red by their likely humanitarian impact, not by their physical size.", "Natural Earth, the border set drawn on the globe, is a public-domain map built by volunteer cartographers."],
             country: ["A country's rank can swing by dozens of places between two measures: Qatar is near the top for income and near the bottom for renewable electricity.", "The World Bank publishes most country figures with a one to two year lag, which is why each number shows its own year.", "Twins are found across 25 measures from every vault; the closest pair in Europe is usually Spain and Italy."],
             stories: ["Warming stripes were invented by climate scientist Ed Hawkins in 2018 as a chart with no numbers at all.", "The Mauna Loa CO₂ record, begun by Charles Keeling in 1958, is the longest continuous measurement of the atmosphere.", "Forest cover is measured by the FAO every five years; the years in between are interpolated."],
@@ -1380,7 +1394,7 @@
             
             const list = facts[currentMode] || facts.weather;
             document.getElementById('fact-text').innerText = list[Math.floor(Math.random() * list.length)];
-            const icons = { globe: '🌐', country: '🪪', stories: '📖', twins: '👯', born: '🎂', perfect: '🌴', weather: '🌪️', ocean: '🌊', forest: '🌳', agri: '🌾', energy: '⚡', water: '💧', univ: '🎓', mental: '🧠', happiness: '😊', carbon: '🏭' , generations: '🤱', human_span: '⏳', internet: '🌐', music: '🎵', cinema: '🎬', endangered: '🐾', migration: '✈️', public_private: '🏛️', health_private: '🏥', economy: '💼', trends: '📊', waste: '♻️', power: '🔌', air: '🌫️', waterstress: '🏜️', alerts: '🛰️', space: '☀️', compare: '⚖️', wildlife: '🦋', quiz: '🎯', iss: '🚀', city: '🏙️', mystery: '🕵️', hotornot: '🌡️', flags: '🚩', rightnow: '🌍', sky: '🌌', asteroids: '☄️', onthisday: '📅', nearby: '🐾', outside: '🏃'};
+            const icons = { home: '🏠', globe: '🌐', country: '🧭', stories: '📖', twins: '👯', born: '🎂', perfect: '🌴', weather: '🌪️', ocean: '🌊', forest: '🌳', agri: '🌾', energy: '⚡', water: '💧', univ: '🎓', mental: '🧠', happiness: '😊', carbon: '🏭' , generations: '🤱', human_span: '⏳', internet: '🌐', music: '🎵', cinema: '🎬', endangered: '🐾', migration: '✈️', public_private: '🏛️', health_private: '🏥', economy: '💼', trends: '📊', waste: '♻️', power: '🔌', air: '🌫️', waterstress: '🏜️', alerts: '🛰️', space: '☀️', compare: '⚖️', wildlife: '🦋', quiz: '🎯', iss: '🚀', city: '🏙️', mystery: '🕵️', hotornot: '🌡️', flags: '🚩', rightnow: '🌍', sky: '🌌', asteroids: '☄️', onthisday: '📅', nearby: '🐾', outside: '🏃'};
             document.getElementById('fact-icon').innerText = icons[currentMode];
         }
 
@@ -1491,7 +1505,7 @@
             let linkCountry = null; try { linkCountry = new URLSearchParams(location.search).get('country'); } catch (e) {}
             if (linkCountry) { hasEnteredVault = true; selectMode('country'); openCountryByIso(linkCountry); }
             else if (linkMode && MODE_INFO[linkMode]) { readChallengeLink(); selectMode(linkMode); hasEnteredVault = true; }
-            else if (savedMode && MODE_INFO[savedMode]) selectMode(savedMode); else setMode('weather');
+            else { HOME.last = savedMode; selectMode('home'); }
             initPWA();
             shuffleFact();
             ['cityInput', 'cityInput2'].forEach(id => document.getElementById(id).addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); mainAction(); } }));
@@ -4125,9 +4139,10 @@ function displayMovies(data, query) {
             nearby:         { desc: 'What people spotted in the wild within 40 km of any city this month', examples: ['Athens', 'Berlin', 'Sydney', 'Cape Town'] },
             outside:        { desc: 'The next 48 hours scored for a walk, run or picnic: weather, air, UV and pollen combined', examples: ['Athens', 'London', 'Tokyo', 'Melbourne'] },
             twins:          { desc: 'Which countries look most like yours? Every vault compared, top five twins with every number side by side', examples: ['Greece', 'Japan', 'Brazil', 'Kenya'] },
+            home:           { desc: 'Live data, games and stories built on open sources. Pick a door.' },
             globe:          { desc: 'The planet in 3D with live fires, storms, quakes, volcanoes, capital temperatures and the space station. Tap a country to open its profile' },
             country:        { desc: "One page per country: every vault's number with its world rank, the weather in the capital now, active alerts, closest twins and a door into every vault", examples: ['Greece', 'Japan', 'Brazil', 'Kenya'] },
-            stories:        { desc: 'Guided tours through the data, chart by chart: this week on Earth (rebuilt live), the carbon century, where the forests went, eight billion of us and the heating Mediterranean' },
+            stories:        { desc: 'Nine guided tours through the data, chart by chart: this week on Earth (rebuilt live), the carbon century, the warming sea, the forests, the renewable turn, eight billion of us, who lives longest, where people are moving and the heating Mediterranean' },
             born:           { desc: 'Enter your birth date: how the air, the climate, the people and the planet changed in your lifetime' },
             perfect:        { desc: 'Pick your ideal temperature and find the capitals that have it at this very moment' },
             air:            { desc: 'Annual PM2.5 exposure plus a live reading in the capital', examples: ['India', 'Greece', 'Canada'] },
@@ -4169,7 +4184,7 @@ function displayMovies(data, query) {
         }
 
         // ======================= LIVE MODES (no search): Planet Alerts & Space Weather =======================
-        const LIVE_MODES = ['globe', 'stories', 'alerts', 'space', 'quiz', 'iss', 'mystery', 'hotornot', 'flags', 'rightnow', 'asteroids', 'onthisday', 'born', 'perfect'];
+        const LIVE_MODES = ['home', 'globe', 'stories', 'alerts', 'space', 'quiz', 'iss', 'mystery', 'hotornot', 'flags', 'rightnow', 'asteroids', 'onthisday', 'born', 'perfect'];
         const MODE_THEMES = {
             alerts:      { color: 'rose',   attr: 'Data by GDACS, NASA EONET & USGS', href: 'https://www.gdacs.org/' },
             space:       { color: 'violet', attr: 'Data by NOAA SWPC', href: 'https://www.swpc.noaa.gov/' },
@@ -4193,6 +4208,7 @@ function displayMovies(data, query) {
             twins:       { color: 'indigo', attr: 'Data by World Bank & Our World in Data', href: 'https://data.worldbank.org/' },
             born:        { color: 'violet', attr: 'Data by NOAA, NASA GISS, World Bank & Open-Meteo', href: 'https://gml.noaa.gov/ccgg/trends/' },
             perfect:     { color: 'teal',   attr: 'Data by Open-Meteo', href: 'https://open-meteo.com/' },
+            home:        { color: 'emerald', attr: 'Open data · 47 vaults', href: 'https://github.com/chamitro/EarthVault' },
             globe:       { color: 'sky',    attr: 'Data by GDACS, USGS, Open-Meteo & Natural Earth', href: 'https://www.gdacs.org/' },
             country:     { color: 'emerald', attr: 'Data by World Bank & Open-Meteo', href: 'https://data.worldbank.org/' },
             stories:     { color: 'amber',  attr: 'Data by NOAA, NASA GISS, World Bank & Open-Meteo', href: 'https://gml.noaa.gov/ccgg/trends/' }
@@ -4249,14 +4265,14 @@ function displayMovies(data, query) {
             document.getElementById('app-content').classList.add('hidden');
             live.classList.remove('hidden');
             const waitSeq = (runLiveMode.seq = (runLiveMode.seq || 0) + 1);
-            live.innerHTML = `<div id="live-wait" data-seq="${waitSeq}" class="text-center py-16 text-slate-500 text-xs font-bold uppercase tracking-widest animate-pulse">${t('contacting')}</div>`;
+            live.innerHTML = `<div id="live-wait" data-seq="${waitSeq}" class="text-center py-8 text-slate-500 text-xs font-bold uppercase tracking-widest"><div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8" aria-hidden="true"><div class="ev-skel h-28 rounded-[2rem]"></div><div class="ev-skel h-28 rounded-[2rem]"></div><div class="ev-skel h-28 rounded-[2rem]"></div></div><div class="animate-pulse">${t('contacting')}</div></div>`;
             setTimeout(() => {
                 const w = document.getElementById('live-wait');
                 if (w && w.dataset.seq === String(waitSeq) && currentMode === mode) w.insertAdjacentHTML('beforeend', `<div class="mt-5 normal-case tracking-normal font-normal animate-none"><p class="text-slate-500 text-xs mb-3">${L('Taking longer than usual. The data source may be slow.', 'Αργεί περισσότερο από το συνηθισμένο. Η πηγή δεδομένων μπορεί να είναι αργή.')}</p><button type="button" onclick="runLiveMode('${mode}')" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold text-white">${t('retry')}</button></div>`);
             }, 8000);
             if (CH.active && CH.game !== mode) CH.active = false;
             if (CH.pending && CH.pending.game === mode) { const p = CH.pending; CH.pending = null; renderChallengeIntro(p); return; }
-            const loader = { globe: loadGlobe, stories: loadStories, alerts: loadPlanetAlerts, space: loadSpaceWeather, quiz: loadQuiz, iss: loadISS, mystery: loadMystery, hotornot: loadHotOrNot, flags: loadFlags, rightnow: loadRightNow, asteroids: loadAsteroids, onthisday: () => loadOnThisDay(), born: loadBorn, perfect: loadPerfect }[mode] || loadPlanetAlerts;
+            const loader = { home: loadHome, globe: loadGlobe, stories: loadStories, alerts: loadPlanetAlerts, space: loadSpaceWeather, quiz: loadQuiz, iss: loadISS, mystery: loadMystery, hotornot: loadHotOrNot, flags: loadFlags, rightnow: loadRightNow, asteroids: loadAsteroids, onthisday: () => loadOnThisDay(), born: loadBorn, perfect: loadPerfect }[mode] || loadPlanetAlerts;
             loader().catch(e => {
                 console.error('Live feed failed:', e);
                 live.innerHTML = `<div class="vault-card rounded-[2rem] p-8 text-center"><p class="text-rose-400 font-bold mb-2">${t('feed_fail')}</p><p class="text-slate-500 text-xs">${e.message}</p><button onclick="runLiveMode('${mode}')" class="mt-4 px-5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold">${t('retry')}</button></div>`;
@@ -5149,9 +5165,10 @@ function displayMovies(data, query) {
         const isRealCountry = c => !!(c && c.region && c.region.value && c.region.value !== 'Aggregates');
         const burst = opts => { if (typeof confetti === 'function') { try { confetti(Object.assign({ particleCount: 120, spread: 75, origin: { y: 0.6 } }, opts || {})); } catch (e) {} } };
         const pickRandom = arr => arr[Math.floor(Math.random() * arr.length)];
+        const CAPITAL_FIX = { CF: ['4.3612', '18.5550'], VE: ['10.4880', '-66.8792'], PK: ['33.7215', '73.0433'], BO: ['-16.5000', '-68.1500'], MG: ['-18.9137', '47.5361'], MM: ['19.7366', '96.2072'], CI: ['6.8206', '-5.2767'], HN: ['14.0818', '-87.2068'], ML: ['12.6092', '-7.9752'], LA: ['17.9667', '102.6000'] };
         async function wbCountries() {
             const cl = await cachedJson('https://api.worldbank.org/v2/country?format=json&per_page=300', 24 * 3600 * 1000);
-            return cl[1].filter(isRealCountry);
+            return cl[1].filter(isRealCountry).map(c => { const f = CAPITAL_FIX[c.iso2Code]; return f ? Object.assign({}, c, { latitude: f[0], longitude: f[1] }) : c; }); // the World Bank places ten capitals hundreds of km away
         }
 
         // ---- Country passport (flag, capital, income group, population) ----
@@ -5562,11 +5579,12 @@ function displayMovies(data, query) {
 
         // ---- Explorer progress (how many vaults you have opened) ----
         function trackVisit(mode) {
+            if (mode === 'home') return; // the front door is not a vault
             let v = []; try { v = JSON.parse(localStorage.getItem('ev_visited') || '[]'); } catch (e) {}
             if (!Array.isArray(v)) v = [];
             const isNew = !v.includes(mode);
             if (isNew) { v.push(mode); try { localStorage.setItem('ev_visited', JSON.stringify(v)); } catch (e) {} }
-            const total = Object.keys(MODE_INFO).length, n = v.filter(m => MODE_INFO[m]).length;
+            const total = Object.keys(MODE_INFO).filter(m => m !== 'home').length, n = v.filter(m => MODE_INFO[m] && m !== 'home').length;
             const pill = document.getElementById('explorer-pill');
             if (pill) { pill.textContent = `🧭 ${n}/${total}`; pill.title = `${n} of ${total} vaults explored`; pill.classList.remove('hidden'); }
             if (isNew && n > 1 && ([5, 10, 20].includes(n) || n === total)) {
@@ -7013,9 +7031,9 @@ function displayMovies(data, query) {
         function globeSelect(d) {
             const g = GLOBE.inst; if (g) g.controls().autoRotate = false;
             if (d.kind === 'quake') { const q = d.item; globeInfo(`<div class="text-[10px] font-black text-amber-300 uppercase tracking-widest">🌐 ${L('Earthquake', 'Σεισμός')}</div><div class="text-lg font-black text-white">M${Number(q.mag).toFixed(1)} · ${escapeHtml(q.place)}</div><div class="text-xs text-slate-400 mt-1">${timeAgo(q.time)}${q.tsunami ? ' · 🌊 ' + L('tsunami advisory', 'προειδοποίηση τσουνάμι') : ''}</div><div class="flex flex-wrap gap-2 mt-3"><a href="${escapeHtml(q.url || 'https://earthquake.usgs.gov/')}" target="_blank" rel="noopener" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-[10px] font-bold text-slate-300">USGS ↗</a></div>`); return; }
-            if (d.kind === 'temp') { const w = d.item; globeInfo(`<div class="text-[10px] font-black text-pink-300 uppercase tracking-widest">🌡️ ${L('Right now', 'Αυτή τη στιγμή')}</div><div class="text-lg font-black text-white">${flagEmoji(w.iso2)} ${escapeHtml(w.city)}, ${escapeHtml(w.country)}</div><div class="text-xs text-slate-400 mt-1">${w.t.toFixed(1)}°C · ${L('feels like', 'αίσθηση')} ${w.feel.toFixed(1)}°C · ${wxText(w.code)} ${WX_EMOJI(w.code)} · ${L('wind', 'άνεμος')} ${Math.round(w.wind)} km/h</div><div class="flex flex-wrap gap-2 mt-3"><button type="button" onclick="openCountryByIso('${w.iso2}')" class="px-3 py-1.5 rounded-xl bg-emerald-600/80 hover:bg-emerald-500 text-[10px] font-black text-white">🪪 ${L('Country profile', 'Προφίλ χώρας')} →</button><button type="button" onclick="jumpTo('weather', '${escapeHtml(w.city).replace(/'/g, '')}')" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-[10px] font-bold text-slate-300">🌪️ ${L('Weather history', 'Αρχείο καιρού')}</button></div>`); return; }
+            if (d.kind === 'temp') { const w = d.item; globeInfo(`<div class="text-[10px] font-black text-pink-300 uppercase tracking-widest">🌡️ ${L('Right now', 'Αυτή τη στιγμή')}</div><div class="text-lg font-black text-white">${flagEmoji(w.iso2)} ${escapeHtml(w.city)}, ${escapeHtml(w.country)}</div><div class="text-xs text-slate-400 mt-1">${w.t.toFixed(1)}°C · ${L('feels like', 'αίσθηση')} ${w.feel.toFixed(1)}°C · ${wxText(w.code)} ${WX_EMOJI(w.code)} · ${L('wind', 'άνεμος')} ${Math.round(w.wind)} km/h</div><div class="flex flex-wrap gap-2 mt-3"><button type="button" onclick="openCountryByIso('${w.iso2}')" class="px-3 py-1.5 rounded-xl bg-emerald-600/80 hover:bg-emerald-500 text-[10px] font-black text-white">🧭 ${L('Country profile', 'Προφίλ χώρας')} →</button><button type="button" onclick="jumpTo('weather', '${escapeHtml(w.city).replace(/'/g, '')}')" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-[10px] font-bold text-slate-300">🌪️ ${L('Weather history', 'Αρχείο καιρού')}</button></div>`); return; }
             const e = d.item, l = GLOBE_LAYERS[e.cat];
-            globeInfo(`<div class="text-[10px] font-black uppercase tracking-widest" style="color:${l.color}">${l.icon} ${L(l.name[0], l.name[1])} · ${escapeHtml(e.level)}</div><div class="text-lg font-black text-white">${escapeHtml(e.title)}</div><div class="text-xs text-slate-400 mt-1">${escapeHtml(e.severity || '')}${e.country ? ' · ' + escapeHtml(e.country) : ''}${e.date ? ' · ' + timeAgo(e.date) : ''}</div><div class="flex flex-wrap gap-2 mt-3">${e.iso2 ? `<button type="button" onclick="openCountryByIso('${escapeHtml(e.iso2)}')" class="px-3 py-1.5 rounded-xl bg-emerald-600/80 hover:bg-emerald-500 text-[10px] font-black text-white">🪪 ${L('Country profile', 'Προφίλ χώρας')} →</button>` : ''}<a href="${escapeHtml(e.link || '#')}" target="_blank" rel="noopener" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-[10px] font-bold text-slate-300">${escapeHtml(e.src || 'Source')} ↗</a><button type="button" onclick="selectMode('alerts')" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-[10px] font-bold text-slate-300">🛰️ ${L('All alerts', 'Όλοι οι συναγερμοί')}</button></div>`);
+            globeInfo(`<div class="text-[10px] font-black uppercase tracking-widest" style="color:${l.color}">${l.icon} ${L(l.name[0], l.name[1])} · ${escapeHtml(e.level)}</div><div class="text-lg font-black text-white">${escapeHtml(e.title)}</div><div class="text-xs text-slate-400 mt-1">${escapeHtml(e.severity || '')}${e.country ? ' · ' + escapeHtml(e.country) : ''}${e.date ? ' · ' + timeAgo(e.date) : ''}</div><div class="flex flex-wrap gap-2 mt-3">${e.iso2 ? `<button type="button" onclick="openCountryByIso('${escapeHtml(e.iso2)}')" class="px-3 py-1.5 rounded-xl bg-emerald-600/80 hover:bg-emerald-500 text-[10px] font-black text-white">🧭 ${L('Country profile', 'Προφίλ χώρας')} →</button>` : ''}<a href="${escapeHtml(e.link || '#')}" target="_blank" rel="noopener" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-[10px] font-bold text-slate-300">${escapeHtml(e.src || 'Source')} ↗</a><button type="button" onclick="selectMode('alerts')" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-[10px] font-bold text-slate-300">🛰️ ${L('All alerts', 'Όλοι οι συναγερμοί')}</button></div>`);
         }
         async function globeIssTick() {
             if (currentMode !== 'globe' || !GLOBE.inst) return;
@@ -7121,7 +7139,7 @@ function displayMovies(data, query) {
         <div class="flex flex-wrap items-center gap-4 md:gap-6">
             <span class="text-6xl md:text-7xl leading-none">${flagEmoji(c.iso2Code)}</span>
             <div class="min-w-0">
-                <div class="text-[10px] font-black text-emerald-300 uppercase tracking-[0.3em]">🪪 ${L('Country profile', 'Προφίλ χώρας')}</div>
+                <div class="text-[10px] font-black text-emerald-300 uppercase tracking-[0.3em]">🧭 ${L('Country profile', 'Προφίλ χώρας')}</div>
                 <h3 class="text-3xl md:text-5xl font-black text-white leading-tight">${escapeHtml(c.name)}</h3>
                 <div class="text-xs text-slate-400 mt-1">${escapeHtml(c.region.value)}${c.capitalCity ? ` · ${L('Capital', 'Πρωτεύουσα')}: <b class="text-white">${escapeHtml(c.capitalCity)}</b>` : ''}${income ? ` · ${escapeHtml(income)} ${L('income', 'εισόδημα')}` : ''}<span id="cp-pop"></span></div>
             </div>
@@ -7195,8 +7213,12 @@ function displayMovies(data, query) {
         const STORIES = {
             week:    { icon: '🗓️', color: 'cyan', live: true, title: ['This week on Earth', 'Αυτή την εβδομάδα στη Γη'], blurb: ['Written fresh from the live feeds every time it opens: the week\'s quakes, where it is burning, active cyclones, the hottest capital and the space weather.', 'Γράφεται ζωντανά κάθε φορά που ανοίγει: οι σεισμοί της εβδομάδας, πού καίγεται, ενεργοί κυκλώνες, η πιο ζεστή πρωτεύουσα και ο διαστημικός καιρός.'], attr: 'USGS · GDACS · NASA · Open-Meteo · NOAA SWPC · Where the ISS at?' },
             carbon:  { icon: '🏭', color: 'orange', title: ['The carbon century', 'Ο αιώνας του άνθρακα'], blurb: ['CO₂ at Mauna Loa since 1959 and the global temperature since 1880, drawn as warming stripes.', 'Το CO₂ στο Mauna Loa από το 1959 και η παγκόσμια θερμοκρασία από το 1880, ως ρίγες θέρμανσης.'], attr: 'NOAA GML · NASA GISTEMP' },
+            oceans:  { icon: '🌊', color: 'cyan', title: ['The sea is warming too', 'Και η θάλασσα θερμαίνεται'], blurb: ['Sea surface temperature since 1850 and global sea level since 1880, from Our World in Data.', 'Θερμοκρασία επιφάνειας της θάλασσας από το 1850 και παγκόσμια στάθμη από το 1880, από το Our World in Data.'], attr: 'Our World in Data · HadSST · Church & White · UHSLC' },
             forests: { icon: '🌳', color: 'emerald', title: ['Where the forests went', 'Πού πήγαν τα δάση'], blurb: ['Forest cover since 1990 in the countries that lost the most, and in the ones that grew it back.', 'Η δασοκάλυψη από το 1990 στις χώρες που έχασαν τα περισσότερα, και σε όσες τα ξανάφτιαξαν.'], attr: 'World Bank (FAO)' },
+            renewables: { icon: '⚡', color: 'emerald', title: ['The renewable turn', 'Η στροφή στις ανανεώσιμες'], blurb: ['Renewables, solar and wind as a share of electricity since 1985, for the world and six countries.', 'Ανανεώσιμες, ηλιακή και αιολική ως μερίδιο του ηλεκτρισμού από το 1985, για τον κόσμο και έξι χώρες.'], attr: 'Our World in Data · Ember · Energy Institute' },
             people:  { icon: '👥', color: 'blue', title: ['Eight billion of us', 'Οκτώ δισεκατομμύρια εμείς'], blurb: ['Population, births, life expectancy and city living since 1960, in four charts.', 'Πληθυσμός, γεννήσεις, προσδόκιμο ζωής και αστική ζωή από το 1960, σε τέσσερα γραφήματα.'], attr: 'World Bank' },
+            longevity: { icon: '⏳', color: 'violet', title: ['Who lives longest', 'Ποιος ζει περισσότερο'], blurb: ['The ten longest- and shortest-lived countries today, and sixty years of life expectancy for nine of them.', 'Οι δέκα χώρες με το μεγαλύτερο και το μικρότερο προσδόκιμο σήμερα, και εξήντα χρόνια προσδόκιμου για εννέα από αυτές.'], attr: 'World Bank · UN Population Division' },
+            migration: { icon: '✈️', color: 'fuchsia', title: ['Where people are moving', 'Πού μετακινούνται οι άνθρωποι'], blurb: ['Net migration today, the countries gaining and losing the most, and thirty-five years of movement.', 'Καθαρή μετανάστευση σήμερα, οι χώρες που κερδίζουν και χάνουν τους περισσότερους, και τριάντα πέντε χρόνια μετακίνησης.'], attr: 'World Bank · UN Population Division' },
             med:     { icon: '🔥', color: 'rose', title: ['The Mediterranean is heating', 'Η Μεσόγειος θερμαίνεται'], blurb: ['Athens, Rome and Barcelona, every day since 1980, from the ERA5 climate archive.', 'Αθήνα, Ρώμη και Βαρκελώνη, κάθε μέρα από το 1980, από το κλιματικό αρχείο ERA5.'], attr: 'Open-Meteo ERA5' }
         };
         const STORY_GRID = { color: 'rgba(255,255,255,0.06)' }, STORY_TICK = { color: '#94a3b8', font: { size: 10 } };
@@ -7363,11 +7385,142 @@ function displayMovies(data, query) {
             steps.push({ kicker: L('Rebuilt live', 'Ξαναγράφεται ζωντανά'), title: L('Come back tomorrow', 'Έλα ξανά αύριο'), text: L('This story is written from the live feeds every time it opens, so no two visits read the same. The Live Globe shows every one of these events on the planet itself.', 'Αυτή η ιστορία γράφεται από τις ζωντανές ροές κάθε φορά που ανοίγει, οπότε δύο επισκέψεις δεν διαβάζονται ποτέ ίδιες. Η Ζωντανή Υδρόγειος δείχνει καθένα από αυτά τα γεγονότα πάνω στον ίδιο τον πλανήτη.'), links: [['globe', null], ['alerts', null], ['rightnow', null]] });
             return { steps };
         }
-        const STORY_LOADERS = { week: loadStoryWeek, carbon: loadStoryCarbon, forests: loadStoryForests, people: loadStoryPeople, med: loadStoryMed };
-        function storyTeardown() { STORY.charts.forEach(ch => { try { ch.destroy(); } catch (e) {} }); STORY.charts = []; if (STORY.io) { STORY.io.disconnect(); STORY.io = null; } }
+        // ---- Our World in Data CSV tables (grapher exports, CORS enabled) ----
+        function parseCsv(txt) {
+            const rows = []; let row = [], cell = '', q = false;
+            for (let i = 0; i < txt.length; i++) {
+                const c = txt[i];
+                if (q) { if (c === '"') { if (txt[i + 1] === '"') { cell += '"'; i++; } else q = false; } else cell += c; }
+                else if (c === '"') q = true;
+                else if (c === ',') { row.push(cell); cell = ''; }
+                else if (c === '\n') { row.push(cell); rows.push(row); row = []; cell = ''; }
+                else if (c !== '\r') cell += c;
+            }
+            if (cell || row.length) { row.push(cell); rows.push(row); }
+            return rows;
+        }
+        async function owidTable(slug) {
+            const rows = parseCsv(await cachedText(`https://ourworldindata.org/grapher/${slug}${slug.includes('.csv') ? '' : '.csv'}`, 24 * 3600 * 1000));
+            const head = rows[0] || [];
+            return { head, rows: rows.slice(1).filter(r => r.length >= head.length).map(r => { const o = {}; head.forEach((h, i) => { o[h] = r[i]; }); return o; }) };
+        }
+        const owidSeries = (tb, code, col) => tb.rows.filter(r => r.Code === code && r[col] !== '' && r[col] !== undefined).map(r => ({ y: +r.Year, v: +r[col] })).filter(p => isFinite(p.v)).sort((a, b) => a.y - b.y);
+        const seriesMean = (s, from, to) => { const xs = s.filter(p => p.y >= from && p.y <= to).map(p => p.v); return xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null; };
+        const wbSeries = (raw, iso3) => { const o = {}; ((raw && raw[1]) || []).forEach(r => { if (r.value !== null && r.countryiso3code === iso3) o[+r.date] = r.value; }); return o; };
+        const fmtPeople = v => { const a = Math.abs(v); const s = a >= 1e6 ? (a / 1e6).toFixed(2) + ' ' + L('million', 'εκατ.') : a >= 1e3 ? Math.round(a / 1e3) + ' ' + L('thousand', 'χιλ.') : String(Math.round(a)); return (v < 0 ? '−' : '+') + s; };
+
+        async function loadStoryOceans() {
+            const [sst, sl] = await Promise.all([owidTable('sea-surface-temperature-anomaly'), owidTable('sea-level')]);
+            const world = owidSeries(sst, 'OWID_WRL', 'Average'), nh = owidSeries(sst, 'OWID_NH', 'Average'), sh = owidSeries(sst, 'OWID_SH', 'Average');
+            if (world.length < 50) throw new Error('Sea temperature series unavailable');
+            const thisYear = new Date().getFullYear(), last = world[world.length - 1], complete = world.filter(p => p.y < thisYear), lastFull = complete[complete.length - 1];
+            const dec = seriesMean(complete, lastFull.y - 9, lastFull.y), early = seriesMean(world, 1850, 1900);
+            const warmest = complete.slice().sort((a, b) => b.v - a.v).slice(0, 10), recentWarm = warmest.filter(p => p.y >= lastFull.y - 9).length;
+            const slCol = sl.head.find(h => /Average of/.test(h)) || sl.head[sl.head.length - 1];
+            const slq = sl.rows.filter(r => r.Entity === 'World' && r[slCol] !== '').map(r => ({ y: +String(r.Quarter || r.Year).slice(0, 4), v: +r[slCol] })).filter(p => isFinite(p.v));
+            const slBy = {}; slq.forEach(p => (slBy[p.y] = slBy[p.y] || []).push(p.v));
+            const slYears = Object.keys(slBy).map(Number).sort((a, b) => a - b).map(y => ({ y, v: slBy[y].reduce((a, b) => a + b, 0) / slBy[y].length }));
+            const at = y => { const p = slYears.find(q => q.y >= y); return p ? p.v : null; };
+            const v1900 = at(1900), slLast = slYears[slYears.length - 1], rise = slLast && v1900 !== null ? (slLast.v - v1900) / 10 : null;
+            const rateOld = v1900 !== null && at(1950) !== null ? (at(1950) - v1900) / 50 : null, rateNew = at(1993) !== null ? (slLast.v - at(1993)) / (slLast.y - 1993) : null;
+            const steps = [
+                { kicker: `${world[0].y} → ${last.y}`, title: L('The sea is warming too', 'Και η θάλασσα θερμαίνεται'), big: { value: `${lastFull.v >= 0 ? '+' : ''}${lastFull.v.toFixed(2)} °C`, label: L(`sea surface in ${lastFull.y}, above the pre-industrial (1861–1890) average`, `επιφάνεια της θάλασσας το ${lastFull.y}, πάνω από τον προβιομηχανικό μέσο όρο (1861–1890)`) },
+                  text: L(`The ocean has taken in about 90% of the extra heat trapped by greenhouse gases, and its surface shows it. Measured against the 1861–1890 average, before industry, the sea surface of the last ten years was ${dec >= 0 ? '+' : ''}${dec.toFixed(2)} °C warmer, and ${recentWarm} of the ten warmest years on record fall in that decade.`, `Ο ωκεανός έχει απορροφήσει περίπου το 90% της επιπλέον θερμότητας που παγιδεύουν τα αέρια του θερμοκηπίου, και η επιφάνειά του το δείχνει. Σε σχέση με τον μέσο όρο 1861–1890, πριν από τη βιομηχανία, η επιφάνεια της θάλασσας τα τελευταία δέκα χρόνια ήταν ${dec >= 0 ? '+' : ''}${dec.toFixed(2)} °C θερμότερη, και ${recentWarm} από τα δέκα θερμότερα έτη που έχουν καταγραφεί ανήκουν σε αυτή τη δεκαετία.`),
+                  chart: storyLine(world.map(p => p.y), [{ data: world.map(p => +p.v.toFixed(3)), borderColor: '#22d3ee', backgroundColor: 'rgba(34,211,238,0.15)', fill: true, label: '°C' }]) },
+                { kicker: L('Two hemispheres', 'Δύο ημισφαίρια'), title: L('North and south, same direction', 'Βορράς και νότος, ίδια κατεύθυνση'),
+                  text: L('The northern hemisphere, with more land and more people, warms faster, but the southern ocean follows the same line. The spike years are El Niño: the Pacific releasing heat it stored in the years before.', 'Το βόρειο ημισφαίριο, με περισσότερη ξηρά και περισσότερους ανθρώπους, θερμαίνεται πιο γρήγορα, αλλά ο νότιος ωκεανός ακολουθεί την ίδια γραμμή. Τα έτη με αιχμές είναι το Ελ Νίνιο: ο Ειρηνικός απελευθερώνει θερμότητα που αποθήκευσε τα προηγούμενα χρόνια.'),
+                  chart: storyLine(nh.filter(p => p.y >= 1950).map(p => p.y), [{ data: nh.filter(p => p.y >= 1950).map(p => +p.v.toFixed(3)), borderColor: '#f87171', label: L('Northern hemisphere', 'Βόρειο ημισφαίριο') }, { data: sh.filter(p => p.y >= 1950).map(p => +p.v.toFixed(3)), borderColor: '#60a5fa', label: L('Southern hemisphere', 'Νότιο ημισφαίριο') }]) }
+            ];
+            if (rise !== null) steps.push({ kicker: `1900 → ${slLast.y}`, title: L('Warmer water takes more room', 'Το πιο ζεστό νερό πιάνει περισσότερο χώρο'), big: { value: `+${rise.toFixed(0)} cm`, label: L(`global sea level since 1900`, `παγκόσμια στάθμη της θάλασσας από το 1900`) },
+                text: L(`Water expands as it warms, and melting ice adds more. The sea rose about ${(rateOld * 10).toFixed(1)} cm per decade in the first half of the 20th century and about ${(rateNew * 10).toFixed(1)} cm per decade since satellites began measuring it in 1993. The line is bending upward.`, `Το νερό διαστέλλεται όσο θερμαίνεται, και ο πάγος που λιώνει προσθέτει κι άλλο. Η θάλασσα ανέβαινε περίπου ${(rateOld * 10).toFixed(1)} cm ανά δεκαετία στο πρώτο μισό του 20ού αιώνα και περίπου ${(rateNew * 10).toFixed(1)} cm ανά δεκαετία από τότε που οι δορυφόροι άρχισαν να τη μετρούν το 1993. Η γραμμή καμπυλώνει προς τα πάνω.`),
+                chart: storyLine(slYears.map(p => p.y), [{ data: slYears.map(p => +((p.v - v1900) / 10).toFixed(1)), borderColor: '#38bdf8', backgroundColor: 'rgba(56,189,248,0.15)', fill: true, label: L('cm above 1900', 'cm πάνω από το 1900') }]) });
+            steps.push({ kicker: L('Your coast', 'Η ακτή σου'), title: L('Feel it at the beach', 'Νιώσε το στην παραλία'), text: L('Ocean Pulse shows the sea temperature and marine heatwaves for any coastal city today, with the record for the same date.', 'Ο Παλμός Ωκεανού δείχνει τη θερμοκρασία της θάλασσας και τους θαλάσσιους καύσωνες για κάθε παράκτια πόλη σήμερα, με το ρεκόρ της ίδιας ημερομηνίας.'), links: [['ocean', 'Barcelona'], ['ocean', 'Sydney'], ['med', null]] });
+            return { steps };
+        }
+        async function loadStoryRenewables() {
+            const [ren, sol, wnd] = await Promise.all([owidTable('electricity-mix.csv?frequency=annual&metric=share_of_generation&source=renewables'), owidTable('electricity-mix.csv?frequency=annual&metric=share_of_generation&source=solar'), owidTable('electricity-mix.csv?frequency=annual&metric=share_of_generation&source=wind')]);
+            const col = tb => tb.head[3];
+            const since = s => s.filter(p => p.y >= 1985);
+            const world = since(owidSeries(ren, 'OWID_WRL', col(ren))), solar = since(owidSeries(sol, 'OWID_WRL', col(sol))), wind = since(owidSeries(wnd, 'OWID_WRL', col(wnd)));
+            if (world.length < 10) throw new Error('Electricity mix unavailable');
+            const w0 = world[0], w1 = world[world.length - 1], s1 = solar[solar.length - 1], d1 = wind[wind.length - 1];
+            const s10 = solar.find(p => p.y === s1.y - 10) || solar[0];
+            const picks = [['DEU', 'Germany', '#fbbf24'], ['GRC', 'Greece', '#60a5fa'], ['DNK', 'Denmark', '#f472b6'], ['CHN', 'China', '#f87171'], ['USA', 'United States', '#a78bfa'], ['IND', 'India', '#fb923c']];
+            const cs = picks.map(([c, n, color]) => ({ c, n, color, s: owidSeries(ren, c, col(ren)).filter(p => p.y >= 2000) })).filter(x => x.s.length > 5);
+            const years = [...new Set(cs.flatMap(x => x.s.map(p => p.y)))].sort((a, b) => a - b);
+            const gr = cs.find(x => x.c === 'GRC'), gr0 = gr && gr.s[0], gr1 = gr && gr.s[gr.s.length - 1];
+            return { steps: [
+                { kicker: `${w0.y} → ${w1.y}`, title: L('A third of the world\'s electricity', 'Το ένα τρίτο του ηλεκτρισμού του κόσμου'), big: { value: `${w1.v.toFixed(1)}%`, label: L(`of global electricity from renewables in ${w1.y}`, `του παγκόσμιου ηλεκτρισμού από ανανεώσιμες το ${w1.y}`) },
+                  text: L(`In ${w0.y} renewables, mostly hydro dams, produced ${w0.v.toFixed(1)}% of the world's electricity. For twenty years the share barely moved. Then solar and wind became the cheapest power ever built, and the line turned upward.`, `Το ${w0.y} οι ανανεώσιμες, κυρίως υδροηλεκτρικά φράγματα, παρήγαγαν το ${w0.v.toFixed(1)}% του ηλεκτρισμού του κόσμου. Για είκοσι χρόνια το μερίδιο σχεδόν δεν κουνήθηκε. Μετά ο ήλιος και ο άνεμος έγιναν η φθηνότερη ενέργεια που χτίστηκε ποτέ, και η γραμμή γύρισε προς τα πάνω.`),
+                  chart: storyLine(world.map(p => p.y), [{ data: world.map(p => +p.v.toFixed(2)), borderColor: '#4ade80', backgroundColor: 'rgba(74,222,128,0.15)', fill: true, label: L('% renewables', '% ανανεώσιμες') }]) },
+                { kicker: L('Solar and wind', 'Ήλιος και άνεμος'), title: L('The two fastest curves in energy', 'Οι δύο πιο γρήγορες καμπύλες στην ενέργεια'),
+                  text: L(`Solar went from ${s10.v.toFixed(1)}% of the world's electricity in ${s10.y} to ${s1.v.toFixed(1)}% in ${s1.y}; wind reached ${d1.v.toFixed(1)}%. Together they now add more new generating capacity every year than everything else combined.`, `Ο ήλιος πήγε από το ${s10.v.toFixed(1)}% του παγκόσμιου ηλεκτρισμού το ${s10.y} στο ${s1.v.toFixed(1)}% το ${s1.y}· ο άνεμος έφτασε το ${d1.v.toFixed(1)}%. Μαζί προσθέτουν πλέον περισσότερη νέα ισχύ κάθε χρόνο από όλα τα υπόλοιπα μαζί.`),
+                  chart: storyLine(solar.map(p => p.y), [{ data: solar.map(p => +p.v.toFixed(2)), borderColor: '#facc15', label: L('Solar %', 'Ηλιακή %') }, { data: solar.map(p => { const q = wind.find(x => x.y === p.y); return q ? +q.v.toFixed(2) : null; }), borderColor: '#7dd3fc', label: L('Wind %', 'Αιολική %') }]) },
+                { kicker: L('Six countries', 'Έξι χώρες'), title: L('Who is moving fastest', 'Ποιος κινείται πιο γρήγορα'),
+                  text: L(`${gr1 ? `Greece went from ${gr0.v.toFixed(0)}% renewable electricity in ${gr0.y} to ${gr1.v.toFixed(0)}% in ${gr1.y}, one of the steepest climbs in Europe. ` : ''}Denmark leads on wind, Germany on the sheer size of its transition, China on how much it builds each year, and India is just starting its climb.`, `${gr1 ? `Η Ελλάδα πήγε από ${gr0.v.toFixed(0)}% ανανεώσιμο ηλεκτρισμό το ${gr0.y} σε ${gr1.v.toFixed(0)}% το ${gr1.y}, μία από τις πιο απότομες ανόδους στην Ευρώπη. ` : ''}Η Δανία προηγείται στον άνεμο, η Γερμανία στο μέγεθος της μετάβασής της, η Κίνα στο πόσο χτίζει κάθε χρόνο, και η Ινδία μόλις ξεκινά την άνοδό της.`),
+                  chart: storyLine(years, cs.map(x => ({ data: years.map(y => { const p = x.s.find(q => q.y === y); return p ? +p.v.toFixed(1) : null; }), borderColor: x.color, label: x.n }))) },
+                { kicker: L('Your grid', 'Το δικό σου δίκτυο'), title: L('Check any country', 'Δες οποιαδήποτε χώρα'), text: L('The Energy vault has the renewable share for every country, and the Energy Mix vault shows fossil, nuclear and renewable side by side.', 'Το θησαυροφυλάκιο Ενέργειας έχει το μερίδιο ανανεώσιμων για κάθε χώρα, και το Ενεργειακό Μείγμα δείχνει ορυκτά, πυρηνικά και ανανεώσιμα δίπλα δίπλα.'), links: [['energy', 'Greece'], ['power', 'Denmark'], ['carbon', null]] }
+            ] };
+        }
+        async function loadStoryLongevity() {
+            const y = new Date().getFullYear();
+            const [all, raw, countries] = await Promise.all([cachedJson('https://api.worldbank.org/v2/country/all/indicator/SP.DYN.LE00.IN?format=json&mrnev=1&per_page=400', 24 * 3600 * 1000), cachedJson(`https://api.worldbank.org/v2/country/JPN;CHE;GRC;USA;CHN;IND;NGA;CAF;WLD/indicator/SP.DYN.LE00.IN?date=1960:${y}&format=json&per_page=1000`, 24 * 3600 * 1000), wbCountries()]);
+            const real = {}; countries.forEach(c => { real[c.id] = c; });
+            const latest = ((all && all[1]) || []).filter(r => r.value !== null && real[r.countryiso3code]).map(r => ({ id: r.countryiso3code, name: real[r.countryiso3code].name, iso2: real[r.countryiso3code].iso2Code, v: r.value, y: +r.date })).sort((a, b) => b.v - a.v);
+            if (latest.length < 20) throw new Error('Life expectancy table unavailable');
+            const top = latest.slice(0, 10), bottom = latest.slice(-10).reverse();
+            const ser = {}; ['JPN', 'CHE', 'GRC', 'USA', 'CHN', 'IND', 'NGA', 'CAF', 'WLD'].forEach(c => { ser[c] = wbSeries(raw, c); });
+            const years = [...new Set(Object.values(ser).flatMap(s => Object.keys(s).map(Number)))].sort((a, b) => a - b);
+            const w = ser.WLD, wy = Object.keys(w).map(Number).sort((a, b) => a - b), w0 = { y: wy[0], v: w[wy[0]] }, w1 = { y: wy[wy.length - 1], v: w[wy[wy.length - 1]] };
+            const gap = yr => { const vals = ['JPN', 'CHE', 'GRC', 'USA', 'CHN', 'IND', 'NGA', 'CAF'].map(c => ser[c][yr]).filter(v => v); return vals.length ? Math.max(...vals) - Math.min(...vals) : null; };
+            const g0 = gap(w0.y), g1 = gap(w1.y);
+            const names = { JPN: 'Japan', CHE: 'Switzerland', GRC: 'Greece', USA: 'United States', CHN: 'China', IND: 'India', NGA: 'Nigeria', CAF: 'Central African Rep.', WLD: 'World' };
+            const colors = { JPN: '#f87171', CHE: '#f472b6', GRC: '#60a5fa', USA: '#a78bfa', CHN: '#fbbf24', IND: '#fb923c', NGA: '#4ade80', CAF: '#94a3b8', WLD: '#ffffff' };
+            return { steps: [
+                { kicker: `${top[0].y}`, title: L('Who lives longest', 'Ποιος ζει περισσότερο'), big: { value: `${top[0].v.toFixed(1)} ${L('years', 'έτη')}`, label: `${flagEmoji(top[0].iso2)} ${top[0].name}` },
+                  text: L(`A child born in ${top[0].name} today can expect ${top[0].v.toFixed(1)} years. The top ten are all wealthy, mostly small, and heavy on the Mediterranean and East Asia. Greece sits at ${latest.findIndex(x => x.id === 'GRC') + 1} of ${latest.length}.`, `Ένα παιδί που γεννιέται σήμερα στη χώρα ${top[0].name} μπορεί να περιμένει ${top[0].v.toFixed(1)} χρόνια. Οι δέκα πρώτες είναι όλες εύπορες, κυρίως μικρές, και πολλές στη Μεσόγειο και την Ανατολική Ασία. Η Ελλάδα είναι στη θέση ${latest.findIndex(x => x.id === 'GRC') + 1} από ${latest.length}.`),
+                  chart: storyBars(top.map(x => x.name), top.map(x => +x.v.toFixed(1)), top.map(() => '#4ade80'), { horizontal: true }) },
+                { kicker: L('The other end', 'Η άλλη άκρη'), title: L(`${Math.round(top[0].v - bottom[0].v)} years apart`, `${Math.round(top[0].v - bottom[0].v)} χρόνια διαφορά`),
+                  text: L(`At the bottom of the table, ${bottom[0].name} expects ${bottom[0].v.toFixed(1)} years, ${Math.round(top[0].v - bottom[0].v)} fewer than ${top[0].name}. Nearly all of the lowest ten are in sub-Saharan Africa, where child mortality, conflict and malaria still cut lives short.`, `Στο κάτω μέρος του πίνακα, η χώρα ${bottom[0].name} περιμένει ${bottom[0].v.toFixed(1)} χρόνια, ${Math.round(top[0].v - bottom[0].v)} λιγότερα από τη χώρα ${top[0].name}. Σχεδόν όλες οι δέκα χαμηλότερες βρίσκονται στην υποσαχάρια Αφρική, όπου η παιδική θνησιμότητα, οι συγκρούσεις και η ελονοσία κόβουν ακόμη ζωές.`),
+                  chart: storyBars(bottom.map(x => x.name), bottom.map(x => +x.v.toFixed(1)), bottom.map(() => '#f87171'), { horizontal: true }) },
+                { kicker: `${w0.y} → ${w1.y}`, title: L('Everyone is living longer', 'Όλοι ζουν περισσότερο'), big: { value: `+${Math.round(w1.v - w0.v)} ${L('years', 'έτη')}`, label: L(`world average since ${w0.y}`, `παγκόσμιος μέσος όρος από το ${w0.y}`) },
+                  text: L(`The world average rose from ${w0.v.toFixed(0)} years in ${w0.y} to ${w1.v.toFixed(0)} in ${w1.y}. China and India gained the most; the gap between the best and worst of these eight countries ${g1 < g0 ? 'narrowed' : 'widened'} from ${g0.toFixed(0)} to ${g1.toFixed(0)} years. The dip at 2020 and 2021 is the pandemic.`, `Ο παγκόσμιος μέσος όρος ανέβηκε από ${w0.v.toFixed(0)} χρόνια το ${w0.y} σε ${w1.v.toFixed(0)} το ${w1.y}. Κίνα και Ινδία κέρδισαν τα περισσότερα· η απόσταση μεταξύ της καλύτερης και της χειρότερης από αυτές τις οκτώ χώρες ${g1 < g0 ? 'μίκρυνε' : 'μεγάλωσε'} από ${g0.toFixed(0)} σε ${g1.toFixed(0)} χρόνια. Η βουτιά το 2020 και το 2021 είναι η πανδημία.`),
+                  chart: storyLine(years, Object.keys(ser).map(c => ({ data: years.map(yy => ser[c][yy] ? +ser[c][yy].toFixed(1) : null), borderColor: colors[c], label: names[c], borderWidth: c === 'WLD' ? 3 : 2 }))) },
+                { kicker: L('Your country', 'Η χώρα σου'), title: L('Fifty years of your country', 'Πενήντα χρόνια της χώρας σου'), text: L('The Life Expectancy vault draws the full series for any country, and the Country Profile shows where it ranks on every measure.', 'Το θησαυροφυλάκιο Προσδόκιμου Ζωής σχεδιάζει την πλήρη σειρά για κάθε χώρα, και το Προφίλ Χώρας δείχνει πού κατατάσσεται σε κάθε μέτρο.'), links: [['human_span', 'Japan'], ['country', 'Greece'], ['people', null]] }
+            ] };
+        }
+        async function loadStoryMigration() {
+            const y = new Date().getFullYear();
+            const [all, raw, countries] = await Promise.all([cachedJson('https://api.worldbank.org/v2/country/all/indicator/SM.POP.NETM?format=json&mrnev=1&per_page=400', 24 * 3600 * 1000), cachedJson(`https://api.worldbank.org/v2/country/USA;DEU;GBR;ARE;SYR;VEN;UKR;GRC;TUR;ITA/indicator/SM.POP.NETM?date=1990:${y}&format=json&per_page=1000`, 24 * 3600 * 1000), wbCountries()]);
+            const real = {}; countries.forEach(c => { real[c.id] = c; });
+            const latest = ((all && all[1]) || []).filter(r => r.value !== null && real[r.countryiso3code]).map(r => ({ id: r.countryiso3code, name: real[r.countryiso3code].name, iso2: real[r.countryiso3code].iso2Code, v: r.value, y: +r.date })).sort((a, b) => b.v - a.v);
+            if (latest.length < 20) throw new Error('Migration table unavailable');
+            const inflow = latest.slice(0, 8), outflow = latest.slice(-8).reverse();
+            const ids = ['USA', 'DEU', 'GBR', 'ARE', 'SYR', 'VEN', 'UKR', 'GRC', 'TUR', 'ITA'], names = { USA: 'United States', DEU: 'Germany', GBR: 'United Kingdom', ARE: 'UAE', SYR: 'Syria', VEN: 'Venezuela', UKR: 'Ukraine', GRC: 'Greece', TUR: 'Türkiye', ITA: 'Italy' };
+            const colors = { USA: '#60a5fa', DEU: '#fbbf24', GBR: '#a78bfa', ARE: '#4ade80', SYR: '#f87171', VEN: '#fb923c', UKR: '#f472b6', GRC: '#38bdf8', TUR: '#facc15', ITA: '#34d399' };
+            const ser = {}; ids.forEach(c => { ser[c] = wbSeries(raw, c); });
+            const years = [...new Set(Object.values(ser).flatMap(s => Object.keys(s).map(Number)))].sort((a, b) => a - b);
+            const gr = ser.GRC, gy = Object.keys(gr).map(Number).sort((a, b) => a - b), grMax = gy.length ? gy.reduce((a, b) => gr[b] > gr[a] ? b : a) : null, grMin = gy.length ? gy.reduce((a, b) => gr[b] < gr[a] ? b : a) : null;
+            const total = latest.filter(x => x.v > 0).reduce((a, x) => a + x.v, 0);
+            return { steps: [
+                { kicker: `${inflow[0].y}`, title: L('Where people are arriving', 'Πού φτάνουν οι άνθρωποι'), big: { value: fmtPeople(inflow[0].v), label: `${flagEmoji(inflow[0].iso2)} ${inflow[0].name} · ${L('net migration in one year', 'καθαρή μετανάστευση σε ένα έτος')}` },
+                  text: L(`Net migration is arrivals minus departures. In ${inflow[0].y} the countries that gained the most people were ${inflow.slice(0, 4).map(x => x.name).join(', ')}. Across all countries with a net gain, about ${(total / 1e6).toFixed(1)} million people moved in that year.`, `Η καθαρή μετανάστευση είναι οι αφίξεις μείον τις αναχωρήσεις. Το ${inflow[0].y} οι χώρες που κέρδισαν τους περισσότερους ανθρώπους ήταν ${inflow.slice(0, 4).map(x => x.name).join(', ')}. Σε όλες τις χώρες με καθαρό κέρδος, περίπου ${(total / 1e6).toFixed(1)} εκατομμύρια άνθρωποι μετακινήθηκαν εκείνη τη χρονιά.`),
+                  chart: storyBars(inflow.map(x => x.name), inflow.map(x => Math.round(x.v / 1000)), inflow.map(() => '#4ade80'), { horizontal: true }) },
+                { kicker: `${outflow[0].y}`, title: L('Where people are leaving', 'Από πού φεύγουν οι άνθρωποι'), big: { value: fmtPeople(outflow[0].v), label: `${flagEmoji(outflow[0].iso2)} ${outflow[0].name}` },
+                  text: L(`The largest net outflows were from ${outflow.slice(0, 4).map(x => x.name).join(', ')}. Some of these are people leaving for work in richer neighbours, some are fleeing war or collapse, and the numbers can swing by millions from one year to the next. Values are in thousands of people.`, `Οι μεγαλύτερες καθαρές εκροές ήταν από ${outflow.slice(0, 4).map(x => x.name).join(', ')}. Κάποιοι φεύγουν για δουλειά σε πλουσιότερους γείτονες, κάποιοι ξεφεύγουν από πόλεμο ή κατάρρευση, και οι αριθμοί μπορούν να αλλάξουν κατά εκατομμύρια από τη μια χρονιά στην άλλη. Οι τιμές είναι σε χιλιάδες ανθρώπους.`),
+                  chart: storyBars(outflow.map(x => x.name), outflow.map(x => Math.round(x.v / 1000)), outflow.map(() => '#f87171'), { horizontal: true }) },
+                { kicker: `${years[0]} → ${years[years.length - 1]}`, title: L('Thirty-five years of movement', 'Τριάντα πέντε χρόνια μετακίνησης'),
+                  text: L(`Every line is one country's net migration per year, in thousands. ${grMax !== null ? `Greece gained the most in ${grMax} (${fmtPeople(gr[grMax])}) and lost the most in ${grMin} (${fmtPeople(gr[grMin])}), the years of the debt crisis and the refugee arrivals.` : ''} Syria's and Ukraine's lines are the wars; Venezuela's is the economic collapse; the Gulf's are the oil booms.`, `Κάθε γραμμή είναι η καθαρή μετανάστευση μιας χώρας ανά έτος, σε χιλιάδες. ${grMax !== null ? `Η Ελλάδα κέρδισε τους περισσότερους το ${grMax} (${fmtPeople(gr[grMax])}) και έχασε τους περισσότερους το ${grMin} (${fmtPeople(gr[grMin])}), τα χρόνια της κρίσης χρέους και των προσφυγικών αφίξεων.` : ''} Οι γραμμές της Συρίας και της Ουκρανίας είναι οι πόλεμοι· της Βενεζουέλας η οικονομική κατάρρευση· του Κόλπου οι πετρελαϊκές εκρήξεις.`),
+                  chart: storyLine(years, ids.map(c => ({ data: years.map(yy => ser[c][yy] !== undefined ? Math.round(ser[c][yy] / 1000) : null), borderColor: colors[c], label: names[c] }))) },
+                { kicker: L('Your country', 'Η χώρα σου'), title: L('Diaspora and arrivals, any country', 'Διασπορά και αφίξεις, κάθε χώρα'), text: L('The Migration vault shows migrants as a share of the population and the diaspora abroad for every country.', 'Το θησαυροφυλάκιο Μετανάστευσης δείχνει τους μετανάστες ως ποσοστό του πληθυσμού και τη διασπορά στο εξωτερικό για κάθε χώρα.'), links: [['migration', 'Greece'], ['country', 'Germany'], ['people', null]] }
+            ] };
+        }
+        const STORY_LOADERS = { week: loadStoryWeek, carbon: loadStoryCarbon, oceans: loadStoryOceans, renewables: loadStoryRenewables, longevity: loadStoryLongevity, migration: loadStoryMigration, forests: loadStoryForests, people: loadStoryPeople, med: loadStoryMed };
+        function storyTeardown() { if (typeof storyProgressStop === 'function') storyProgressStop(); STORY.charts.forEach(ch => { try { ch.destroy(); } catch (e) {} }); STORY.charts = []; if (STORY.io) { STORY.io.disconnect(); STORY.io = null; } }
         async function loadStories() {
             storyTeardown();
-            let want = STORY.open; try { want = want || new URLSearchParams(location.search).get('story'); } catch (e) {}
+            let want = STORY.open; try { if (!want && !STORY.linkUsed) want = new URLSearchParams(location.search).get('story'); } catch (e) {}
+            STORY.linkUsed = true;
             if (want && STORIES[want]) { STORY.open = null; return openStory(want); }
             showLive(`
     <div class="vault-card rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 text-center">
@@ -7397,10 +7550,10 @@ function displayMovies(data, query) {
         <p class="text-[10px] text-slate-500 uppercase tracking-widest mt-4">${s.live ? `<span class="text-emerald-300">● ${L('Live', 'Ζωντανό')} · ${new Date().toLocaleString(LANG === 'el' ? 'el-GR' : 'en-GB', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}</span> · ` : ''}${escapeHtml(s.attr)} · ${data.steps.length} ${L('steps', 'βήματα')} · ${L('scroll ↓', 'κύλισε ↓')}</p>
     </div>
     ${data.steps.map((st, i) => `
-    <section class="vault-card rounded-[2rem] p-5 md:p-8 mt-5 story-step">
+    <section id="story-step-${i}" class="vault-card rounded-[2rem] p-5 md:p-8 mt-5 story-step">
         <div class="text-[10px] font-black text-${s.color}-300 uppercase tracking-[0.3em]">${i + 1} / ${data.steps.length} · ${escapeHtml(st.kicker || '')}</div>
         <h4 class="text-xl md:text-3xl font-black text-white mt-1">${escapeHtml(st.title)}</h4>
-        ${st.big ? `<div class="mt-4"><div class="text-4xl md:text-6xl font-black text-${s.color}-300 font-mono-data">${escapeHtml(st.big.value)}</div><div class="text-[10px] text-slate-500 uppercase tracking-widest mt-1">${escapeHtml(st.big.label)}</div></div>` : ''}
+        ${st.big ? `<div class="mt-4"><div class="story-big text-4xl md:text-6xl font-black text-${s.color}-300 font-mono-data" data-count="${escapeHtml(st.big.value)}">${escapeHtml(st.big.value)}</div><div class="text-[10px] text-slate-500 uppercase tracking-widest mt-1">${escapeHtml(st.big.label)}</div></div>` : ''}
         <p class="text-sm md:text-base text-slate-300 leading-relaxed mt-4 max-w-2xl">${st.text}</p>
         ${st.chart ? `<div class="mt-5 bg-black/20 rounded-2xl p-2 md:p-3" style="height:${st.chart.options.scales.x.display === false ? '160px' : '300px'}"><canvas id="story-chart-${i}"></canvas></div>` : ''}
         ${st.links ? `<div class="flex flex-wrap gap-2 mt-5">${st.links.map(link).join('')}</div>` : ''}
@@ -7413,17 +7566,140 @@ function displayMovies(data, query) {
             window.scrollTo({ top: 0, behavior: 'smooth' });
             // Charts draw as they scroll into view
             const draw = i => { const cv = document.getElementById(`story-chart-${i}`); if (!cv || cv.dataset.done) return; cv.dataset.done = '1'; try { STORY.charts.push(new Chart(cv.getContext('2d'), data.steps[i].chart)); } catch (e) { console.warn('Chart failed:', e.message); } };
+            const reveal = i => { const sec = document.getElementById(`story-step-${i}`); if (sec) { sec.classList.add('in'); sec.querySelectorAll('.story-big').forEach(countUp); } draw(i); };
+            STORY.reveal = reveal;
             if ('IntersectionObserver' in window) {
-                STORY.io = new IntersectionObserver(entries => entries.forEach(en => { if (en.isIntersecting) { draw(+en.target.dataset.i); STORY.io.unobserve(en.target); } }), { rootMargin: '0px 0px -10% 0px' });
-                data.steps.forEach((st, i) => { const cv = document.getElementById(`story-chart-${i}`); if (cv) { cv.dataset.i = i; STORY.io.observe(cv); } });
-            } else data.steps.forEach((st, i) => draw(i));
+                STORY.io = new IntersectionObserver(entries => entries.forEach(en => { if (en.isIntersecting) { reveal(+en.target.dataset.i); STORY.io.unobserve(en.target); } }), { rootMargin: '0px 0px -8% 0px' });
+                data.steps.forEach((st, i) => { const sec = document.getElementById(`story-step-${i}`); if (sec) { sec.dataset.i = i; STORY.io.observe(sec); } });
+            } else data.steps.forEach((st, i) => reveal(i));
+            storyProgressStart();
         }
 
+        // ======================= HOME: the front door =======================
+        const HOME = { last: null };
+        function menuGroups() {
+            const groups = []; let cur = null;
+            document.querySelectorAll('#dropdown-menu [data-i18n^="cat_"], #dropdown-menu button[data-vault]').forEach(el => {
+                if (el.dataset.i18n) { cur = { key: el.dataset.i18n, name: t(el.dataset.i18n), items: [] }; groups.push(cur); }
+                else if (cur) cur.items.push({ mode: el.dataset.vault, icon: (el.querySelector('span') || {}).textContent || '📦', name: trv('menu', el.dataset.vault, el.textContent.replace(/\s+/g, ' ').trim().replace(/^\S+\s/, '')) });
+            });
+            return groups;
+        }
+        const skel = (h = 'h-4', w = 'w-24') => `<span class="ev-skel inline-block ${h} ${w} rounded-md align-middle"></span>`;
+        async function loadHome() {
+            const last = HOME.last && HOME.last !== 'home' && MODE_INFO[HOME.last] ? HOME.last : null;
+            const tile = (mode, icon, title, desc, cls) => `<button type="button" onclick="selectMode('${mode}')" class="home-tile vault-card rounded-[2rem] p-5 md:p-6 text-left border border-white/10 ${cls}"><div class="text-4xl mb-3">${icon}</div><div class="text-lg md:text-xl font-black text-white">${title}</div><div class="text-xs text-slate-400 mt-1 leading-relaxed">${desc}</div></button>`;
+            const stat = (id, icon, label, mode) => `<button type="button" onclick="selectMode('${mode}')" class="bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl p-3 md:p-4 text-left transition-all"><div class="text-[9px] font-black text-slate-500 uppercase tracking-widest">${icon} ${label}</div><div id="${id}" class="text-lg md:text-2xl font-black text-white font-mono-data mt-1">${skel('h-6', 'w-16')}</div><div id="${id}-sub" class="text-[10px] text-slate-500 mt-1 truncate">${skel('h-3', 'w-24')}</div></button>`;
+            showLive(`
+    <div class="home-hero vault-card rounded-[2.5rem] p-6 md:p-12 relative overflow-hidden">
+        <div class="home-blob home-blob-a"></div><div class="home-blob home-blob-b"></div>
+        <div class="relative">
+            <p class="text-[10px] font-black text-emerald-300 uppercase tracking-[0.35em] mb-3">${L('Open data · live · free', 'Ανοιχτά δεδομένα · ζωντανά · δωρεάν')}</p>
+            <h2 class="text-3xl md:text-6xl font-black text-white leading-[1.05] max-w-3xl">${L('The planet, in data you can play with.', 'Ο πλανήτης, σε δεδομένα που μπορείς να παίξεις.')}</h2>
+            <p class="text-sm md:text-lg text-slate-300 mt-4 max-w-2xl">${L('Forty-seven vaults of climate, oceans, forests, energy, people and culture, a live 3D globe, quiz games and guided stories, all drawn from the World Bank, NASA, NOAA, USGS and Open-Meteo.', 'Σαράντα επτά θησαυροφυλάκια για κλίμα, ωκεανούς, δάση, ενέργεια, ανθρώπους και πολιτισμό, μια ζωντανή 3D υδρόγειος, κουίζ και ιστορίες, όλα από την Παγκόσμια Τράπεζα, τη NASA, τη NOAA, την USGS και το Open-Meteo.')}</p>
+            <div class="flex flex-wrap gap-3 mt-6">
+                <button type="button" onclick="selectMode('globe')" class="px-5 py-3 rounded-2xl bg-sky-600 hover:bg-sky-500 text-sm font-black text-white shadow-lg shadow-sky-900/40">🌐 ${L('Open the live globe', 'Άνοιξε τη ζωντανή υδρόγειο')}</button>
+                <button type="button" onclick="selectMode('quiz')" class="px-5 py-3 rounded-2xl bg-pink-600 hover:bg-pink-500 text-sm font-black text-white shadow-lg shadow-pink-900/40">🎯 ${L('Play the quiz', 'Παίξε το κουίζ')}</button>
+                <button type="button" onclick="openStory('week')" class="px-5 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-sm font-black text-white">🗓️ ${L('This week on Earth', 'Αυτή την εβδομάδα στη Γη')}</button>
+                <button type="button" onclick="openPalette()" class="px-5 py-3 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-bold text-slate-200">🔍 ${L('Find a vault or country', 'Βρες θησαυροφυλάκιο ή χώρα')} <kbd class="hidden md:inline ml-2 text-[10px] text-slate-500 border border-white/10 rounded px-1">Ctrl K</kbd></button>
+                ${last ? `<button type="button" onclick="selectMode('${last}')" class="px-5 py-3 rounded-2xl bg-white/5 hover:bg-white/10 border border-dashed border-white/15 text-sm font-bold text-slate-300">↩ ${L('Continue', 'Συνέχισε')}: ${trv('labels', last, MODE_LABELS[last] || last)}</button>` : ''}
+            </div>
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-3 mt-8">
+                ${stat('home-quakes', '🌐', L('Quakes 4.5+ today', 'Σεισμοί 4.5+ σήμερα'), 'alerts')}
+                ${stat('home-fires', '🔥', L('Wildfires tracked', 'Πυρκαγιές'), 'alerts')}
+                ${stat('home-hot', '🌡️', L('Hottest capital now', 'Πιο ζεστή πρωτεύουσα'), 'perfect')}
+                ${stat('home-kp', '☀️', L('Space weather', 'Διαστημικός καιρός'), 'space')}
+            </div>
+        </div>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-5">
+        ${tile('globe', '🌐', L('Live Globe', 'Ζωντανή Υδρόγειος'), L('Fires, storms, quakes, the ISS and every capital\'s temperature on a 3D Earth.', 'Πυρκαγιές, καταιγίδες, σεισμοί, ο ISS και η θερμοκρασία κάθε πρωτεύουσας σε 3D Γη.'), 'hover:border-sky-400/50')}
+        ${tile('stories', '📖', L('Earth Stories', 'Ιστορίες της Γης'), L('Nine guided tours through the data, one rewritten from the live feeds every day.', 'Εννέα ξεναγήσεις στα δεδομένα, μία που ξαναγράφεται ζωντανά κάθε μέρα.'), 'hover:border-amber-400/50')}
+        ${tile('quiz', '🎯', L('Planet Quiz', 'Κουίζ Πλανήτη'), L('Seven kinds of question on real numbers, streaks and a global leaderboard.', 'Επτά είδη ερωτήσεων με αληθινούς αριθμούς, σερί και παγκόσμια κατάταξη.'), 'hover:border-pink-400/50')}
+        ${tile('country', '🧭', L('Country Profile', 'Προφίλ Χώρας'), L('Every number for one country on one page, with world ranks and twins.', 'Κάθε αριθμός για μία χώρα σε μία σελίδα, με παγκόσμιες θέσεις και δίδυμες.'), 'hover:border-emerald-400/50')}
+    </div>
+    <div class="vault-card rounded-[2rem] p-5 md:p-8 mt-5">
+        <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">🗂️ ${L('All the vaults', 'Όλα τα θησαυροφυλάκια')}</div>
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">${menuGroups().map(g => `<div><div class="text-[10px] font-black uppercase tracking-widest mb-2 text-slate-300">${escapeHtml(g.name)}</div><div class="flex flex-wrap gap-1.5">${g.items.map(it => `<button type="button" onclick="selectMode('${it.mode}')" class="px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 text-[11px] font-bold text-slate-200">${it.icon} ${escapeHtml(it.name)}</button>`).join('')}</div></div>`).join('')}</div>
+    </div>`);
+            const fill = (id, v, sub) => { const el = document.getElementById(id); if (el) el.innerHTML = v; const s = document.getElementById(id + '-sub'); if (s && sub !== undefined) s.textContent = sub; };
+            const safe = p => p.catch(e => { console.warn('Home tile failed:', e.message); return null; });
+            safe(cachedJson('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_day.geojson', 10 * 60 * 1000)).then(d => { if (!d) return fill('home-quakes', '—', ''); const fs = d.features || []; const big = fs.slice().sort((a, b) => b.properties.mag - a.properties.mag)[0]; fill('home-quakes', String(fs.length), big ? `M${big.properties.mag.toFixed(1)} ${big.properties.place}` : L('quiet day', 'ήσυχη μέρα')); });
+            safe(fetchAlertData()).then(a => { if (!a) return fill('home-fires', '—', ''); const fires = a.events.filter(e => e.cat === 'fires'), storms = a.events.filter(e => e.cat === 'storms'); fill('home-fires', String(fires.length), `${storms.length} ${L('active cyclones', 'ενεργοί κυκλώνες')}`); });
+            safe(loadCapitalWeather()).then(rows => { if (!rows) return fill('home-hot', '—', ''); const h = rows.slice().sort((a, b) => b.t - a.t)[0]; fill('home-hot', `${h.t.toFixed(0)}°C`, `${flagEmoji(h.iso2)} ${h.city}`); });
+            safe(cachedJson('https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json', 15 * 60 * 1000)).then(kp => { const r = Array.isArray(kp) ? kp[kp.length - 1] : null; const k = r ? +(Array.isArray(r) ? r[1] : r.Kp) : NaN; if (!isFinite(k)) return fill('home-kp', '—', ''); fill('home-kp', `Kp ${k.toFixed(1)}`, k >= 5 ? L('geomagnetic storm', 'γεωμαγνητική καταιγίδα') : k >= 4 ? L('active', 'ενεργός') : L('quiet', 'ήρεμος')); });
+        }
+
+        // ======================= COMMAND PALETTE: Ctrl+K, find any vault or country =======================
+        const PAL = { items: [], sel: 0, countries: null, q: '' };
+        function openPalette() {
+            if (document.getElementById('ev-palette')) return;
+            const box = document.createElement('div'); box.id = 'ev-palette';
+            box.className = 'fixed inset-0 z-[100] bg-slate-950/70 backdrop-blur-sm flex items-start justify-center p-4 pt-[12vh]';
+            box.innerHTML = `<div class="w-full max-w-xl bg-slate-900 border border-white/10 rounded-3xl shadow-2xl overflow-hidden" role="dialog" aria-label="${L('Find a vault or country', 'Βρες θησαυροφυλάκιο ή χώρα')}">
+        <div class="flex items-center gap-3 px-4 py-3 border-b border-white/10"><span class="text-slate-500">🔍</span><input id="ev-palette-input" type="text" autocomplete="off" placeholder="${L('Type a vault or a country…', 'Γράψε θησαυροφυλάκιο ή χώρα…')}" class="flex-1 bg-transparent text-white text-base outline-none placeholder:text-slate-500"><kbd class="text-[10px] text-slate-500 border border-white/10 rounded px-1.5 py-0.5">Esc</kbd></div>
+        <div id="ev-palette-list" class="max-h-[55vh] overflow-y-auto p-2"></div>
+        <div class="px-4 py-2 border-t border-white/10 text-[10px] text-slate-500 uppercase tracking-widest">↑↓ ${L('move', 'κίνηση')} · ↵ ${L('open', 'άνοιγμα')}</div>
+    </div>`;
+            box.addEventListener('click', e => { if (e.target === box) closePalette(); });
+            document.body.appendChild(box);
+            const inp = document.getElementById('ev-palette-input');
+            inp.addEventListener('input', () => { PAL.q = inp.value; PAL.sel = 0; renderPalette(); });
+            inp.addEventListener('keydown', e => {
+                if (e.key === 'Escape') { e.preventDefault(); closePalette(); }
+                else if (e.key === 'ArrowDown') { e.preventDefault(); PAL.sel = Math.min(PAL.items.length - 1, PAL.sel + 1); renderPalette(); }
+                else if (e.key === 'ArrowUp') { e.preventDefault(); PAL.sel = Math.max(0, PAL.sel - 1); renderPalette(); }
+                else if (e.key === 'Enter') { e.preventDefault(); paletteGo(PAL.sel); }
+            });
+            PAL.q = ''; PAL.sel = 0; renderPalette(); inp.focus();
+            if (!PAL.countries) wbCountries().then(cs => { PAL.countries = cs; if (document.getElementById('ev-palette')) renderPalette(); }).catch(() => {});
+        }
+        function closePalette() { const box = document.getElementById('ev-palette'); if (box) box.remove(); }
+        function renderPalette() {
+            const list = document.getElementById('ev-palette-list'); if (!list) return;
+            const q = PAL.q.trim().toLowerCase();
+            const vaults = menuGroups().flatMap(g => g.items.map(it => Object.assign({ kind: 'vault', group: g.name }, it)));
+            const vHits = (q ? vaults.filter(v => v.name.toLowerCase().includes(q) || v.mode.includes(q) || (MODE_LABELS[v.mode] || '').toLowerCase().includes(q)) : vaults.filter(v => ['globe', 'stories', 'quiz', 'country', 'twins', 'alerts', 'weather', 'born'].includes(v.mode))).slice(0, 8);
+            const cHits = q && PAL.countries ? PAL.countries.filter(c => c.name.toLowerCase().includes(q) || (c.capitalCity || '').toLowerCase().includes(q)).slice(0, 8).map(c => ({ kind: 'country', iso2: c.iso2Code, name: c.name, sub: c.capitalCity })) : [];
+            PAL.items = [...vHits, ...cHits];
+            if (!PAL.items.length) { list.innerHTML = `<div class="text-center text-sm text-slate-500 py-6">${L('Nothing matches.', 'Τίποτα δεν ταιριάζει.')}</div>`; return; }
+            const sect = (label) => `<div class="px-3 pt-2 pb-1 text-[10px] font-black text-slate-500 uppercase tracking-widest">${label}</div>`;
+            list.innerHTML = (vHits.length ? sect(L('Vaults', 'Θησαυροφυλάκια')) : '') + PAL.items.map((it, i) => {
+                const head = i === vHits.length && cHits.length ? sect(L('Countries', 'Χώρες')) : '';
+                const row = it.kind === 'vault' ? `<span class="text-lg w-7 text-center">${it.icon}</span><span class="flex-1 text-sm font-bold text-white">${escapeHtml(it.name)}</span><span class="text-[10px] text-slate-500 uppercase tracking-widest">${escapeHtml(it.group)}</span>` : `<span class="text-lg w-7 text-center">${flagEmoji(it.iso2)}</span><span class="flex-1 text-sm font-bold text-white">${escapeHtml(it.name)}</span><span class="text-[10px] text-slate-500">${escapeHtml(it.sub || '')} · ${L('profile', 'προφίλ')}</span>`;
+                return `${head}<button type="button" onmousemove="PAL.sel=${i}" onclick="paletteGo(${i})" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left ${i === PAL.sel ? 'bg-white/10' : 'hover:bg-white/5'}">${row}</button>`;
+            }).join('');
+            const selEl = list.querySelectorAll('button')[PAL.sel]; if (selEl && selEl.scrollIntoView) selEl.scrollIntoView({ block: 'nearest' });
+        }
+        function paletteGo(i) {
+            const it = PAL.items[i]; if (!it) return; closePalette();
+            if (it.kind === 'vault') selectMode(it.mode); else openCountryByIso(it.iso2);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); if (document.getElementById('ev-palette')) closePalette(); else openPalette(); } });
+
+        // ======================= STORY POLISH: reading progress and counting numbers =======================
+        function countUp(el) {
+            if (!el || el.dataset.counted) return; el.dataset.counted = '1';
+            const raw = el.dataset.count || el.textContent; const m = raw.match(/^([^\d]*)(\d[\d,]*(?:\.\d+)?)(.*)$/s); if (!m) return;
+            const target = parseFloat(m[2].replace(/,/g, '')), dec = (m[2].split('.')[1] || '').length, pre = m[1], post = m[3], t0 = performance.now(), dur = 1100;
+            const tick = now => { const p = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - p, 3), v = target * e; el.textContent = pre + (dec ? v.toFixed(dec) : Math.round(v).toLocaleString()) + post; if (p < 1) requestAnimationFrame(tick); else el.textContent = raw; };
+            requestAnimationFrame(tick); setTimeout(() => { el.textContent = raw; }, dur + 500); // settle even if frames are slow or the tab is hidden
+        }
+        function storyProgressStart() {
+            storyProgressStop();
+            const bar = document.createElement('div'); bar.id = 'story-progress'; bar.className = 'fixed top-0 left-0 h-1 z-[70] bg-gradient-to-r from-amber-400 via-rose-400 to-fuchsia-400 transition-[width] duration-150'; bar.style.width = '0%';
+            document.body.appendChild(bar);
+            STORY.onScroll = () => { const live = document.getElementById('live-section'); if (!live) return; const top = live.getBoundingClientRect().top + window.scrollY, h = live.offsetHeight - window.innerHeight; const p = h > 0 ? Math.max(0, Math.min(1, (window.scrollY - top) / h)) : 1; bar.style.width = (p * 100).toFixed(1) + '%'; if (STORY.reveal) document.querySelectorAll('.story-step:not(.in)').forEach(sec => { if (sec.getBoundingClientRect().top < window.innerHeight * 0.92) STORY.reveal(+sec.dataset.i); }); };
+            window.addEventListener('scroll', STORY.onScroll, { passive: true }); STORY.onScroll();
+        }
+        function storyProgressStop() { const bar = document.getElementById('story-progress'); if (bar) bar.remove(); if (STORY.onScroll) { window.removeEventListener('scroll', STORY.onScroll); STORY.onScroll = null; } }
+
         const GR = {
-            menu: { globe: 'Ζωντανή Υδρόγειος', country: 'Προφίλ Χώρας', stories: 'Ιστορίες της Γης', twins: 'Δίδυμες Χώρες', born: 'Ο Πλανήτης από τη Γέννησή σου', perfect: 'Εύρεση Τέλειου Καιρού', quiz: 'Κουίζ Πλανήτη', mystery: 'Μυστήρια Χώρα (ημερήσιο)', hotornot: 'Ζεστό ή Κρύο (ζωντανή μονομαχία)', flags: 'Σημαίες Αστραπή', rightnow: 'Ο Πλανήτης Τώρα', alerts: 'Συναγερμοί Πλανήτη', space: 'Διαστημικός Καιρός', iss: 'Διαστημικός Σταθμός', sky: 'Ο Ουρανός Απόψε', asteroids: 'Παρατηρητήριο Αστεροειδών', onthisday: 'Σαν Σήμερα στη Γη', nearby: 'Άγρια Ζωή Κοντά σου', outside: 'Καλύτερη Ώρα Έξω', weather: 'Αρχείο Καιρού', ocean: 'Παλμός Ωκεανού', forest: 'Δασική Κληρονομιά', agri: 'Γεωργία', energy: 'Ενέργεια & ΑΠΕ', water: 'Ασφάλεια Νερού', carbon: 'Εκπομπές Άνθρακα', endangered: 'Απειλούμενα Είδη', waste: 'Απορρίμματα & Ανακύκλωση', power: 'Ενεργειακό Μείγμα', air: 'Ποιότητα Αέρα', waterstress: 'Υδατική Πίεση', wildlife: 'Γκαλερί Άγριας Ζωής', human_span: 'Προσδόκιμο Ζωής', mental: 'Ψυχική Υγεία', happiness: 'Ευτυχία & Ευημερία', generations: 'Γενιές', univ: 'Πρόσβαση στο Πανεπιστήμιο', public_private: 'Εκπαίδευση: Δημόσια vs Ιδιωτική', health_private: 'Υγεία: Δημόσια vs Ιδιωτική', migration: 'Μετανάστευση & Διασπορά', economy: 'Οικονομία & Αγορά Εργασίας', internet: 'Πρόσβαση στο Διαδίκτυο', music: 'Μουσική Κουλτούρα', cinema: 'Κινηματογράφος', trends: 'Τάσεις Διαδικτύου', city: 'Ιστορίες Πόλεων', compare: 'Χώρα vs Χώρα' },
-            labels: { globe: 'ΖΩΝΤΑΝΗ ΥΔΡΟΓΕΙΟΣ', country: 'ΠΡΟΦΙΛ ΧΩΡΑΣ', stories: 'ΙΣΤΟΡΙΕΣ ΤΗΣ ΓΗΣ', twins: 'ΔΙΔΥΜΕΣ ΧΩΡΕΣ', born: 'ΑΠΟ ΤΗ ΓΕΝΝΗΣΗ ΣΟΥ', perfect: 'ΤΕΛΕΙΟΣ ΚΑΙΡΟΣ', quiz: 'ΚΟΥΙΖ ΠΛΑΝΗΤΗ', mystery: 'ΜΥΣΤΗΡΙΑ ΧΩΡΑ', hotornot: 'ΖΕΣΤΟ Ή ΚΡΥΟ', flags: 'ΣΗΜΑΙΕΣ ΑΣΤΡΑΠΗ', rightnow: 'Ο ΠΛΑΝΗΤΗΣ ΤΩΡΑ', alerts: 'ΣΥΝΑΓΕΡΜΟΙ ΠΛΑΝΗΤΗ', space: 'ΔΙΑΣΤΗΜΙΚΟΣ ΚΑΙΡΟΣ', iss: 'ΔΙΑΣΤΗΜΙΚΟΣ ΣΤΑΘΜΟΣ', sky: 'Ο ΟΥΡΑΝΟΣ ΑΠΟΨΕ', asteroids: 'ΑΣΤΕΡΟΕΙΔΕΙΣ', onthisday: 'ΣΑΝ ΣΗΜΕΡΑ', nearby: 'ΑΓΡΙΑ ΖΩΗ ΚΟΝΤΑ ΣΟΥ', outside: 'ΚΑΛΥΤΕΡΗ ΩΡΑ ΕΞΩ', weather: 'ΑΡΧΕΙΟ ΚΑΙΡΟΥ', ocean: 'ΠΑΛΜΟΣ ΩΚΕΑΝΟΥ', forest: 'ΔΑΣΙΚΗ ΚΛΗΡΟΝΟΜΙΑ', agri: 'ΓΕΩΡΓΙΑ', energy: 'ΕΝΕΡΓΕΙΑ & ΑΠΕ', water: 'ΑΣΦΑΛΕΙΑ ΝΕΡΟΥ', carbon: 'ΕΚΠΟΜΠΕΣ ΑΝΘΡΑΚΑ', endangered: 'ΑΠΕΙΛΟΥΜΕΝΑ ΕΙΔΗ', waste: 'ΑΠΟΡΡΙΜΜΑΤΑ & ΑΝΑΚΥΚΛΩΣΗ', power: 'ΕΝΕΡΓΕΙΑΚΟ ΜΕΙΓΜΑ', air: 'ΠΟΙΟΤΗΤΑ ΑΕΡΑ', waterstress: 'ΥΔΑΤΙΚΗ ΠΙΕΣΗ', wildlife: 'ΓΚΑΛΕΡΙ ΑΓΡΙΑΣ ΖΩΗΣ', human_span: 'ΠΡΟΣΔΟΚΙΜΟ ΖΩΗΣ', mental: 'ΨΥΧΙΚΗ ΥΓΕΙΑ', happiness: 'ΕΥΤΥΧΙΑ & ΕΥΗΜΕΡΙΑ', generations: 'ΓΕΝΙΕΣ', univ: 'ΠΑΝΕΠΙΣΤΗΜΙΟ', public_private: 'ΕΚΠΑΙΔΕΥΣΗ: ΔΗΜΟΣΙΑ vs ΙΔΙΩΤΙΚΗ', health_private: 'ΥΓΕΙΑ: ΔΗΜΟΣΙΑ vs ΙΔΙΩΤΙΚΗ', migration: 'ΜΕΤΑΝΑΣΤΕΥΣΗ & ΔΙΑΣΠΟΡΑ', economy: 'ΟΙΚΟΝΟΜΙΑ & ΕΡΓΑΣΙΑ', internet: 'ΠΡΟΣΒΑΣΗ ΣΤΟ ΔΙΑΔΙΚΤΥΟ', music: 'ΜΟΥΣΙΚΗ ΚΟΥΛΤΟΥΡΑ', cinema: 'ΚΙΝΗΜΑΤΟΓΡΑΦΟΣ', trends: 'ΤΑΣΕΙΣ ΔΙΑΔΙΚΤΥΟΥ', city: 'ΙΣΤΟΡΙΕΣ ΠΟΛΕΩΝ', compare: 'ΧΩΡΑ VS ΧΩΡΑ' },
-            titles: { globe: 'Ζωντανή Υδρόγειος', country: 'Προφίλ Χώρας', stories: 'Ιστορίες της Γης', twins: 'Δίδυμες Χώρες', born: 'Ο Πλανήτης από τότε που Γεννήθηκες', perfect: 'Εύρεση Τέλειου Καιρού', weather: 'Ιστορία του Καιρού', ocean: 'Παλμός του Ωκεανού', univ: 'Πρόσβαση στο Πανεπιστήμιο', forest: 'Δασική Κληρονομιά', agri: 'Γεωργία', human_span: 'Προσδόκιμο Ζωής', energy: 'Ενέργεια & Ανανεώσιμες', water: 'Ποιότητα & Ασφάλεια Νερού', mental: 'Ψυχική Υγεία', happiness: 'Ευτυχία & Ευημερία', carbon: 'Εκπομπές Άνθρακα', generations: 'Γενιές', internet: 'Πρόσβαση στο Διαδίκτυο', music: 'Μουσική Κουλτούρα', cinema: 'Ανακάλυψη Κινηματογράφου', endangered: 'Απειλούμενα Είδη', migration: 'Μετανάστευση & Διασπορά', public_private: 'Εκπαίδευση: Δημόσια vs Ιδιωτική', health_private: 'Υγεία: Δημόσια vs Ιδιωτική', economy: 'Οικονομία & Αγορά Εργασίας', trends: 'Τάσεις του Διαδικτύου', waste: 'Απορρίμματα & Ανακύκλωση', power: 'Ενεργειακό Μείγμα', air: 'Ποιότητα Αέρα', waterstress: 'Υδατική Πίεση', alerts: 'Συναγερμοί Πλανήτη', space: 'Διαστημικός Καιρός', compare: 'Χώρα εναντίον Χώρας', wildlife: 'Γκαλερί Άγριας Ζωής', quiz: 'Κουίζ Πλανήτη', iss: 'Εντοπισμός Διαστημικού Σταθμού', city: 'Ιστορίες Πόλεων', mystery: 'Μυστήρια Χώρα', hotornot: 'Ζεστό ή Κρύο', flags: 'Σημαίες Αστραπή', rightnow: 'Ο Πλανήτης Τώρα', sky: 'Ο Ουρανός Απόψε', asteroids: 'Παρατηρητήριο Αστεροειδών', onthisday: 'Σαν Σήμερα στη Γη', nearby: 'Άγρια Ζωή Κοντά σου', outside: 'Καλύτερη Ώρα Έξω' },
-            desc: { globe: 'Ο πλανήτης σε 3D με ζωντανές πυρκαγιές, καταιγίδες, σεισμούς, ηφαίστεια, θερμοκρασίες πρωτευουσών και τον διαστημικό σταθμό. Πάτησε μια χώρα για το προφίλ της', country: 'Μία σελίδα για κάθε χώρα: ο αριθμός κάθε θησαυροφυλακίου με την παγκόσμια θέση του, ο καιρός στην πρωτεύουσα τώρα, ενεργοί συναγερμοί, οι πιο κοντινές δίδυμες και μια πόρτα σε κάθε θησαυροφυλάκιο', stories: 'Ξεναγήσεις μέσα στα δεδομένα, γράφημα-γράφημα: αυτή την εβδομάδα στη Γη (ζωντανά), ο αιώνας του άνθρακα, πού πήγαν τα δάση, οκτώ δισεκατομμύρια εμείς και η Μεσόγειος που θερμαίνεται', twins: 'Ποιες χώρες μοιάζουν πιο πολύ στη δική σου; Σύγκριση σε κάθε θησαυροφυλάκιο, οι πέντε πιο κοντινές με κάθε αριθμό δίπλα-δίπλα', born: 'Βάλε την ημερομηνία γέννησής σου: πώς άλλαξαν ο αέρας, το κλίμα, οι άνθρωποι και ο πλανήτης στη ζωή σου', perfect: 'Διάλεξε την ιδανική σου θερμοκρασία και βρες τις πρωτεύουσες που την έχουν αυτή τη στιγμή', weather: '50 χρόνια ημερήσιας ιστορίας θερμοκρασίας για κάθε πόλη', ocean: 'Ζωντανή θερμοκρασία θάλασσας και θαλάσσιοι καύσωνες για κάθε παράκτια πόλη', forest: 'Δασοκάλυψη και τάσεις αποψίλωσης ανά χώρα', agri: 'Ποσοστό γης που χρησιμοποιείται για καλλιέργειες, ανά χώρα', energy: 'Μερίδιο ανανεώσιμων και υδροηλεκτρικών στην ηλεκτρική ενέργεια ανά χώρα', water: 'Πρόσβαση σε ασφαλές πόσιμο νερό ανά χώρα', carbon: 'Εκπομπές αερίων του θερμοκηπίου σε σχέση με προϋπολογισμό άνθρακα με βάση το 1990', endangered: 'Απειλούμενα θηλαστικά, πουλιά, ψάρια και φυτά ανά χώρα', waste: 'Ποσοστά ανακύκλωσης, κομποστοποίησης και ταφής από τον ΟΟΣΑ', power: 'Μερίδια ορυκτών, άνθρακα και πυρηνικών στο δίκτυο, συν κατανάλωση ρεύματος ανά άτομο', wildlife: 'Αληθινές φωτογραφίες άγριας ζωής από πολίτες-επιστήμονες, και τι ζει εκεί', quiz: 'Επτά είδη ερωτήσεων με αληθινά δεδομένα: περισσότερο ή λιγότερο, ο πρώτος από τέσσερις, πρωτεύουσες, σημαίες, εκτιμήσεις και ζωντανός καιρός. Μετά προκάλεσε έναν φίλο με σύνδεσμο', iss: 'Πού βρίσκεται ο Διεθνής Διαστημικός Σταθμός αυτή τη στιγμή, ζωντανά στον χάρτη', city: 'Πότε ιδρύθηκε μια πόλη, ποιοι γεννήθηκαν εκεί και οι στιγμές που τη διαμόρφωσαν', mystery: 'Μία μυστική χώρα κάθε μέρα. Έξι προσπάθειες, νέα ένδειξη μετά από κάθε λάθος', hotornot: 'Δύο πόλεις, ζωντανές θερμοκρασίες: ποια είναι πιο ζεστή αυτή τη στιγμή;', flags: 'Τριάντα δευτερόλεπτα, τέσσερις επιλογές ανά σημαία. Πόσες θα αναγνωρίσεις;', rightnow: 'Οι πιο ζεστές, κρύες, ανεμώδεις και καθαρές πόλεις της Γης αυτό το λεπτό', sky: 'Ηλιοβασίλεμα, ώρα σκότους, φεγγάρι, σύννεφα και πιθανότητα σέλας για κάθε πόλη απόψε', asteroids: 'Κάθε αστεροειδής που περνά κοντά στη Γη αυτή την εβδομάδα, με μέγεθος και απόσταση', onthisday: 'Σεισμοί, αποστολές, εκλείψεις και ανακαλύψεις που έγιναν σαν σήμερα', nearby: 'Τι εντόπισαν οι άνθρωποι στη φύση σε ακτίνα 40 χλμ. από κάθε πόλη αυτόν τον μήνα', outside: 'Οι επόμενες 48 ώρες βαθμολογημένες για περπάτημα, τρέξιμο ή πικνίκ: καιρός, αέρας, UV και γύρη μαζί', air: 'Ετήσια έκθεση σε PM2.5 συν ζωντανή μέτρηση στην πρωτεύουσα', waterstress: 'Πόσο από το ανανεώσιμο γλυκό νερό αντλεί μια χώρα κάθε χρόνο', human_span: 'Προσδόκιμο ζωής, με τη διαφορά ανάμεσα σε γυναίκες και άνδρες', mental: 'Θνησιμότητα από αυτοκτονίες ανά 100.000 κατοίκους, ανά φύλο', happiness: 'Βαθμολογίες της Παγκόσμιας Έκθεσης Ευτυχίας με κατάταξη, ώρες εργασίας και ασφάλεια', generations: 'Δείκτες γονιμότητας και η δημογραφική μετάβαση', univ: 'Πανεπιστημιακή εκπαίδευση, με τον διαχωρισμό ανά φύλο', public_private: 'Εγγραφές σε δημόσια και ιδιωτικά σχολεία και δαπάνες για την εκπαίδευση', health_private: 'Ποιος πληρώνει την υγεία: κράτος, ιδιώτες και από την τσέπη', migration: 'Καθαρή μετανάστευση, μεταναστευτικός πληθυσμός και εμβάσματα', economy: 'ΑΕΠ κατά κεφαλήν, ανεργία, ανισότητα και συμμετοχή στην εργασία', internet: 'Πρόσβαση στο διαδίκτυο, με ανάλυση ανά φύλο', music: 'Οι πιο δημοφιλείς καλλιτέχνες και τραγούδια ανά χώρα', cinema: 'Οι ταινίες με την υψηλότερη βαθμολογία που γυρίστηκαν σε μια χώρα', trends: 'Για τι μιλάει το Reddit, παγκόσμια και σε μια χώρα', alerts: 'Πυρκαγιές, καταιγίδες, πλημμύρες, ηφαίστεια, ξηρασίες και σεισμοί που συμβαίνουν τώρα, παγκοσμίως. Πάτησε μια κατηγορία για όλα τα γεγονότα', space: 'Γεωμαγνητικές καταιγίδες, πιθανότητα σέλας και ηλιακή δραστηριότητα, ζωντανά από τη NOAA', compare: 'Βάλε δύο χώρες δίπλα-δίπλα σε οποιονδήποτε δείκτη' }
+            menu: { home: 'Αρχική', globe: 'Ζωντανή Υδρόγειος', country: 'Προφίλ Χώρας', stories: 'Ιστορίες της Γης', twins: 'Δίδυμες Χώρες', born: 'Ο Πλανήτης από τη Γέννησή σου', perfect: 'Εύρεση Τέλειου Καιρού', quiz: 'Κουίζ Πλανήτη', mystery: 'Μυστήρια Χώρα (ημερήσιο)', hotornot: 'Ζεστό ή Κρύο (ζωντανή μονομαχία)', flags: 'Σημαίες Αστραπή', rightnow: 'Ο Πλανήτης Τώρα', alerts: 'Συναγερμοί Πλανήτη', space: 'Διαστημικός Καιρός', iss: 'Διαστημικός Σταθμός', sky: 'Ο Ουρανός Απόψε', asteroids: 'Παρατηρητήριο Αστεροειδών', onthisday: 'Σαν Σήμερα στη Γη', nearby: 'Άγρια Ζωή Κοντά σου', outside: 'Καλύτερη Ώρα Έξω', weather: 'Αρχείο Καιρού', ocean: 'Παλμός Ωκεανού', forest: 'Δασική Κληρονομιά', agri: 'Γεωργία', energy: 'Ενέργεια & ΑΠΕ', water: 'Ασφάλεια Νερού', carbon: 'Εκπομπές Άνθρακα', endangered: 'Απειλούμενα Είδη', waste: 'Απορρίμματα & Ανακύκλωση', power: 'Ενεργειακό Μείγμα', air: 'Ποιότητα Αέρα', waterstress: 'Υδατική Πίεση', wildlife: 'Γκαλερί Άγριας Ζωής', human_span: 'Προσδόκιμο Ζωής', mental: 'Ψυχική Υγεία', happiness: 'Ευτυχία & Ευημερία', generations: 'Γενιές', univ: 'Πρόσβαση στο Πανεπιστήμιο', public_private: 'Εκπαίδευση: Δημόσια vs Ιδιωτική', health_private: 'Υγεία: Δημόσια vs Ιδιωτική', migration: 'Μετανάστευση & Διασπορά', economy: 'Οικονομία & Αγορά Εργασίας', internet: 'Πρόσβαση στο Διαδίκτυο', music: 'Μουσική Κουλτούρα', cinema: 'Κινηματογράφος', trends: 'Τάσεις Διαδικτύου', city: 'Ιστορίες Πόλεων', compare: 'Χώρα vs Χώρα' },
+            labels: { home: 'ΑΡΧΙΚΗ', globe: 'ΖΩΝΤΑΝΗ ΥΔΡΟΓΕΙΟΣ', country: 'ΠΡΟΦΙΛ ΧΩΡΑΣ', stories: 'ΙΣΤΟΡΙΕΣ ΤΗΣ ΓΗΣ', twins: 'ΔΙΔΥΜΕΣ ΧΩΡΕΣ', born: 'ΑΠΟ ΤΗ ΓΕΝΝΗΣΗ ΣΟΥ', perfect: 'ΤΕΛΕΙΟΣ ΚΑΙΡΟΣ', quiz: 'ΚΟΥΙΖ ΠΛΑΝΗΤΗ', mystery: 'ΜΥΣΤΗΡΙΑ ΧΩΡΑ', hotornot: 'ΖΕΣΤΟ Ή ΚΡΥΟ', flags: 'ΣΗΜΑΙΕΣ ΑΣΤΡΑΠΗ', rightnow: 'Ο ΠΛΑΝΗΤΗΣ ΤΩΡΑ', alerts: 'ΣΥΝΑΓΕΡΜΟΙ ΠΛΑΝΗΤΗ', space: 'ΔΙΑΣΤΗΜΙΚΟΣ ΚΑΙΡΟΣ', iss: 'ΔΙΑΣΤΗΜΙΚΟΣ ΣΤΑΘΜΟΣ', sky: 'Ο ΟΥΡΑΝΟΣ ΑΠΟΨΕ', asteroids: 'ΑΣΤΕΡΟΕΙΔΕΙΣ', onthisday: 'ΣΑΝ ΣΗΜΕΡΑ', nearby: 'ΑΓΡΙΑ ΖΩΗ ΚΟΝΤΑ ΣΟΥ', outside: 'ΚΑΛΥΤΕΡΗ ΩΡΑ ΕΞΩ', weather: 'ΑΡΧΕΙΟ ΚΑΙΡΟΥ', ocean: 'ΠΑΛΜΟΣ ΩΚΕΑΝΟΥ', forest: 'ΔΑΣΙΚΗ ΚΛΗΡΟΝΟΜΙΑ', agri: 'ΓΕΩΡΓΙΑ', energy: 'ΕΝΕΡΓΕΙΑ & ΑΠΕ', water: 'ΑΣΦΑΛΕΙΑ ΝΕΡΟΥ', carbon: 'ΕΚΠΟΜΠΕΣ ΑΝΘΡΑΚΑ', endangered: 'ΑΠΕΙΛΟΥΜΕΝΑ ΕΙΔΗ', waste: 'ΑΠΟΡΡΙΜΜΑΤΑ & ΑΝΑΚΥΚΛΩΣΗ', power: 'ΕΝΕΡΓΕΙΑΚΟ ΜΕΙΓΜΑ', air: 'ΠΟΙΟΤΗΤΑ ΑΕΡΑ', waterstress: 'ΥΔΑΤΙΚΗ ΠΙΕΣΗ', wildlife: 'ΓΚΑΛΕΡΙ ΑΓΡΙΑΣ ΖΩΗΣ', human_span: 'ΠΡΟΣΔΟΚΙΜΟ ΖΩΗΣ', mental: 'ΨΥΧΙΚΗ ΥΓΕΙΑ', happiness: 'ΕΥΤΥΧΙΑ & ΕΥΗΜΕΡΙΑ', generations: 'ΓΕΝΙΕΣ', univ: 'ΠΑΝΕΠΙΣΤΗΜΙΟ', public_private: 'ΕΚΠΑΙΔΕΥΣΗ: ΔΗΜΟΣΙΑ vs ΙΔΙΩΤΙΚΗ', health_private: 'ΥΓΕΙΑ: ΔΗΜΟΣΙΑ vs ΙΔΙΩΤΙΚΗ', migration: 'ΜΕΤΑΝΑΣΤΕΥΣΗ & ΔΙΑΣΠΟΡΑ', economy: 'ΟΙΚΟΝΟΜΙΑ & ΕΡΓΑΣΙΑ', internet: 'ΠΡΟΣΒΑΣΗ ΣΤΟ ΔΙΑΔΙΚΤΥΟ', music: 'ΜΟΥΣΙΚΗ ΚΟΥΛΤΟΥΡΑ', cinema: 'ΚΙΝΗΜΑΤΟΓΡΑΦΟΣ', trends: 'ΤΑΣΕΙΣ ΔΙΑΔΙΚΤΥΟΥ', city: 'ΙΣΤΟΡΙΕΣ ΠΟΛΕΩΝ', compare: 'ΧΩΡΑ VS ΧΩΡΑ' },
+            titles: { home: 'Εξερεύνησε τον πλανήτη με δεδομένα', globe: 'Ζωντανή Υδρόγειος', country: 'Προφίλ Χώρας', stories: 'Ιστορίες της Γης', twins: 'Δίδυμες Χώρες', born: 'Ο Πλανήτης από τότε που Γεννήθηκες', perfect: 'Εύρεση Τέλειου Καιρού', weather: 'Ιστορία του Καιρού', ocean: 'Παλμός του Ωκεανού', univ: 'Πρόσβαση στο Πανεπιστήμιο', forest: 'Δασική Κληρονομιά', agri: 'Γεωργία', human_span: 'Προσδόκιμο Ζωής', energy: 'Ενέργεια & Ανανεώσιμες', water: 'Ποιότητα & Ασφάλεια Νερού', mental: 'Ψυχική Υγεία', happiness: 'Ευτυχία & Ευημερία', carbon: 'Εκπομπές Άνθρακα', generations: 'Γενιές', internet: 'Πρόσβαση στο Διαδίκτυο', music: 'Μουσική Κουλτούρα', cinema: 'Ανακάλυψη Κινηματογράφου', endangered: 'Απειλούμενα Είδη', migration: 'Μετανάστευση & Διασπορά', public_private: 'Εκπαίδευση: Δημόσια vs Ιδιωτική', health_private: 'Υγεία: Δημόσια vs Ιδιωτική', economy: 'Οικονομία & Αγορά Εργασίας', trends: 'Τάσεις του Διαδικτύου', waste: 'Απορρίμματα & Ανακύκλωση', power: 'Ενεργειακό Μείγμα', air: 'Ποιότητα Αέρα', waterstress: 'Υδατική Πίεση', alerts: 'Συναγερμοί Πλανήτη', space: 'Διαστημικός Καιρός', compare: 'Χώρα εναντίον Χώρας', wildlife: 'Γκαλερί Άγριας Ζωής', quiz: 'Κουίζ Πλανήτη', iss: 'Εντοπισμός Διαστημικού Σταθμού', city: 'Ιστορίες Πόλεων', mystery: 'Μυστήρια Χώρα', hotornot: 'Ζεστό ή Κρύο', flags: 'Σημαίες Αστραπή', rightnow: 'Ο Πλανήτης Τώρα', sky: 'Ο Ουρανός Απόψε', asteroids: 'Παρατηρητήριο Αστεροειδών', onthisday: 'Σαν Σήμερα στη Γη', nearby: 'Άγρια Ζωή Κοντά σου', outside: 'Καλύτερη Ώρα Έξω' },
+            desc: { home: 'Ζωντανά δεδομένα, παιχνίδια και ιστορίες από ανοιχτές πηγές. Διάλεξε μια πόρτα.', globe: 'Ο πλανήτης σε 3D με ζωντανές πυρκαγιές, καταιγίδες, σεισμούς, ηφαίστεια, θερμοκρασίες πρωτευουσών και τον διαστημικό σταθμό. Πάτησε μια χώρα για το προφίλ της', country: 'Μία σελίδα για κάθε χώρα: ο αριθμός κάθε θησαυροφυλακίου με την παγκόσμια θέση του, ο καιρός στην πρωτεύουσα τώρα, ενεργοί συναγερμοί, οι πιο κοντινές δίδυμες και μια πόρτα σε κάθε θησαυροφυλάκιο', stories: 'Εννέα ξεναγήσεις μέσα στα δεδομένα, γράφημα-γράφημα: αυτή την εβδομάδα στη Γη (ζωντανά), ο αιώνας του άνθρακα, η θάλασσα που θερμαίνεται, τα δάση, η στροφή στις ανανεώσιμες, οκτώ δισεκατομμύρια εμείς, ποιος ζει περισσότερο, πού μετακινούνται οι άνθρωποι και η Μεσόγειος που θερμαίνεται', twins: 'Ποιες χώρες μοιάζουν πιο πολύ στη δική σου; Σύγκριση σε κάθε θησαυροφυλάκιο, οι πέντε πιο κοντινές με κάθε αριθμό δίπλα-δίπλα', born: 'Βάλε την ημερομηνία γέννησής σου: πώς άλλαξαν ο αέρας, το κλίμα, οι άνθρωποι και ο πλανήτης στη ζωή σου', perfect: 'Διάλεξε την ιδανική σου θερμοκρασία και βρες τις πρωτεύουσες που την έχουν αυτή τη στιγμή', weather: '50 χρόνια ημερήσιας ιστορίας θερμοκρασίας για κάθε πόλη', ocean: 'Ζωντανή θερμοκρασία θάλασσας και θαλάσσιοι καύσωνες για κάθε παράκτια πόλη', forest: 'Δασοκάλυψη και τάσεις αποψίλωσης ανά χώρα', agri: 'Ποσοστό γης που χρησιμοποιείται για καλλιέργειες, ανά χώρα', energy: 'Μερίδιο ανανεώσιμων και υδροηλεκτρικών στην ηλεκτρική ενέργεια ανά χώρα', water: 'Πρόσβαση σε ασφαλές πόσιμο νερό ανά χώρα', carbon: 'Εκπομπές αερίων του θερμοκηπίου σε σχέση με προϋπολογισμό άνθρακα με βάση το 1990', endangered: 'Απειλούμενα θηλαστικά, πουλιά, ψάρια και φυτά ανά χώρα', waste: 'Ποσοστά ανακύκλωσης, κομποστοποίησης και ταφής από τον ΟΟΣΑ', power: 'Μερίδια ορυκτών, άνθρακα και πυρηνικών στο δίκτυο, συν κατανάλωση ρεύματος ανά άτομο', wildlife: 'Αληθινές φωτογραφίες άγριας ζωής από πολίτες-επιστήμονες, και τι ζει εκεί', quiz: 'Επτά είδη ερωτήσεων με αληθινά δεδομένα: περισσότερο ή λιγότερο, ο πρώτος από τέσσερις, πρωτεύουσες, σημαίες, εκτιμήσεις και ζωντανός καιρός. Μετά προκάλεσε έναν φίλο με σύνδεσμο', iss: 'Πού βρίσκεται ο Διεθνής Διαστημικός Σταθμός αυτή τη στιγμή, ζωντανά στον χάρτη', city: 'Πότε ιδρύθηκε μια πόλη, ποιοι γεννήθηκαν εκεί και οι στιγμές που τη διαμόρφωσαν', mystery: 'Μία μυστική χώρα κάθε μέρα. Έξι προσπάθειες, νέα ένδειξη μετά από κάθε λάθος', hotornot: 'Δύο πόλεις, ζωντανές θερμοκρασίες: ποια είναι πιο ζεστή αυτή τη στιγμή;', flags: 'Τριάντα δευτερόλεπτα, τέσσερις επιλογές ανά σημαία. Πόσες θα αναγνωρίσεις;', rightnow: 'Οι πιο ζεστές, κρύες, ανεμώδεις και καθαρές πόλεις της Γης αυτό το λεπτό', sky: 'Ηλιοβασίλεμα, ώρα σκότους, φεγγάρι, σύννεφα και πιθανότητα σέλας για κάθε πόλη απόψε', asteroids: 'Κάθε αστεροειδής που περνά κοντά στη Γη αυτή την εβδομάδα, με μέγεθος και απόσταση', onthisday: 'Σεισμοί, αποστολές, εκλείψεις και ανακαλύψεις που έγιναν σαν σήμερα', nearby: 'Τι εντόπισαν οι άνθρωποι στη φύση σε ακτίνα 40 χλμ. από κάθε πόλη αυτόν τον μήνα', outside: 'Οι επόμενες 48 ώρες βαθμολογημένες για περπάτημα, τρέξιμο ή πικνίκ: καιρός, αέρας, UV και γύρη μαζί', air: 'Ετήσια έκθεση σε PM2.5 συν ζωντανή μέτρηση στην πρωτεύουσα', waterstress: 'Πόσο από το ανανεώσιμο γλυκό νερό αντλεί μια χώρα κάθε χρόνο', human_span: 'Προσδόκιμο ζωής, με τη διαφορά ανάμεσα σε γυναίκες και άνδρες', mental: 'Θνησιμότητα από αυτοκτονίες ανά 100.000 κατοίκους, ανά φύλο', happiness: 'Βαθμολογίες της Παγκόσμιας Έκθεσης Ευτυχίας με κατάταξη, ώρες εργασίας και ασφάλεια', generations: 'Δείκτες γονιμότητας και η δημογραφική μετάβαση', univ: 'Πανεπιστημιακή εκπαίδευση, με τον διαχωρισμό ανά φύλο', public_private: 'Εγγραφές σε δημόσια και ιδιωτικά σχολεία και δαπάνες για την εκπαίδευση', health_private: 'Ποιος πληρώνει την υγεία: κράτος, ιδιώτες και από την τσέπη', migration: 'Καθαρή μετανάστευση, μεταναστευτικός πληθυσμός και εμβάσματα', economy: 'ΑΕΠ κατά κεφαλήν, ανεργία, ανισότητα και συμμετοχή στην εργασία', internet: 'Πρόσβαση στο διαδίκτυο, με ανάλυση ανά φύλο', music: 'Οι πιο δημοφιλείς καλλιτέχνες και τραγούδια ανά χώρα', cinema: 'Οι ταινίες με την υψηλότερη βαθμολογία που γυρίστηκαν σε μια χώρα', trends: 'Για τι μιλάει το Reddit, παγκόσμια και σε μια χώρα', alerts: 'Πυρκαγιές, καταιγίδες, πλημμύρες, ηφαίστεια, ξηρασίες και σεισμοί που συμβαίνουν τώρα, παγκοσμίως. Πάτησε μια κατηγορία για όλα τα γεγονότα', space: 'Γεωμαγνητικές καταιγίδες, πιθανότητα σέλας και ηλιακή δραστηριότητα, ζωντανά από τη NOAA', compare: 'Βάλε δύο χώρες δίπλα-δίπλα σε οποιονδήποτε δείκτη' }
         };
         function t(key) { const e = UI[key]; if (!e) return key; return (LANG === 'el' && e[1]) ? e[1] : e[0]; }
         function trv(group, mode, fallback) { return (LANG === 'el' && GR[group] && GR[group][mode]) ? GR[group][mode] : fallback; }
@@ -7474,17 +7750,17 @@ function displayMovies(data, query) {
             set('pollution-label', isOcean ? t('s_current') : t('s_pollution'));
             document.querySelectorAll('.rec-prefix').forEach(el => el.innerText = isOcean ? t('s_on') : t('s_year'));
             const titles = {
-                weather: "Weather History Vault", ocean: "Ocean Pulse Vault", univ: "University Access Vault", forest: "Forest Heritage Vault", agri: "Agriculture Vault", human_span: "Human Span Vault", energy: "Energy & Renewables Vault", water: "Water Quality & Safety Vault", mental: "Mental Health Vault", happiness: "Happiness & Wellbeing Vault", carbon: "Carbon Emissions Vault", generations: "Generations Vault", internet: "Internet Access Vault", music: "Music Culture Vault", cinema: "Cinema Discovery Vault", endangered: "Endangered Species Vault", migration: "Migration & Diaspora Vault", public_private: "Education: Public vs Private Vault", health_private: "Health: Public vs Private Vault", economy: "Economy & Labor Market Vault", trends: "Internet Trends Vault", waste: "Waste & Recycling Vault", power: "Power Mix Vault", air: "Air Quality Vault", waterstress: "Water Stress Vault", alerts: "Planet Alerts", space: "Space Weather Vault", compare: "Country vs Country", wildlife: "Wildlife Gallery", quiz: "Planet Quiz", iss: "Space Station Tracker", city: "City Stories", mystery: "Mystery Country", hotornot: "Hot or Not", flags: "Flag Flash", rightnow: "Planet Right Now", sky: "Sky Tonight", asteroids: "Asteroid Watch", onthisday: "On This Day on Earth", nearby: "Wildlife Near You", outside: "Best Hour Outside", twins: "Country Twins", born: "The Planet Since You Were Born", globe: "Live Globe", country: "Country Profile", stories: "Earth Stories", perfect: "Perfect Weather Finder"
+                weather: "Weather History Vault", ocean: "Ocean Pulse Vault", univ: "University Access Vault", forest: "Forest Heritage Vault", agri: "Agriculture Vault", human_span: "Human Span Vault", energy: "Energy & Renewables Vault", water: "Water Quality & Safety Vault", mental: "Mental Health Vault", happiness: "Happiness & Wellbeing Vault", carbon: "Carbon Emissions Vault", generations: "Generations Vault", internet: "Internet Access Vault", music: "Music Culture Vault", cinema: "Cinema Discovery Vault", endangered: "Endangered Species Vault", migration: "Migration & Diaspora Vault", public_private: "Education: Public vs Private Vault", health_private: "Health: Public vs Private Vault", economy: "Economy & Labor Market Vault", trends: "Internet Trends Vault", waste: "Waste & Recycling Vault", power: "Power Mix Vault", air: "Air Quality Vault", waterstress: "Water Stress Vault", alerts: "Planet Alerts", space: "Space Weather Vault", compare: "Country vs Country", wildlife: "Wildlife Gallery", quiz: "Planet Quiz", iss: "Space Station Tracker", city: "City Stories", mystery: "Mystery Country", hotornot: "Hot or Not", flags: "Flag Flash", rightnow: "Planet Right Now", sky: "Sky Tonight", asteroids: "Asteroid Watch", onthisday: "On This Day on Earth", nearby: "Wildlife Near You", outside: "Best Hour Outside", twins: "Country Twins", born: "The Planet Since You Were Born", globe: "Live Globe", country: "Country Profile", stories: "Earth Stories", home: "Explore the planet in data", perfect: "Perfect Weather Finder"
             };
             set('main-title', trv('titles', mode, titles[mode] || 'EarthVault'));
             set('main-subtitle', trv('desc', mode, (MODE_INFO[mode] && MODE_INFO[mode].desc) || t('subtitle_default')));
             try {
-                const pageTitle = (titles[mode] || 'EarthVault').replace(/ Vault$/, ''), pageDesc = mode === 'weather' ? 'EarthVault turns open data into 47 interactive vaults: climate, oceans, forests, energy, air, water, happiness, health, culture, games and live planetary data.' : (MODE_INFO[mode] && MODE_INFO[mode].desc) || '';
-                document.title = mode === 'weather' ? 'EarthVault - Explore the Planet in Data' : `${pageTitle} · EarthVault`;
+                const pageTitle = (titles[mode] || 'EarthVault').replace(/ Vault$/, ''), pageDesc = (mode === 'weather' || mode === 'home') ? 'EarthVault turns open data into 47 interactive vaults: climate, oceans, forests, energy, air, water, happiness, health, culture, games and live planetary data.' : (MODE_INFO[mode] && MODE_INFO[mode].desc) || '';
+                document.title = (mode === 'weather' || mode === 'home') ? 'EarthVault - Explore the Planet in Data' : `${pageTitle} · EarthVault`;
                 const setMeta = (sel, val) => { const m = document.querySelector(sel); if (m && val) m.setAttribute('content', val); };
                 if (pageDesc) { setMeta('meta[name="description"]', pageDesc); setMeta('meta[property="og:description"]', pageDesc); setMeta('meta[name="twitter:description"]', pageDesc); }
                 setMeta('meta[property="og:title"]', document.title); setMeta('meta[name="twitter:title"]', document.title);
-                const url = 'https://chamitro.github.io/EarthVault/' + (mode === 'weather' ? '' : `?vault=${mode}`);
+                const url = 'https://chamitro.github.io/EarthVault/' + ((mode === 'weather' || mode === 'home') ? '' : `?vault=${mode}`);
                 const canon = document.querySelector('link[rel="canonical"]'); if (canon) canon.href = url; setMeta('meta[property="og:url"]', url);
             } catch (e) {}
             const btn = document.getElementById('searchBtn');

@@ -50,6 +50,10 @@
   <url><loc>https://chamitro.github.io/EarthVault/?vault=weather</loc><lastmod>2026-10-21</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://chamitro.github.io/EarthVault/?vault=wildlife</loc><lastmod>2026-10-21</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://chamitro.github.io/EarthVault/?vault=stories&amp;story=week</loc><lastmod>2026-10-21</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://chamitro.github.io/EarthVault/?vault=stories&amp;story=oceans</loc><lastmod>2026-10-22</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://chamitro.github.io/EarthVault/?vault=stories&amp;story=renewables</loc><lastmod>2026-10-22</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://chamitro.github.io/EarthVault/?vault=stories&amp;story=longevity</loc><lastmod>2026-10-22</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://chamitro.github.io/EarthVault/?vault=stories&amp;story=migration</loc><lastmod>2026-10-22</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://chamitro.github.io/EarthVault/?vault=stories&amp;story=carbon</loc><lastmod>2026-10-21</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://chamitro.github.io/EarthVault/?vault=stories&amp;story=forests</loc><lastmod>2026-10-21</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://chamitro.github.io/EarthVault/?vault=stories&amp;story=people</loc><lastmod>2026-10-21</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
