@@ -4762,7 +4762,7 @@ function displayMovies(data, query) {
 
         // ---------------- WASTE & RECYCLING (OECD municipal waste, live SDMX API) ----------------
         async function searchWasteOECD(country) {
-            const cacheKey = `oecd_munw_${country.id}_${getCurrentCacheMonth()}`;
+            const cacheKey = `oecd_munw_${country.id}_${new Date().toISOString().slice(0, 10)}`;
             let payload = null;
             try { payload = JSON.parse(localStorage.getItem(cacheKey)); } catch (e) {}
             if (!payload) {
@@ -4909,7 +4909,7 @@ function displayMovies(data, query) {
         async function loadOwidSeries(key) {
             if (owidTables[key]) return owidTables[key];
             const { slug, col } = OWID_SERIES[key];
-            const cacheKey = `owid_${slug}_${getCurrentCacheMonth()}`;
+            const cacheKey = `owid_${slug}_${new Date().toISOString().slice(0, 10)}`; // refetched daily so a new annual release shows up within a day
             let text = null;
             try { text = localStorage.getItem(cacheKey); } catch (e) {}
             if (!text) {
@@ -6410,7 +6410,7 @@ function displayMovies(data, query) {
             showLive(liveSpinner(L('Reading 100 years of planet records…', 'Διαβάζω 100 χρόνια αρχείων του πλανήτη…')));
             const safe = p => p.catch(e => { console.warn('Born source failed:', e.message); return null; });
             const [wld, co2Txt, tempJson, geo] = await Promise.all([
-                safe(cachedJson('https://api.worldbank.org/v2/country/WLD/indicator/SP.POP.TOTL;SP.DYN.LE00.IN;AG.LND.FRST.K2;IT.NET.USER.ZS;EG.ELC.RNEW.ZS;SP.URB.TOTL.IN.ZS;EN.GHG.ALL.MT.CE.AR5?source=2&format=json&per_page=1000&date=1900:2030', 24 * 3600 * 1000)),
+                safe(cachedJson('https://api.worldbank.org/v2/country/WLD/indicator/SP.POP.TOTL;SP.DYN.LE00.IN;AG.LND.FRST.K2;IT.NET.USER.ZS;EG.ELC.RNEW.ZS;SP.URB.TOTL.IN.ZS;EN.GHG.ALL.MT.CE.AR5?source=2&format=json&per_page=1000&date=1900:${new Date().getFullYear() + 1}', 24 * 3600 * 1000)),
                 safe(cachedText('https://gml.noaa.gov/webdata/ccgg/trends/co2/co2_annmean_mlo.csv')),
                 safe(cachedJson('https://global-warming.org/api/temperature-api', 24 * 3600 * 1000)),
                 city ? safe(fetchJson(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json`, 20000)) : Promise.resolve(null)
