@@ -61,6 +61,7 @@ EarthVault provides comprehensive insights across environmental, social, economi
 - 📅 **On This Day on Earth** - Wikipedia's events for today, with planet, nature and space moments highlighted, and a random-day button
 - 🐾 **Wildlife Near You** - iNaturalist sightings within 40 km of any city in the last 30 days: most-seen species and the latest photos
 - 🏃 **Best Hour Outside** - The next 48 hours for any city scored 0-100 for being outdoors, blending feels-like temperature, rain chance, wind, UV, European air-quality index and pollen. Shows the best two-hour window today and tomorrow, the hour to avoid, a 48-hour score chart, and the best hour for a walk, run, ride or picnic
+- ☁️ **Shared capital-weather sheet** - The weather of all 208 capitals (globe dots, home tile, quiz, Perfect Weather Finder, weekly story) is refreshed every hour by a job inside the Supabase database (about 5,000 location requests a day from Supabase's address, half of Open-Meteo's free daily allowance) (`supabase/capitals_cache.sql`, pg_cron + pg_net) and read by visitors as one small row, so visitors make no Open-Meteo calls for it. The page keeps the sheet for 30 minutes and falls back to Open-Meteo directly if the shared sheet is missing or older than about two hours
 - 🌴 **Perfect Weather Finder** - Pick your ideal temperature on a slider and see which of 208 capital cities have it at this very moment, with sunny-only, daytime-only and region filters. Live readings from Open-Meteo for every capital in two calls, refreshed every 10 minutes
 
 #### 🧰 **Tools (5 sections)**

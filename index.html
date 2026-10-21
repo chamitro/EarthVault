@@ -4221,7 +4221,7 @@ function displayMovies(data, query) {
             // Mobile networks and the World Bank API sometimes leave a request hanging; give up after 20 s, retry once, fall back to an older copy.
             const attempt = async ms => {
                 const ctrl = new AbortController(); const timer = setTimeout(() => ctrl.abort(), ms);
-                try { const res = await fetch(url, { signal: ctrl.signal }); if (!res.ok) throw new Error(`${res.status} from ${host}`); return await res.json(); }
+                try { const res = await fetch(url, { signal: ctrl.signal }); if (res.status === 429) throw new Error(`${host} is rate-limiting this connection (too many requests in a short time); it clears within a minute`); if (!res.ok) throw new Error(`${res.status} from ${host}`); return await res.json(); }
                 finally { clearTimeout(timer); }
             };
             const slow = /worldbank\.org$/.test(host); // the World Bank can take 25-30 s per call on a bad day
@@ -5247,9 +5247,31 @@ function displayMovies(data, query) {
         // Same rule for every measure: a guess within 10% of the slider's range counts (so ±10 on the 0–100 ones)
         const quizTol = cfg => Number((Math.round((cfg.max - cfg.min) / 10 / cfg.step) * cfg.step).toFixed(2));
         async function loadCapitalWeather() {
+            const stored = lsGet('ev_caps_v1', null);
+            if (stored && stored.t && Date.now() - stored.t < 30 * 60 * 1000 && Array.isArray(stored.rows) && stored.rows.length > 100) { if (stored.asOf) stored.rows.asOf = stored.asOf; return stored.rows; }
+            let rows = null;
+            try { rows = await sharedCapitalWeather(); } catch (e) { console.warn('Shared capital sheet unavailable:', e.message); }
+            if (!rows) rows = await fetchCapitalWeather(); // fall back to asking Open-Meteo directly
+            lsSet('ev_caps_v1', { t: Date.now(), rows, asOf: rows.asOf || null });
+            return rows;
+        }
+        // The Supabase project refreshes one shared sheet every hour (supabase/capitals_cache.sql), so visitors make no Open-Meteo calls for it
+        async function sharedCapitalWeather() {
+            if (!LB.url || !LB.key) return null;
+            const ctrl = new AbortController(); const timer = setTimeout(() => ctrl.abort(), 8000);
+            try {
+                const res = await fetch(`${LB.url}/rest/v1/cache?key=eq.capitals&select=data,updated_at`, { headers: { apikey: LB.key, Authorization: `Bearer ${LB.key}` }, signal: ctrl.signal });
+                if (!res.ok) return null;
+                const row = (await res.json())[0]; if (!row || !Array.isArray(row.data) || row.data.length < 100) return null;
+                if (Date.now() - Date.parse(row.updated_at) > 130 * 60 * 1000) return null; // stale: the job has stopped, use Open-Meteo
+                row.data.asOf = Date.parse(row.updated_at);
+                return row.data;
+            } finally { clearTimeout(timer); }
+        }
+        async function fetchCapitalWeather() {
             const capitals = (await wbCountries()).filter(c => c.capitalCity && c.latitude && c.longitude && /^[A-Z]{2}$/.test(c.iso2Code || ''));
             const chunks = []; for (let i = 0; i < capitals.length; i += 104) chunks.push(capitals.slice(i, i + 104));
-            const parts = await Promise.all(chunks.map(ch => cachedJson(`https://api.open-meteo.com/v1/forecast?latitude=${ch.map(c => c.latitude).join(',')}&longitude=${ch.map(c => c.longitude).join(',')}&current=temperature_2m,apparent_temperature,weather_code,is_day,wind_speed_10m,relative_humidity_2m&timezone=auto`, 10 * 60 * 1000)));
+            const parts = await Promise.all(chunks.map(ch => cachedJson(`https://api.open-meteo.com/v1/forecast?latitude=${ch.map(c => c.latitude).join(',')}&longitude=${ch.map(c => c.longitude).join(',')}&current=temperature_2m,apparent_temperature,weather_code,is_day,wind_speed_10m,relative_humidity_2m&timezone=auto`, 20 * 60 * 1000)));
             const rows = [];
             chunks.forEach((ch, ci) => { const list = Array.isArray(parts[ci]) ? parts[ci] : [parts[ci]]; ch.forEach((c, i) => { const w = list[i] && list[i].current; if (!w || w.temperature_2m === null || w.temperature_2m === undefined) return; rows.push({ city: c.capitalCity, country: c.name, iso2: c.iso2Code, region: c.region.value, t: w.temperature_2m, feel: w.apparent_temperature, code: w.weather_code, day: !!w.is_day, wind: w.wind_speed_10m, hum: w.relative_humidity_2m, tz: list[i].timezone, offset: list[i].utc_offset_seconds || 0, lon: Number(c.longitude), lat: Number(c.latitude) }); }); });
             if (!rows.length) throw new Error('No weather for the capitals');
@@ -7001,7 +7023,7 @@ function displayMovies(data, query) {
             g.ringsData(rings);
             g.htmlElementsData(GLOBE.layers.iss && GLOBE.iss ? [GLOBE.iss] : []);
             const counts = { alerts: ((GLOBE.alerts && GLOBE.alerts.events) || []).filter(e => e.coords && GLOBE.layers[e.cat] && e.cat !== 'quakes').length, quakes: GLOBE.layers.quakes ? (GLOBE.quakes || []).length : 0 };
-            const st = document.getElementById('globe-status'); if (st) st.textContent = `${counts.alerts} ${L('events', 'γεγονότα')} · ${counts.quakes} ${L('quakes', 'σεισμοί')}${GLOBE.layers.temp && GLOBE.temp ? ` · ${GLOBE.temp.length} ${L('capitals', 'πρωτεύουσες')}` : ''}`;
+            const st = document.getElementById('globe-status'); if (st) st.textContent = `${counts.alerts} ${L('events', 'γεγονότα')} · ${counts.quakes} ${L('quakes', 'σεισμοί')}${GLOBE.layers.temp && GLOBE.temp ? ` · ${GLOBE.temp.length} ${L('capitals', 'πρωτεύουσες')}${GLOBE.temp.asOf ? ` (${L('readings', 'μετρήσεις')} ${new Date(GLOBE.temp.asOf).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})` : ''}` : ''}`;
         }
         GLOBE.metric = {};
         function globeMetricData(key) {
@@ -7544,7 +7566,9 @@ function displayMovies(data, query) {
             if (currentMode !== 'stories') { STORY.open = id; selectMode('stories'); return; }
             showLive(liveSpinner(L('Drawing the story…', 'Σχεδιάζω την ιστορία…')));
             let data;
-            try { data = await STORY_LOADERS[id](); } catch (e) { showLive(`<div class="vault-card rounded-[2rem] p-8 text-center"><p class="text-rose-400 font-bold mb-2">${t('feed_fail')}</p><p class="text-slate-500 text-xs">${escapeHtml(e.message)}</p><button onclick="openStory('${id}')" class="mt-4 px-4 py-2 rounded-xl bg-white/10 text-xs font-bold text-white">${L('Retry', 'Ξανά')}</button></div>`); return; }
+            const cacheKey = `ev_story_${id}_${LANG}`, cached = s.live ? null : lsGet(cacheKey, null);
+            if (cached && cached.t && Date.now() - cached.t < 6 * 3600 * 1000 && Array.isArray(cached.steps)) data = { steps: cached.steps };
+            else try { data = await STORY_LOADERS[id](); if (!s.live) lsSet(cacheKey, { t: Date.now(), steps: data.steps }); } catch (e) { showLive(`<div class="vault-card rounded-[2rem] p-8 text-center"><p class="text-rose-400 font-bold mb-2">${t('feed_fail')}</p><p class="text-slate-500 text-xs">${escapeHtml(e.message)}</p><button onclick="openStory('${id}')" class="mt-4 px-4 py-2 rounded-xl bg-white/10 text-xs font-bold text-white">${L('Retry', 'Ξανά')}</button></div>`); return; }
             if (currentMode !== 'stories') return;
             const ids = Object.keys(STORIES), next = ids[(ids.indexOf(id) + 1) % ids.length];
             const link = ([m, name]) => `<button type="button" onclick="${name ? `jumpTo('${m}', '${name}')` : `selectMode('${m}')`}" class="px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] font-bold text-slate-200">${vaultIcon(m)} ${escapeHtml(trv('menu', m, vaultName(m)))}${name ? ` · ${name}` : ''}</button>`;
