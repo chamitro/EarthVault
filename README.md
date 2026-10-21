@@ -8,7 +8,7 @@
 
 ## ✨ Features
 
-#### 📊 **44 Data Visualization Sections**
+#### 📊 **47 Data Visualization Sections**
 EarthVault provides comprehensive insights across environmental, social, economic, and cultural dimensions:
 
 #### 🌍 **Environmental Data (13 sections)**
@@ -38,14 +38,17 @@ EarthVault provides comprehensive insights across environmental, social, economi
 - 🏛️ **Education: Public vs Private** - School enrollment distribution between public and private sectors
 
 #### 🎮 **Games (4 sections)**
-- 🎯 **Planet Quiz** - Seven kinds of question on real data, mixed at random: higher or lower between two countries (25 measures), top of four, capitals, flags, estimate-on-a-slider (a guess within 10% of the slider range counts, shown before you lock in), and two live ones from Open-Meteo: which capital is warmer right now and where it is later in the day (with a hint button that explains the east-to-west rule and each city's longitude). Streaks, confetti milestones, an explore button into the matching vault, share, challenge-by-link (seeded, live kinds excluded) and the global leaderboard
+- 🌐 **Live Globe** - The planet in 3D (Globe.gl, loaded only when opened): live fires, storms, floods, volcanoes from GDACS and NASA EONET, a week of USGS earthquakes with rings for M5.5+, every capital coloured by its temperature right now, and the ISS moving every 5 seconds. Countries can be coloured by forest cover, life expectancy, happiness, internet use, emissions per person, air pollution, fertility or renewables, and tapping a country opens its profile. Also reachable from the splash screen
+- 🪪 **Country Profile** - One page per country, linkable as `?country=GR`: flag, capital, region, income group and population; the weather in the capital right now; active alerts in that country; all 25 measures from every vault with their year and world rank; the five closest twins; and a chip into every vault for that country or its capital
+- 📖 **Earth Stories** - Five guided, scroll-driven tours drawn live from the data, linkable as `?vault=stories&story=…`: This week on Earth (rebuilt from the live feeds on every visit: seven days of USGS quakes, fires by country, active cyclones, floods, volcanoes and red alerts, the hottest and coldest capitals this minute, three days of Kp index and the ISS position), The carbon century (NOAA CO₂ and NASA GISTEMP warming stripes), Where the forests went (World Bank forest cover since 1990), Eight billion of us (world population, fertility, life expectancy and urban share since 1960) and The Mediterranean is heating (ERA5 daily archive for Athens, Rome and Barcelona since 1980, including days of 35 °C or more). Charts draw as they scroll into view
+- 🎯 **Planet Quiz** - Starts within a second on capitals, flags and live questions while the World Bank figures load in the background, then adds the data questions. Seven kinds of question on real data, mixed at random: higher or lower between two countries (25 measures), top of four, capitals, flags, estimate-on-a-slider (a guess within 10% of the slider range counts, shown before you lock in), and two live ones from Open-Meteo: which capital is warmer right now and where it is later in the day (with a hint button that explains the east-to-west rule and each city's longitude). Streaks, confetti milestones, an explore button into the matching vault, share, challenge-by-link (seeded, live kinds excluded) and the global leaderboard
 - 🕵️ **Mystery Country** - One secret country a day, the same for everyone. Six guesses; every miss unlocks a clue (region, population, forest and life expectancy, capital hint, neighbours, flag) and tells you how far off you were and in which direction. Streaks, stats and a Wordle-style share grid
 - 🌡️ **Hot or Not** - Two cities, live temperatures from Open-Meteo: which one is warmer at this moment? The answer changes through the day
 - 🚩 **Flag Flash** - Thirty seconds, four choices per flag, with distractors from the same region. Personal best and share
 - ⚔️ **Challenge a friend** - Planet Quiz, Hot or Not and Flag Flash each have a "Challenge a friend" button. It starts a seeded round (10 questions, or the same flag deck for 30 seconds), then gives you a link with your score. Your friend opens it, plays the exact same questions, and both scores appear side by side with a winner. They can send their result back and you see who won without playing again. No account and no server: everything is encoded in the link (`?vault=quiz&ch=<seed>&cs=<score>&cb=<name>`)
 - 🌍 **Global leaderboard** - When a Planet Quiz or Hot or Not streak ends, a Flag Flash round finishes or the daily Mystery Country is solved, the page posts the result (name, score, country of the browser language, a random device id) to a small Supabase table and shows the top 5 players all time and in the last 24 hours, plus your rank. The publishable key in the page can only insert scores and read the `leaderboard` view (every round counts, so one strong player may hold several of the top 5 places); a database trigger limits one score per device every 20 seconds and 200 a day and cleans names. Seeded challenge rounds are never posted
 
-#### 🛰️ **Live Earth (10 sections)**
+#### 🛰️ **Live Earth (11 sections)**
 - 🌍 **Planet Right Now** - Live leaderboards across 56 cities: hottest, coldest, windiest, cleanest and most polluted air, strongest UV, plus how many are clear, raining, snowing or in night. Refreshes every 10 minutes
 - 🛰️ **Planet Alerts** - Worldwide wildfires, floods, cyclones, volcanic eruptions and droughts from GDACS (the EU and UN disaster alert system, with green/orange/red impact levels), icebergs and US fire incidents from NASA EONET, and the last 24 hours of M4.5+ earthquakes from USGS. Tap a category tile to list every event in it, or filter by country or place ("Greece", "Australia"). No search needed
 - ☀️ **Space Weather** - NOAA geomagnetic, radio and radiation scales, Kp history and forecast, aurora outlook, solar wind and the latest bulletins
@@ -57,9 +60,9 @@ EarthVault provides comprehensive insights across environmental, social, economi
 - 🏃 **Best Hour Outside** - The next 48 hours for any city scored 0-100 for being outdoors, blending feels-like temperature, rain chance, wind, UV, European air-quality index and pollen. Shows the best two-hour window today and tomorrow, the hour to avoid, a 48-hour score chart, and the best hour for a walk, run, ride or picnic
 - 🌴 **Perfect Weather Finder** - Pick your ideal temperature on a slider and see which of 208 capital cities have it at this very moment, with sunny-only, daytime-only and region filters. Live readings from Open-Meteo for every capital in two calls, refreshed every 10 minutes
 
-#### 🧰 **Tools (3 sections)**
+#### 🧰 **Tools (5 sections)**
 - ⚖️ **Country vs Country** - Any two countries side by side on 16 World Bank metrics, with a two-line history chart and a plain-language verdict
-- 👯 **Country Twins** - Type a country and get its five closest twins across 25 measures drawn from the other vaults: fertility, life expectancy, ageing, population, GDP per person, unemployment, inequality, internet, degrees, education and health spending, suicide rate, happiness, migrants, forest, farmland, rainfall, water, water stress, air pollution, renewables, fossil power, electricity use, emissions per person and threatened species. Every number is shown side by side with a green/amber/red closeness dot, plus the least similar country and a jump to Country vs Country. Each measure is scaled by the interquartile range across all countries (log scale for money, population and pollution), so the match is a fair average
+- 👯 **Country Twins** - Type a country and get its five closest twins across 25 measures drawn from the other vaults: fertility, life expectancy, ageing, population, GDP per person, unemployment, inequality, internet, degrees, education and health spending, suicide rate, happiness, migrants, forest, farmland, rainfall, water, water stress, air pollution, renewables, fossil power, electricity use, emissions per person and threatened species. Every number is shown side by side with a green/amber/red closeness dot, plus the least similar country and a jump to Country vs Country. Each measure is scaled by the interquartile range across all countries (log scale for money, population and pollution), so the match is a fair average The processed dataset is kept in the browser for a day, so later visits and the quiz open instantly and survive a World Bank outage
 - 🎂 **The Planet Since You Were Born** - Enter your birth date (and optionally your city) for a personal Earth report: days alive, orbits around the Sun, distance travelled through space, full moons, ISS orbits, then-and-now tiles for CO₂ (NOAA Mauna Loa), global temperature (NASA GISTEMP), world population, life expectancy, urbanisation, internet, renewables, forest and emissions, and the actual weather in your city on the day you were born versus your last birthday (Open-Meteo ERA5 archive, 1940 onwards)
 
 #### 🌐 **Digital & Cultural (5 sections)**
@@ -77,14 +80,14 @@ EarthVault provides comprehensive insights across environmental, social, economi
 - 🛂 **Country Passport** - Every country result opens with the flag, capital, region, income group and population
 - 🎲 **Surprise Me** - A dice button next to the search box picks a random place for the current vault
 - 📸 **Share Cards** - One click turns any result into a shareable 1200×630 image (native share sheet on phones, download on desktop)
-- 🧭 **Explorer Progress** - A counter in the header tracks how many of the 44 vaults you have opened, with milestone celebrations
+- 🧭 **Explorer Progress** - A counter in the header tracks how many of the 47 vaults you have opened, with milestone celebrations
 - 🛰️ **Earth Today** - The splash screen shows the latest full-disc photo of Earth from NASA's EPIC camera
 - 💡 **First-visit Tips** - A dismissable three-step guide; press `/` anywhere to jump to the search box
 - 🌊 **Tides in Ocean Pulse** - Current tide height and the next high or low water for any coastal city
 - 🌼 **Pollen & UV in Air Quality** - The live capital reading now includes UV and pollen levels (Europe)
-- 🔎 **Search-engine ready** - `sitemap.xml` (home, privacy and all 44 `?vault=` links), `robots.txt`, canonical and Open Graph tags, and a title and description that change per vault so each deep link reads as its own page
+- 🔎 **Search-engine ready** - `sitemap.xml` (home, privacy, all 47 `?vault=` links, the five stories and every `?country=` profile, 271 URLs), `robots.txt`, canonical and Open Graph tags, and a title and description that change per vault so each deep link reads as its own page
 - 🛰️ **Live splash counters** - Earthquakes in the last 24 hours, wildfires burning now and the current Kp index, next to the statistical daily estimates
-- 🔎 **Vault Finder** - Type to filter the 44 vaults in the menu; the last vault you used is remembered
+- 🔎 **Vault Finder** - Type to filter the 47 vaults in the menu; the last vault you used is remembered
 - 💬 **Friendly Feedback** - Non-blocking toasts replace browser alerts; empty or failed searches never leave stale data on screen
 - 🧭 **Guided Search** - Every vault shows a one-line description and "Try" example chips; Enter submits, and results scroll into view on phones
 - 📱 **Phone-first Checks** - Verified at 390px: no horizontal overflow, 44px tap targets in the menu, 3-column timeline grid
