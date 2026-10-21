@@ -6978,24 +6978,37 @@ function displayMovies(data, query) {
             const counts = { alerts: ((GLOBE.alerts && GLOBE.alerts.events) || []).filter(e => e.coords && GLOBE.layers[e.cat] && e.cat !== 'quakes').length, quakes: GLOBE.layers.quakes ? (GLOBE.quakes || []).length : 0 };
             const st = document.getElementById('globe-status'); if (st) st.textContent = `${counts.alerts} ${L('events', 'γεγονότα')} · ${counts.quakes} ${L('quakes', 'σεισμοί')}${GLOBE.layers.temp && GLOBE.temp ? ` · ${GLOBE.temp.length} ${L('capitals', 'πρωτεύουσες')}` : ''}`;
         }
+        GLOBE.metric = {};
+        function globeMetricData(key) {
+            if (key === 'none') return null;
+            if (GLOBE.twin && GLOBE.twin.val) return GLOBE.twin.val;
+            const m = GLOBE.metric[key]; if (m && m.val) return m.val;
+            const mt = TWIN_METRICS.find(x => twinKey(x) === key);
+            if (!mt || !mt.ind || (m && m.loading)) return null; // measures without a World Bank code wait for the full dataset
+            GLOBE.metric[key] = { loading: true };
+            cachedJson(`https://api.worldbank.org/v2/country/all/indicator/${mt.ind}?format=json&mrnev=1&per_page=400`, 24 * 3600 * 1000)
+                .then(d => { const val = {}; ((d && d[1]) || []).forEach(r => { if (r.value !== null && r.countryiso3code) (val[r.countryiso3code] = {})[key] = { v: r.value, y: r.date }; }); GLOBE.metric[key] = { val }; if (GLOBE.colorBy === key) globePaintPolys(); })
+                .catch(e => { console.warn('Globe colour data failed:', e.message); GLOBE.metric[key] = {}; if (GLOBE.colorBy === key) globePaintPolys(); });
+            return null;
+        }
         function globeScale(key) {
-            const tw = GLOBE.twin; if (!tw || key === 'none') return null;
+            const val = globeMetricData(key); if (!val) return null;
             const mt = TWIN_METRICS.find(m => twinKey(m) === key); if (!mt) return null;
-            const xs = Object.values(tw.val).map(m => m[key] && twinTf(mt, m[key].v)).filter(x => typeof x === 'number' && isFinite(x)).sort((a, b) => a - b);
+            const xs = Object.values(val).map(m => m[key] && twinTf(mt, m[key].v)).filter(x => typeof x === 'number' && isFinite(x)).sort((a, b) => a - b);
             if (xs.length < 10) return null;
             const lo = xs[Math.floor(xs.length * 0.05)], hi = xs[Math.floor(xs.length * 0.95)];
-            return { mt, lo, hi, f: v => { const t = Math.max(0, Math.min(1, (twinTf(mt, v) - lo) / ((hi - lo) || 1))); const h = 230 - t * 190, l = 35 + t * 25; return `hsl(${h}, 85%, ${l}%)`; } };
+            return { mt, val, lo, hi, f: v => { const t = Math.max(0, Math.min(1, (twinTf(mt, v) - lo) / ((hi - lo) || 1))); const h = 230 - t * 190, l = 35 + t * 25; return `hsl(${h}, 85%, ${l}%)`; } };
         }
         function globePaintPolys() {
             const g = GLOBE.inst; if (!g || !GLOBE.polys) return;
             const sc = globeScale(GLOBE.colorBy);
             g.polygonCapColor(d => {
                 if (d === GLOBE.hover) return 'rgba(255,255,255,0.35)';
-                const v = sc && GLOBE.twin.val[d.wb] && GLOBE.twin.val[d.wb][GLOBE.colorBy];
+                const v = sc && sc.val[d.wb] && sc.val[d.wb][GLOBE.colorBy];
                 return v ? sc.f(v.v).replace('hsl(', 'hsla(').replace(')', ', 0.75)') : sc ? 'rgba(148,163,184,0.15)' : 'rgba(0,0,0,0)';
             });
             const leg = document.getElementById('globe-legend');
-            if (leg) leg.innerHTML = sc ? `<span class="text-slate-500">${escapeHtml(globeMetricLabel(GLOBE.colorBy))}:</span> <span class="inline-block w-20 h-2 rounded-full align-middle" style="background: linear-gradient(90deg, hsl(230,85%,35%), hsl(135,85%,47%), hsl(40,85%,60%))"></span> <span class="text-slate-500">${L('low → high', 'χαμηλό → υψηλό')}</span>` : '';
+            if (leg) leg.innerHTML = sc ? `<span class="text-slate-500">${escapeHtml(globeMetricLabel(GLOBE.colorBy))}:</span> <span class="inline-block w-20 h-2 rounded-full align-middle" style="background: linear-gradient(90deg, hsl(230,85%,35%), hsl(135,85%,47%), hsl(40,85%,60%))"></span> <span class="text-slate-500">${L('low → high', 'χαμηλό → υψηλό')}</span>` : GLOBE.colorBy !== 'none' ? `<span class="animate-pulse">⏳ ${L('Loading World Bank figures for', 'Φόρτωση στοιχείων Παγκόσμιας Τράπεζας για')} ${escapeHtml(globeMetricLabel(GLOBE.colorBy).toLowerCase())}…</span>` : '';
         }
         function globeSelect(d) {
             const g = GLOBE.inst; if (g) g.controls().autoRotate = false;
@@ -7045,7 +7058,7 @@ function displayMovies(data, query) {
                     .ringLat('lat').ringLng('lng').ringMaxRadius('rr').ringPropagationSpeed(1.5).ringRepeatPeriod(1400).ringColor(() => t => `rgba(251,191,36,${1 - t})`)
                     .htmlLat('lat').htmlLng('lng').htmlAltitude(0.05).htmlElement(d => { const n = document.createElement('div'); n.innerHTML = `<div style="transform:translate(-50%,-50%);font-size:22px;filter:drop-shadow(0 0 6px #fff)" title="ISS">🛰️</div>`; n.style.pointerEvents = 'none'; return n; })
                     .polygonSideColor(() => 'rgba(0,0,0,0)').polygonStrokeColor(() => 'rgba(255,255,255,0.22)').polygonAltitude(d => d === GLOBE.hover ? 0.02 : 0.006)
-                    .polygonLabel(d => `<div class="globe-tip">${flagEmoji(d.iso2)} <b>${escapeHtml(d.name)}</b>${(() => { const sc = globeScale(GLOBE.colorBy); const v = sc && GLOBE.twin.val[d.wb] && GLOBE.twin.val[d.wb][GLOBE.colorBy]; return v ? `<br>${escapeHtml(globeMetricLabel(GLOBE.colorBy))}: ${twinFmt(sc.mt, v.v)} (${v.y})` : ''; })()}<br><span style="opacity:.7">${L('Tap to open the profile', 'Πάτησε για το προφίλ')}</span></div>`)
+                    .polygonLabel(d => `<div class="globe-tip">${flagEmoji(d.iso2)} <b>${escapeHtml(d.name)}</b>${(() => { const sc = globeScale(GLOBE.colorBy); const v = sc && sc.val[d.wb] && sc.val[d.wb][GLOBE.colorBy]; return v ? `<br>${escapeHtml(globeMetricLabel(GLOBE.colorBy))}: ${twinFmt(sc.mt, v.v)} (${v.y})` : ''; })()}<br><span style="opacity:.7">${L('Tap to open the profile', 'Πάτησε για το προφίλ')}</span></div>`)
                     .onPolygonHover(d => { GLOBE.hover = d; g.polygonAltitude(x => x === d ? 0.02 : 0.006); globePaintPolys(); })
                     .onPolygonClick(d => { if (d.iso2) openCountryByIso(d.iso2); })
                     .onGlobeReady(() => { const ld = document.getElementById('globe-loading'); if (ld) ld.remove(); globeApplyPending(); });
