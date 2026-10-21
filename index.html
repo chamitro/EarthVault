@@ -5261,16 +5261,21 @@ function displayMovies(data, query) {
             if (!QUIZ.data) {
                 const countries = (await wbCountries()).filter(c => /^[A-Z]{2}$/.test(c.iso2Code || '') && c.region && c.region.value && c.region.value !== 'Aggregates');
                 const byIso2 = {}; countries.forEach(c => { byIso2[c.iso2Code] = c; });
-                const d = QUIZ.data = { countries, main: countries.filter(c => !QUIZ_SMALL.has(c.iso2Code)), byIso2, val: {}, metrics: [], weather: null, weatherLoading: false, twin: null };
-                // The World Bank figures arrive in the background; capitals, flags and the live questions start right away
-                d.twin = loadTwinData().then(twin => {
-                    const pop = c => (twin.val[c.id] && twin.val[c.id]['SP.POP.TOTL'] && twin.val[c.id]['SP.POP.TOTL'].v) || 0;
-                    d.val = twin.val; d.metrics = TWIN_METRICS.map(mt => ({ mt, key: twinKey(mt) }));
-                    d.main = countries.filter(c => pop(c) ? pop(c) >= 1e6 : !QUIZ_SMALL.has(c.iso2Code)); // skip micro-states so questions stay recognisable
-                }).catch(e => console.warn('World Bank figures unavailable for the quiz:', e.message));
+                const d = QUIZ.data = { countries, main: countries.filter(c => !QUIZ_SMALL.has(c.iso2Code)), byIso2, val: {}, metrics: [], weather: null, weatherLoading: false, twin: null, twinLoading: false, twinFailed: false, twinAt: 0 };
+                quizStartTwin(d); // the World Bank figures arrive in the background; capitals, flags and the live questions start right away
             }
             if (needData) await QUIZ.data.twin;
             return QUIZ.data;
+        }
+        function quizStartTwin(d) {
+            d.twinLoading = true; d.twinFailed = false; d.twinAt = Date.now();
+            d.twin = loadTwinData().then(twin => {
+                const pop = c => (twin.val[c.id] && twin.val[c.id]['SP.POP.TOTL'] && twin.val[c.id]['SP.POP.TOTL'].v) || 0;
+                d.val = twin.val; d.metrics = TWIN_METRICS.map(mt => ({ mt, key: twinKey(mt) }));
+                d.main = d.countries.filter(c => pop(c) ? pop(c) >= 1e6 : !QUIZ_SMALL.has(c.iso2Code)); // skip micro-states so questions stay recognisable
+                const note = document.getElementById('quiz-data-note'); if (note) note.remove();
+            }).catch(e => { console.warn('World Bank figures unavailable for the quiz:', e.message); d.twinFailed = true; }).finally(() => { d.twinLoading = false; });
+            return d.twin;
         }
         function quizWeather(d) {
             if (d.weather || d.weatherLoading) return d.weather;
@@ -5284,6 +5289,7 @@ function displayMovies(data, query) {
             const d = await loadQuizData(inChallenge); // a seeded challenge needs the full dataset so both players get identical questions
             if (currentMode !== 'quiz') return;
             if (inChallenge && !d.metrics.length) throw new Error('The World Bank figures did not arrive. Try the challenge again in a minute.');
+            if (!d.metrics.length && !d.twinLoading && Date.now() - d.twinAt > 20000) quizStartTwin(d); // a failed first attempt is retried, so the number questions join once the World Bank answers
             const pick = chPick('quiz');
             const weather = inChallenge ? null : quizWeather(d);
             let kinds = Object.keys(QUIZ_KINDS).filter(k => (!QUIZ_KINDS[k].live || weather) && (!QUIZ_KINDS[k].data || d.metrics.length));
@@ -5386,6 +5392,7 @@ function displayMovies(data, query) {
     <div class="vault-card rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10">
         ${quizHeader()}
         ${chActive('quiz') ? chBanner('pink') : `<p class="text-center text-[10px] font-black text-pink-400 uppercase tracking-[0.3em] mb-2">Question ${QUIZ.asked + 1} · ${L(kind.label[0], kind.label[1])}</p>`}
+        ${QUIZ.data && !QUIZ.data.metrics.length ? `<p id="quiz-data-note" class="text-center text-[10px] text-amber-300/90 mb-3">${QUIZ.data.twinFailed ? `⚠️ ${L('The World Bank is not answering right now, so only capitals, flags and live questions are on. Retrying in the background.', 'Η Παγκόσμια Τράπεζα δεν απαντά αυτή τη στιγμή, οπότε παίζουν μόνο πρωτεύουσες, σημαίες και ζωντανές ερωτήσεις. Ξαναπροσπαθώ στο παρασκήνιο.')}` : `⏳ ${L('Loading the World Bank figures; the number questions join in a moment.', 'Φόρτωση στοιχείων Παγκόσμιας Τράπεζας· οι ερωτήσεις με αριθμούς έρχονται σε λίγο.')}`}</p>` : ''}
         <h3 class="text-center text-xl md:text-3xl font-black text-white mb-6 md:mb-8">${q.prompt}</h3>
         ${body}
         ${q.hint ? `<div class="text-center mt-4"><button type="button" id="quiz-hint-btn" onclick="quizHint()" class="px-4 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-xs font-bold text-amber-300">💡 ${L('Hint', 'Βοήθεια')}</button><div id="quiz-hint" class="hidden max-w-xl mx-auto mt-3 px-4 py-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-100 leading-relaxed">${q.hint}</div></div>` : ''}
