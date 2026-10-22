@@ -228,6 +228,9 @@ create policy "cache public read" on public.cache for select to anon, authentica
 create table if not exists public.cache_jobs (
   id bigserial primary key, key text not null, part int not null, request_id bigint not null, created_at timestamptz not null default now()
 );
+-- helper tables are locked: only the jobs below (which run with the database's own rights) touch them
+alter table public.capitals enable row level security;
+alter table public.cache_jobs enable row level security;
 
 -- 1. every hour: send two requests (104 capitals each) and remember their ids
 create or replace function public.capitals_request() returns void language plpgsql security definer set search_path = public as $$
