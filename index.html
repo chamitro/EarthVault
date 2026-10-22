@@ -2774,7 +2774,7 @@ function displayMovies(data, query) {
                     ind3 = 'EG.ELC.FOSL.ZS';  // fossil share, runs years beyond the renewable series
                     ind4 = 'EG.ELC.NUCL.ZS';  // nuclear share, same
                 } else if (currentMode === 'endangered') {
-                    ind2 = 'EN.BRD.THRD.NO';  // Birds
+                    ind2 = 'EN.BIR.THRD.NO';  // Birds
                     ind3 = 'EN.FSH.THRD.NO';  // Fish
                     ind4 = 'EN.HPT.THRD.NO';  // Plants
                 } else if (currentMode === 'migration') {
@@ -2820,6 +2820,7 @@ function displayMovies(data, query) {
                 if (ind4) requests.push(fetchJson(wbUrl(ind4)));
                 
                 const results = await Promise.all(requests);
+                if (currentMode === 'energy') { try { await renewShareByCode(); } catch (e) { console.warn('Renewables table unavailable:', e.message); } }
                 processWBResults(results[0][1], results[1] ? results[1][1] : null, results[2] ? results[2][1] : null, country.name, results[3] ? results[3][1] : null);
             } catch (e) { showToast(e.message); }
         }
@@ -2827,10 +2828,11 @@ function displayMovies(data, query) {
         function processWBResults(percData, secondData, thirdData, name, fourthData) {
             const history = (percData || []).filter(d => d.value !== null).map(d => ({ year: d.date, val: parseFloat(d.value.toFixed(2)) })).reverse();
             if (currentMode === 'energy' && thirdData) {
-                // The World Bank renewable share stops in 2021 (IEA licence) while fossil, nuclear and hydro shares run on; the three sum to ~100, so later years are derived.
+                // The World Bank renewable share stops in 2021 (IEA licence). Later years come from Our World in Data (Ember); failing that, fossil + nuclear + renewable sum to ~100, so they are derived.
                 const fossil = toHist(thirdData), nuclear = toHist(fourthData);
                 const lastYear = history.length ? +history[history.length - 1].year : 0;
-                fossil.filter(f => +f.year > lastYear).forEach(f => { const n = nuclear.find(x => x.year === f.year); const v = 100 - f.val - (n ? n.val : 0); if (v >= 0 && v <= 100) history.push({ year: f.year, val: parseFloat(v.toFixed(2)), derived: true }); });
+                extendRenewables(history, lastWBCountry && lastWBCountry.id, renewTable);
+                fossil.filter(f => +f.year > lastYear && !history.some(h => h.year === f.year)).forEach(f => { const n = nuclear.find(x => x.year === f.year); const v = 100 - f.val - (n ? n.val : 0); if (v >= 0 && v <= 100) history.push({ year: f.year, val: parseFloat(v.toFixed(2)), derived: true }); });
             }
             if (!history || history.length === 0) return showToast("Data unavailable.");
             const latest = history[history.length-1];
@@ -2867,7 +2869,7 @@ function displayMovies(data, query) {
             <h5 class="text-[10px] font-black text-orange-400 mb-2 uppercase tracking-widest">Renewable Share</h5>
             <p class="text-3xl font-black text-white">${renewableTotal}%</p>
             <p class="text-[9px] text-slate-500 mt-2 leading-tight">
-                Percentage of electricity from solar, wind, and hydro.${latest.derived ? ` Years after ${history.filter(h => !h.derived).slice(-1)[0].year} are derived as 100% minus the fossil and nuclear shares.` : ''}
+                Percentage of electricity from solar, wind, and hydro.${latest.owid ? ` Years after ${(history.filter(h => !h.derived && !h.owid).slice(-1)[0] || {}).year || 2021} are from Our World in Data (Ember).` : latest.derived ? ` Years after ${(history.filter(h => !h.derived && !h.owid).slice(-1)[0] || {}).year || 2021} are derived as 100% minus the fossil and nuclear shares.` : ''}
             </p>
         </div>
 
@@ -4731,6 +4733,7 @@ function displayMovies(data, query) {
                 const url = c => `https://api.worldbank.org/v2/country/${c.id}/indicator/${metric.ind}?format=json&per_page=100&date=${currentYear - 50}:${currentYear}`;
                 const [ra, rb] = await Promise.all([fetch(url(A)).then(r => r.json()), fetch(url(B)).then(r => r.json())]);
                 const hA = toHist(ra[1]), hB = toHist(rb[1]);
+                if (metric.ind === 'EG.ELC.RNEW.ZS') { try { const t = await renewShareByCode(); extendRenewables(hA, A.id, t); extendRenewables(hB, B.id, t); } catch (e) { console.warn('Renewables table unavailable:', e.message); } }
                 if (!hA.length || !hB.length) { showToast(`No "${metric.label}" data for ${!hA.length ? A.name : B.name}.`); return; }
                 renderCompare(A.name, B.name, hA, hB, metric);
             } catch (e) {
@@ -4764,7 +4767,7 @@ function displayMovies(data, query) {
             row.innerHTML = card(nameA, la, hA, leader === 'A', 'indigo') + card(nameB, lb, hB, leader === 'B', 'emerald') + `
     <div class="md:col-span-2 bg-slate-900/60 border border-white/5 p-5 rounded-[2rem] text-center">
         <p class="text-sm font-bold text-white">${leader ? `${leader === 'A' ? nameA : nameB} leads on ${metric.label} by ${fmt(gap)}.` : `${la.val > lb.val ? nameA : nameB} is higher by ${fmt(gap)}; neither direction is simply "better" for this metric.`}</p>
-        <p class="text-[10px] text-slate-500 mt-1">Latest World Bank values; the chart shows how the gap has moved over time.</p>
+        <p class="text-[10px] text-slate-500 mt-1">${metric.ind === 'EG.ELC.RNEW.ZS' ? 'World Bank values to 2021, then Our World in Data (Ember)' : 'Latest World Bank values'}; the chart shows how the gap has moved over time.</p>
     </div>`;
             animateImpactCards();
             renderCompareChart(hA, hB, nameA, nameB, metric.label);
@@ -6292,16 +6295,16 @@ function displayMovies(data, query) {
         let twinData = null;
         async function loadTwinData() {
             if (twinData) return twinData;
-            const stored = lsGet('ev_twin_v1', null), storedOk = stored && stored.t && Array.isArray(stored.countries) && stored.val && stored.scale;
+            const stored = lsGet('ev_twin_v2', null), storedOk = stored && stored.t && Array.isArray(stored.countries) && stored.val && stored.scale;
             if (storedOk && Date.now() - stored.t < 24 * 3600 * 1000) { twinData = stored; return twinData; }
-            try { twinData = await fetchTwinData(); lsSet('ev_twin_v1', twinData); return twinData; }
+            try { twinData = await fetchTwinData(); lsSet('ev_twin_v2', twinData); return twinData; }
             catch (e) { if (storedOk) { console.warn('Using yesterday\'s World Bank figures:', e.message); twinData = stored; return twinData; } throw e; }
         }
         async function fetchTwinData() {
             // Multi-indicator calls need source=2 (WDI); the threatened-species counts live in another source, so they are fetched one by one.
             const inds = [...new Set([...TWIN_METRICS.filter(m => m.ind).map(m => m.ind), 'EN.GHG.ALL.MT.CE.AR5'])];
             const chunks = []; for (let i = 0; i < inds.length; i += 6) chunks.push(inds.slice(i, i + 6));
-            const singles = ['EN.MAM.THRD.NO', 'EN.BRD.THRD.NO', 'EN.FSH.THRD.NO', 'EN.HPT.THRD.NO'];
+            const singles = ['EN.MAM.THRD.NO', 'EN.BIR.THRD.NO', 'EN.FSH.THRD.NO', 'EN.HPT.THRD.NO'];
             // Every call is independent: a chunk that fails is retried one indicator at a time, and whatever arrives is used
             const countries = await wbCountries();
             const chunkUrl = c => `https://api.worldbank.org/v2/country/all/indicator/${c.join(';')}?source=2&mrnev=1&format=json&per_page=5000`;
@@ -6320,9 +6323,13 @@ function displayMovies(data, query) {
                 const ladder = await loadOwidSeries('ladder');
                 Object.values(ladder).forEach(tb => { if (tb.code && real.has(tb.code) && tb.points.length) { const p = tb.points[tb.points.length - 1]; (val[tb.code] = val[tb.code] || {}).owid_ladder = { v: p.val, y: p.year }; } });
             } catch (e) { console.warn('Happiness table unavailable for twins:', e.message); }
+            try {
+                const ren = await renewShareByCode();
+                Object.keys(ren).forEach(code => { if (!real.has(code)) return; const q = ren[code][ren[code].length - 1], cur = val[code] && val[code]['EG.ELC.RNEW.ZS']; if (!cur || +q.year > +cur.y) (val[code] = val[code] || {})['EG.ELC.RNEW.ZS'] = { v: q.val, y: q.year }; });
+            } catch (e) { console.warn('Renewables table unavailable for twins:', e.message); }
             Object.values(val).forEach(m => {
                 if (m['EN.GHG.ALL.MT.CE.AR5'] && m['SP.POP.TOTL']) m.calc_ghgpc = { v: m['EN.GHG.ALL.MT.CE.AR5'].v * 1e6 / m['SP.POP.TOTL'].v, y: m['EN.GHG.ALL.MT.CE.AR5'].y };
-                const th = ['EN.MAM.THRD.NO', 'EN.BRD.THRD.NO', 'EN.FSH.THRD.NO', 'EN.HPT.THRD.NO'].filter(k => m[k]);
+                const th = ['EN.MAM.THRD.NO', 'EN.BIR.THRD.NO', 'EN.FSH.THRD.NO', 'EN.HPT.THRD.NO'].filter(k => m[k]);
                 if (th.length) m.calc_threat = { v: th.reduce((s, k) => s + m[k].v, 0), y: m[th[0]].y };
             });
             const scale = {};
@@ -6442,17 +6449,19 @@ function displayMovies(data, query) {
             BORN.date = date; BORN.city = city;
             showLive(liveSpinner(L('Reading 100 years of planet records…', 'Διαβάζω 100 χρόνια αρχείων του πλανήτη…')));
             const safe = p => p.catch(e => { console.warn('Born source failed:', e.message); return null; });
-            const [wld, co2Txt, tempJson, geo] = await Promise.all([
+            const [wld, co2Txt, tempJson, geo, ren] = await Promise.all([
                 safe(cachedJson('https://api.worldbank.org/v2/country/WLD/indicator/SP.POP.TOTL;SP.DYN.LE00.IN;AG.LND.FRST.K2;IT.NET.USER.ZS;EG.ELC.RNEW.ZS;SP.URB.TOTL.IN.ZS;EN.GHG.ALL.MT.CE.AR5?source=2&format=json&per_page=1000&date=1900:${new Date().getFullYear() + 1}', 24 * 3600 * 1000)),
                 safe(cachedText('https://gml.noaa.gov/webdata/ccgg/trends/co2/co2_annmean_mlo.csv')),
                 safe(cachedJson('https://global-warming.org/api/temperature-api', 24 * 3600 * 1000)),
-                city ? safe(fetchJson(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json`, 20000)) : Promise.resolve(null)
+                city ? safe(fetchJson(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json`, 20000)) : Promise.resolve(null),
+                safe(renewShareByCode())
             ]);
             if (currentMode !== 'born') return;
             const y = date.getFullYear(), nowYear = new Date().getFullYear();
             // World Bank world series -> { ind: { year: value } }
             const series = {};
             ((wld && wld[1]) || []).forEach(r => { if (r.value !== null) (series[r.indicator.id] = series[r.indicator.id] || {})[+r.date] = r.value; });
+            if (ren && ren.OWID_WRL) { const rs = series['EG.ELC.RNEW.ZS'] = series['EG.ELC.RNEW.ZS'] || {}; const lastY = Math.max(0, ...Object.keys(rs).map(Number)); ren.OWID_WRL.filter(q => +q.year > lastY).forEach(q => { rs[+q.year] = q.val; }); }
             const latest = s => { const ys = Object.keys(s || {}).map(Number); if (!ys.length) return null; const ly = Math.max(...ys); return { y: ly, v: s[ly] }; };
             const thenOf = s => { const ny = nearestYear(s || {}, y); return ny === null ? null : { y: ny, v: s[ny], approx: ny !== y }; };
             // CO2 (NOAA, annual means from 1959)
@@ -7067,7 +7076,7 @@ function displayMovies(data, query) {
             const mt = TWIN_METRICS.find(x => twinKey(x) === key);
             if (!mt || !mt.ind || (m && m.loading)) return null; // measures without a World Bank code wait for the full dataset
             GLOBE.metric[key] = { loading: true };
-            cachedJson(`https://api.worldbank.org/v2/country/all/indicator/${mt.ind}?format=json&mrnev=1&per_page=400`, 24 * 3600 * 1000)
+            (key === 'EG.ELC.RNEW.ZS' ? renewShareByCode().then(t => [null, Object.keys(t).filter(c => !c.startsWith('OWID_')).map(c => ({ countryiso3code: c, value: t[c][t[c].length - 1].val, date: t[c][t[c].length - 1].year }))]) : cachedJson(`https://api.worldbank.org/v2/country/all/indicator/${mt.ind}?format=json&mrnev=1&per_page=400`, 24 * 3600 * 1000))
                 .then(d => { const val = {}; ((d && d[1]) || []).forEach(r => { if (r.value !== null && r.countryiso3code) (val[r.countryiso3code] = {})[key] = { v: r.value, y: r.date }; }); GLOBE.metric[key] = { val }; if (GLOBE.colorBy === key) globePaintPolys(); })
                 .catch(e => { console.warn('Globe colour data failed:', e.message); GLOBE.metric[key] = {}; if (GLOBE.colorBy === key) globePaintPolys(); });
             return null;
@@ -7465,25 +7474,55 @@ function displayMovies(data, query) {
         }
         async function owidTable(slug) {
             const rows = parseCsv(await cachedText(`https://ourworldindata.org/grapher/${slug}${slug.includes('.csv') ? '' : '.csv'}`, 24 * 3600 * 1000));
-            const head = rows[0] || [];
+            // OWID switched its id columns to lowercase (entity, code, year, quarter); accept either spelling
+            const head = (rows[0] || []).map(h => /^(entity|code|year|quarter|day)$/i.test(h) ? h[0].toUpperCase() + h.slice(1).toLowerCase() : h);
             return { head, rows: rows.slice(1).filter(r => r.length >= head.length).map(r => { const o = {}; head.forEach((h, i) => { o[h] = r[i]; }); return o; }) };
         }
+        // Renewable share of electricity per country (Ember / Energy Institute via Our World in Data), to the latest year; the World Bank copy stops in 2021
+        let renewTable = null;
+        async function renewShareByCode() {
+            if (renewTable) return renewTable;
+            const tb = await owidTable('electricity-mix.csv?frequency=annual&metric=share_of_generation&source=renewables');
+            const col = tb.head[3], out = {};
+            tb.rows.forEach(r => { const v = +r[col]; if (r.Code && r[col] !== '' && isFinite(v)) (out[r.Code] = out[r.Code] || []).push({ year: String(r.Year), val: +v.toFixed(2) }); });
+            Object.values(out).forEach(sr => sr.sort((a, b) => a.year.localeCompare(b.year)));
+            renewTable = out; return out;
+        }
+        // Append the OWID years that come after the last World Bank year of a per-country history
+        const extendRenewables = (history, iso3, table) => {
+            const sr = table && table[iso3 === 'WLD' ? 'OWID_WRL' : iso3]; if (!sr) return history;
+            const last = history.length ? +history[history.length - 1].year : 0;
+            sr.filter(q => +q.year > last).forEach(q => history.push({ year: q.year, val: q.val, owid: true }));
+            return history;
+        };
         const owidSeries = (tb, code, col) => tb.rows.filter(r => r.Code === code && r[col] !== '' && r[col] !== undefined).map(r => ({ y: +r.Year, v: +r[col] })).filter(p => isFinite(p.v)).sort((a, b) => a.y - b.y);
         const seriesMean = (s, from, to) => { const xs = s.filter(p => p.y >= from && p.y <= to).map(p => p.v); return xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null; };
         const wbSeries = (raw, iso3) => { const o = {}; ((raw && raw[1]) || []).forEach(r => { if (r.value !== null && r.countryiso3code === iso3) o[+r.date] = r.value; }); return o; };
         const fmtPeople = v => { const a = Math.abs(v); const s = a >= 1e6 ? (a / 1e6).toFixed(2) + ' ' + L('million', 'εκατ.') : a >= 1e3 ? Math.round(a / 1e3) + ' ' + L('thousand', 'χιλ.') : String(Math.round(a)); return (v < 0 ? '−' : '+') + s; };
 
         async function loadStoryOceans() {
-            const [sst, sl] = await Promise.all([owidTable('sea-surface-temperature-anomaly'), owidTable('sea-level')]);
+            const [sst, sl, star] = await Promise.all([owidTable('sea-surface-temperature-anomaly'), owidTable('sea-level'),
+                cachedText('https://www.star.nesdis.noaa.gov/socd/lsa/SeaLevelRise/slr/slr_sla_gbl_free_all_66.csv', 24 * 3600 * 1000).catch(e => { console.warn('NOAA altimetry unavailable:', e.message); return null; })]);
             const world = owidSeries(sst, 'OWID_WRL', 'Average'), nh = owidSeries(sst, 'OWID_NH', 'Average'), sh = owidSeries(sst, 'OWID_SH', 'Average');
             if (world.length < 50) throw new Error('Sea temperature series unavailable');
             const thisYear = new Date().getFullYear(), last = world[world.length - 1], complete = world.filter(p => p.y < thisYear), lastFull = complete[complete.length - 1];
             const dec = seriesMean(complete, lastFull.y - 9, lastFull.y), early = seriesMean(world, 1850, 1900);
             const warmest = complete.slice().sort((a, b) => b.v - a.v).slice(0, 10), recentWarm = warmest.filter(p => p.y >= lastFull.y - 9).length;
-            const slCol = sl.head.find(h => /Average of/.test(h)) || sl.head[sl.head.length - 1];
+            const slCol = sl.head.find(h => /average/i.test(h)) || sl.head[sl.head.length - 1];
             const slq = sl.rows.filter(r => r.Entity === 'World' && r[slCol] !== '').map(r => ({ y: +String(r.Quarter || r.Year).slice(0, 4), v: +r[slCol] })).filter(p => isFinite(p.v));
             const slBy = {}; slq.forEach(p => (slBy[p.y] = slBy[p.y] || []).push(p.v));
             const slYears = Object.keys(slBy).map(Number).sort((a, b) => a - b).map(y => ({ y, v: slBy[y].reduce((a, b) => a + b, 0) / slBy[y].length }));
+            // NOAA satellite altimetry (TOPEX to Sentinel-6, 1993 to the latest pass) carries the line past the last OWID year, aligned on the years both cover
+            if (star && slYears.length) {
+                const sBy = {};
+                star.split('\n').forEach(line => { const m = line.match(/^(\d{4})\.\d+,(.*)$/); if (!m) return; const vs = m[2].split(',').filter(x => x.trim() !== '').map(Number).filter(isFinite); if (vs.length) (sBy[+m[1]] = sBy[+m[1]] || []).push(vs.reduce((a, b) => a + b, 0) / vs.length); });
+                const sYears = Object.keys(sBy).map(Number).filter(y => sBy[y].length >= 3).sort((a, b) => a - b).map(y => ({ y, v: sBy[y].reduce((a, b) => a + b, 0) / sBy[y].length }));
+                const both = slYears.filter(p => p.y >= 1993 && sYears.some(q => q.y === p.y));
+                if (both.length >= 5) {
+                    const offset = both.reduce((a, p) => a + p.v - sYears.find(q => q.y === p.y).v, 0) / both.length, lastOwid = slYears[slYears.length - 1].y;
+                    sYears.filter(q => q.y > lastOwid).forEach(q => slYears.push({ y: q.y, v: q.v + offset }));
+                }
+            }
             const at = y => { const p = slYears.find(q => q.y >= y); return p ? p.v : null; };
             const v1900 = at(1900), slLast = slYears[slYears.length - 1], rise = slLast && v1900 !== null ? (slLast.v - v1900) / 10 : null;
             const rateOld = v1900 !== null && at(1950) !== null ? (at(1950) - v1900) / 50 : null, rateNew = at(1993) !== null ? (slLast.v - at(1993)) / (slLast.y - 1993) : null;
@@ -8201,8 +8240,8 @@ function displayMovies(data, query) {
         const isIOS = () => /iPhone|iPad|iPod/i.test(navigator.userAgent) && !window.MSStream;
         function showInstallButtons(show) { document.querySelectorAll('.install-btn').forEach(b => b.classList.toggle('hidden', !show)); }
         // Bump APP_VERSION and APP_NEWS with every release: returning visitors and installed apps get a one-time "updated" notice
-        const APP_VERSION = '2026.10.22-3';
-        const APP_NEWS = ['New: Fact or Fiction game, The World as 100 People, Planet Records and a Year in Review story.', 'Νέα: παιχνίδι Αλήθεια ή Ψέμα, Ο Κόσμος ως 100 Άνθρωποι, Ρεκόρ του Πλανήτη και ιστορία Ανασκόπησης της Χρονιάς.'];
+        const APP_VERSION = '2026.10.22-4';
+        const APP_NEWS = ['Fresher data: renewable electricity to 2025 (Our World in Data), sea level to 2025 (NOAA satellites), threatened birds are back.', 'Πιο φρέσκα δεδομένα: ανανεώσιμο ρεύμα έως το 2025 (Our World in Data), στάθμη θάλασσας έως το 2025 (δορυφόροι NOAA), επέστρεψαν τα απειλούμενα πτηνά.'];
         function updateBanner(text, buttonLabel, onClick) {
             const stack = document.getElementById('toast-stack'); if (!stack) return;
             const el = document.createElement('div');

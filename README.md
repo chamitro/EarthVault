@@ -16,7 +16,7 @@ EarthVault provides comprehensive insights across environmental, social, economi
 - 🌊 **Ocean Pulse** - Live sea surface temperature, wave height and marine heatwave tracking for any coastal city, with a daily record back to late 2022
 - 🌳 **Forest Heritage** - Global deforestation rates and forest coverage trends
 - 🌾 **Agriculture** - Agricultural land use intensity and farming trends
-- ⚡ **Energy & Renewables** - Clean energy transition tracking and renewable adoption rates The World Bank renewable series ends in 2021, so later years are derived as 100% minus the fossil and nuclear shares, which run to the latest year and sum to within half a point of the published figure
+- ⚡ **Energy & Renewables** - Clean energy transition tracking and renewable adoption rates The World Bank renewable series ends in 2021, so later years come from Our World in Data (Ember / Energy Institute, to the latest year); if that file is unavailable they are derived as 100% minus the fossil and nuclear shares
 - 💧 **Water Safety** - Access to safely managed drinking water sources
 - 🏭 **Carbon Emissions** - CO₂ emissions tracking per capita and environmental impact
 - 🐾 **Endangered Species** - Threatened mammals, birds, fish, and plants (% of global threatened species)
@@ -185,7 +185,7 @@ Powers the Happiness & Wellbeing Vault. Three small CSV series, fetched directly
 - Life satisfaction (Cantril ladder, 0-10) from the World Happiness Report, 2011 to the latest survey year
 - Annual working hours per employed person
 - Intentional homicide rate per 100,000 people (UNODC)
-- For Earth Stories, cached for a day: sea-surface temperature anomaly (HadSST, world and both hemispheres since 1850), global sea level (Church & White and UHSLC, quarterly since 1880) and the electricity mix (Ember / Energy Institute: renewables, solar and wind shares since 1985 for every country). The grapher CSV endpoints follow redirects and allow CORS
+- For Earth Stories, cached for a day: sea-surface temperature anomaly (HadSST, world and both hemispheres since 1850), global sea level (Church & White and UHSLC, quarterly 1880–2020, carried to the latest satellite pass with NOAA STAR altimetry, TOPEX to Sentinel-6, aligned on the overlap years) and the electricity mix (also used for the per-country renewable share in Twins, Profiles, Compare, Energy and the Globe, since the World Bank series stops in 2021) (Ember / Energy Institute: renewables, solar and wind shares since 1985 for every country). The grapher CSV endpoints follow redirects and allow CORS
 
 **API Documentation:** [ourworldindata.org](https://ourworldindata.org/happiness-and-life-satisfaction)
 
