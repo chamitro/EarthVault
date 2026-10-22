@@ -8,7 +8,7 @@
 
 ## ✨ Features
 
-#### 📊 **47 Data Visualization Sections**
+#### 📊 **50 Data Visualization Sections**
 EarthVault provides comprehensive insights across environmental, social, economic, and cultural dimensions:
 
 #### 🌍 **Environmental Data (13 sections)**
@@ -26,7 +26,7 @@ EarthVault provides comprehensive insights across environmental, social, economi
 - 🏜️ **Water Stress** - Freshwater withdrawal as a share of renewable resources (FAO levels), rainfall and live river flow near the capital
 - 🦋 **Wildlife Gallery** - Real wildlife photos spotted by citizen scientists in any country (GBIF/iNaturalist), with common names, a breakdown of what lives there and a shuffle button
 
-#### 👥 **Social & Health Metrics (9 sections)**
+#### 👥 **Social & Health Metrics (10 sections)**
 - 🎓 **University Access** - Global tertiary education enrollment with gender parity analysis
 - ⏳ **Human Lifespan** - Life expectancy trends with male/female breakdowns
 - 🤱 **Generations** - Fertility rates and demographic transitions
@@ -37,13 +37,16 @@ EarthVault provides comprehensive insights across environmental, social, economi
 - 💼 **Economy & Labor Market** - GDP per capita, unemployment rates, GINI index, labor force participation
 - 🏛️ **Education: Public vs Private** - School enrollment distribution between public and private sectors
 
-#### 🎮 **Games (4 sections)**
+#### 🎮 **Games (5 sections)**
 - 🏠 **Home** - The front door after the splash: a hero with live tiles (quakes today, wildfires tracked, the hottest capital this minute, the Kp index), four featured doors (globe, stories, quiz, country profile), a Continue chip for the vault you used last, and every vault grouped by category. The logo and a 🏠 button return to it
 - 🔍 **Command palette** - Ctrl K (or the 🔍 button) opens a search over all 47 vaults and every country; arrow keys and Enter jump straight to a vault or a country profile
 - ✨ **Interface polish** - Shimmer skeletons while live sections load, sections fade and lift into place, clickable cards rise on hover, and everything respects `prefers-reduced-motion`
 - 🌐 **Live Globe** - The planet in 3D (Globe.gl, loaded only when opened): live fires, storms, floods, volcanoes from GDACS and NASA EONET, a week of USGS earthquakes with rings for M5.5+, every capital coloured by its temperature right now, and the ISS moving every 5 seconds. Countries can be coloured by forest cover, life expectancy, happiness, internet use, emissions per person, air pollution, fertility or renewables, and tapping a country opens its profile. Also reachable from the splash screen
 - 🧭 **Country Profile** - One page per country, linkable as `?country=GR`: flag, capital, region, income group and population; the weather in the capital right now; active alerts in that country; all 25 measures from every vault with their year and world rank; the five closest twins; and a chip into every vault for that country or its capital
-- 📖 **Earth Stories** - Nine guided, scroll-driven tours drawn live from the data, linkable as `?vault=stories&story=…`, with a reading-progress bar, numbers that count up and charts that draw as they scroll into view: This week on Earth (rebuilt from the live feeds on every visit: seven days of USGS quakes, fires by country, active cyclones, floods, volcanoes and red alerts, the hottest and coldest capitals this minute, three days of Kp index and the ISS position), The carbon century (NOAA CO₂ and NASA GISTEMP warming stripes), The sea is warming too (HadSST sea-surface anomaly since 1850 and global sea level since 1880 via Our World in Data), Where the forests went (World Bank forest cover since 1990), The renewable turn (Our World in Data / Ember electricity mix: renewables, solar and wind since 1985), Eight billion of us (world population, fertility, life expectancy and urban share since 1960), Who lives longest (the ten longest- and shortest-lived countries and sixty years of life expectancy), Where people are moving (net migration today and since 1990) and The Mediterranean is heating (ERA5 daily archive for Athens, Rome and Barcelona since 1980)
+- 📖 **Earth Stories** - Ten guided, scroll-driven tours drawn live from the data, linkable as `?vault=stories&story=…`, with a reading-progress bar, numbers that count up and charts that draw as they scroll into view: The year so far / Year in review (assembled from EarthVault's own daily log: the hottest and coldest capital of every day, quakes and fires per day, the records that fell, and NASA's year-to-date global anomaly; it becomes the review in mid-December), This week on Earth (rebuilt from the live feeds on every visit: seven days of USGS quakes, fires by country, active cyclones, floods, volcanoes and red alerts, the hottest and coldest capitals this minute, three days of Kp index and the ISS position), The carbon century (NOAA CO₂ and NASA GISTEMP warming stripes), The sea is warming too (HadSST sea-surface anomaly since 1850 and global sea level since 1880 via Our World in Data), Where the forests went (World Bank forest cover since 1990), The renewable turn (Our World in Data / Ember electricity mix: renewables, solar and wind since 1985), Eight billion of us (world population, fertility, life expectancy and urban share since 1960), Who lives longest (the ten longest- and shortest-lived countries and sixty years of life expectancy), Where people are moving (net migration today and since 1990) and The Mediterranean is heating (ERA5 daily archive for Athens, Rome and Barcelona since 1980)
+- 🧠 **Fact or Fiction** - Ten statements built from World Bank figures the moment you play ("Chile has a higher forest cover than Finland", "Lima lies further north than Nairobi", "Dakar is the capital of Senegal", "More than half of Norway's electricity comes from renewables", "Nigeria has more than twice the population of Egypt"), half of them false by construction. Each verdict shows the real numbers, scores post to the global leaderboard
+- 🏆 **Planet Records** - The hottest, coldest and windiest capital, the strongest earthquake, the largest wildfire, and the busiest days for quakes and fires that EarthVault itself has recorded, hour by hour, with the date each record fell and a "new" badge for records under a day old. The home screen flashes a new record for 24 hours. Fed by `supabase/records.sql` (an hourly database job reading the capitals sheet, USGS and GDACS)
+- 🧑‍🤝‍🧑 **The World as 100 People** - A village of 100 dots: where they live (seven World Bank regions), and how many live in cities, use the internet, have electricity, safe water, sanitation, can read, are children, are over 65, are women, work, or live on under $3 a day. Latest world figures, animated, shareable
 - 🎯 **Planet Quiz** - Starts within a second on capitals, flags and live questions while the World Bank figures load in the background, then adds the data questions. Seven kinds of question on real data, mixed at random: higher or lower between two countries (25 measures), top of four, capitals, flags, estimate-on-a-slider (a guess within 10% of the slider range counts, shown before you lock in), and two live ones from Open-Meteo: which capital is warmer right now and where it is later in the day (with a hint button that explains the east-to-west rule and each city's longitude). Streaks, confetti milestones, an explore button into the matching vault, share, challenge-by-link (seeded, live kinds excluded) and the global leaderboard
 - 🕵️ **Mystery Country** - One secret country a day, the same for everyone. Six guesses; every miss unlocks a clue (region, population, forest and life expectancy, capital hint, neighbours, flag) and tells you how far off you were and in which direction. Streaks, stats and a Wordle-style share grid
 - 🌡️ **Hot or Not** - Two cities, live temperatures from Open-Meteo: which one is warmer at this moment? The answer changes through the day
@@ -51,7 +54,7 @@ EarthVault provides comprehensive insights across environmental, social, economi
 - ⚔️ **Challenge a friend** - Planet Quiz, Hot or Not and Flag Flash each have a "Challenge a friend" button. It starts a seeded round (10 questions, or the same flag deck for 30 seconds), then gives you a link with your score. Your friend opens it, plays the exact same questions, and both scores appear side by side with a winner. They can send their result back and you see who won without playing again. No account and no server: everything is encoded in the link (`?vault=quiz&ch=<seed>&cs=<score>&cb=<name>`)
 - 🌍 **Global leaderboard** - When a Planet Quiz or Hot or Not streak ends, a Flag Flash round finishes or the daily Mystery Country is solved, the page posts the result (name, score, country of the browser language, a random device id) to a small Supabase table and shows the top 5 players all time and in the last 24 hours, plus your rank. The publishable key in the page can only insert scores and read the `leaderboard` view (every round counts, so one strong player may hold several of the top 5 places); a database trigger limits one score per device every 20 seconds and 200 a day and cleans names. Seeded challenge rounds are never posted
 
-#### 🛰️ **Live Earth (11 sections)**
+#### 🛰️ **Live Earth (12 sections)**
 - 🌍 **Planet Right Now** - Live leaderboards across 56 cities: hottest, coldest, windiest, cleanest and most polluted air, strongest UV, plus how many are clear, raining, snowing or in night. Refreshes every 10 minutes
 - 🛰️ **Planet Alerts** - Worldwide wildfires, floods, cyclones, volcanic eruptions and droughts from GDACS (the EU and UN disaster alert system, with green/orange/red impact levels), icebergs and US fire incidents from NASA EONET, and the last 24 hours of M4.5+ earthquakes from USGS. Tap a category tile to list every event in it, or filter by country or place ("Greece", "Australia"). No search needed
 - ☀️ **Space Weather** - NOAA geomagnetic, radio and radiation scales, Kp history and forecast, aurora outlook, solar wind and the latest bulletins
@@ -84,14 +87,14 @@ EarthVault provides comprehensive insights across environmental, social, economi
 - 🛂 **Country Passport** - Every country result opens with the flag, capital, region, income group and population
 - 🎲 **Surprise Me** - A dice button next to the search box picks a random place for the current vault
 - 📸 **Share Cards** - One click turns any result into a shareable 1200×630 image (native share sheet on phones, download on desktop)
-- 🧭 **Explorer Progress** - A counter in the header tracks how many of the 47 vaults you have opened, with milestone celebrations
+- 🧭 **Explorer Progress** - A counter in the header tracks how many of the 50 vaults you have opened, with milestone celebrations
 - 🛰️ **Earth Today** - The splash screen shows the latest full-disc photo of Earth from NASA's EPIC camera
 - 💡 **First-visit Tips** - A dismissable three-step guide; press `/` anywhere to jump to the search box
 - 🌊 **Tides in Ocean Pulse** - Current tide height and the next high or low water for any coastal city
 - 🌼 **Pollen & UV in Air Quality** - The live capital reading now includes UV and pollen levels (Europe)
-- 🔎 **Search-engine ready** - `sitemap.xml` (home, privacy, all 47 `?vault=` links, the nine stories and every `?country=` profile, 275 URLs), `robots.txt`, canonical and Open Graph tags, and a title and description that change per vault so each deep link reads as its own page
+- 🔎 **Search-engine ready** - `sitemap.xml` (home, privacy, all 50 `?vault=` links, the ten stories and every `?country=` profile, 279 URLs), `robots.txt`, canonical and Open Graph tags, and a title and description that change per vault so each deep link reads as its own page
 - 🛰️ **Live splash counters** - Earthquakes in the last 24 hours, wildfires burning now and the current Kp index, next to the statistical daily estimates
-- 🔎 **Vault Finder** - Type to filter the 47 vaults in the menu; the last vault you used is offered as a Continue chip on the home screen
+- 🔎 **Vault Finder** - Type to filter the 50 vaults in the menu; the last vault you used is offered as a Continue chip on the home screen
 - 💬 **Friendly Feedback** - Non-blocking toasts replace browser alerts; empty or failed searches never leave stale data on screen
 - 🧭 **Guided Search** - Every vault shows a one-line description and "Try" example chips; Enter submits, and results scroll into view on phones
 - 📱 **Phone-first Checks** - Verified at 390px: no horizontal overflow, 44px tap targets in the menu, 3-column timeline grid
