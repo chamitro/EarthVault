@@ -1,0 +1,16 @@
+# Keeps the Supabase project active (free projects pause after ~7 days without API requests).
+# One read of the shared capital sheet per day, with the public key that is already in index.html.
+name: keep Supabase awake
+on:
+  schedule:
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Read the capital sheet
+        run: |
+          curl -sf -m 30 "https://qslofkasphxcmfzgsdry.supabase.co/rest/v1/cache?key=eq.capitals&select=updated_at" \
+            -H "apikey: sb_publishable_w6gn-2QkaS6eDAcsryYh-A_xJIFDMBo" \
+            -H "Authorization: Bearer sb_publishable_w6gn-2QkaS6eDAcsryYh-A_xJIFDMBo"
