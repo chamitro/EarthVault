@@ -7933,9 +7933,34 @@ function displayMovies(data, query) {
         const isStandalone = () => (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
         const isIOS = () => /iPhone|iPad|iPod/i.test(navigator.userAgent) && !window.MSStream;
         function showInstallButtons(show) { document.querySelectorAll('.install-btn').forEach(b => b.classList.toggle('hidden', !show)); }
+        // Bump APP_VERSION and APP_NEWS with every release: returning visitors and installed apps get a one-time "updated" notice
+        const APP_VERSION = '2026.10.22';
+        const APP_NEWS = ['Home screen, Ctrl K search, nine Earth Stories, a shared capital-weather sheet and a sturdier quiz.', 'Αρχική οθόνη, αναζήτηση Ctrl K, εννέα Ιστορίες της Γης, κοινό φύλλο καιρού πρωτευουσών και πιο ανθεκτικό κουίζ.'];
+        function updateBanner(text, buttonLabel, onClick) {
+            const stack = document.getElementById('toast-stack'); if (!stack) return;
+            const el = document.createElement('div');
+            el.className = 'toast pointer-events-auto bg-slate-900/95 border border-emerald-500/40 text-slate-100 text-sm rounded-2xl px-4 py-3 shadow-2xl backdrop-blur flex items-start gap-3';
+            el.innerHTML = `<span class="text-emerald-400 font-black leading-5">↑</span><span class="flex-1 leading-5"></span>${buttonLabel ? `<button type="button" class="shrink-0 px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-xs font-black text-white"></button>` : ''}<button type="button" aria-label="Dismiss" class="shrink-0 text-slate-500 hover:text-white">×</button>`;
+            el.querySelector('span.flex-1').textContent = text;
+            const btns = el.querySelectorAll('button');
+            if (buttonLabel) { btns[0].textContent = buttonLabel; btns[0].onclick = () => { el.remove(); onClick(); }; }
+            btns[btns.length - 1].onclick = () => el.remove();
+            stack.appendChild(el);
+            setTimeout(() => { if (el.isConnected) { el.classList.add('toast-out'); setTimeout(() => el.remove(), 300); } }, 14000);
+        }
+        function checkAppVersion() {
+            let prev = null; try { prev = localStorage.getItem('ev_version'); } catch (e) {}
+            try { localStorage.setItem('ev_version', APP_VERSION); } catch (e) {}
+            if (prev && prev !== APP_VERSION) setTimeout(() => updateBanner(`${L('EarthVault updated to', 'Το EarthVault ενημερώθηκε στην έκδοση')} ${APP_VERSION}: ${L(APP_NEWS[0], APP_NEWS[1])}`, null), 1500);
+        }
         function initPWA() {
+            checkAppVersion();
             if (location.protocol.startsWith('http') && 'serviceWorker' in navigator) {
-                navigator.serviceWorker.register('sw.js').catch(e => console.warn('Service worker not registered:', e.message));
+                navigator.serviceWorker.register('sw.js').then(reg => {
+                    // A new service worker arriving while the app is open means a newer build exists: offer a reload
+                    reg.addEventListener('updatefound', () => { const nw = reg.installing; if (!nw) return; nw.addEventListener('statechange', () => { if (nw.state === 'installed' && navigator.serviceWorker.controller) updateBanner(L('A newer version of EarthVault is ready.', 'Μια νεότερη έκδοση του EarthVault είναι έτοιμη.'), L('Update now', 'Ενημέρωση τώρα'), () => location.reload()); }); });
+                    reg.update().catch(() => {});
+                }).catch(e => console.warn('Service worker not registered:', e.message));
             }
             if (isStandalone()) return;
             window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installPrompt = e; showInstallButtons(true); });

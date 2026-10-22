@@ -122,6 +122,8 @@ The pieces behind it: `manifest.json` (name, icons, theme, shortcuts), `sw.js` (
 
 ---
 
+- **Updates.** The page is served network-first, so an installed app gets the newest build the moment it is opened online. `APP_VERSION` and `APP_NEWS` in `index.html` are bumped with every release; a returning visitor or installed app then sees a one-time "EarthVault updated to …" notice with what is new, and if a newer service worker arrives while the app is open, a banner offers "Update now" to reload.
+
 ## 🛠️ Technology Stack
 
 | Technology | Purpose |
