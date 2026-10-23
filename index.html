@@ -4201,7 +4201,7 @@ function displayMovies(data, query) {
             outside:        { desc: 'The next 48 hours scored for a walk, run or picnic: weather, air, UV and pollen combined', examples: ['Athens', 'London', 'Tokyo', 'Melbourne'] },
             twins:          { desc: 'Which countries look most like yours? Every vault compared, top five twins with every number side by side', examples: ['Greece', 'Japan', 'Brazil', 'Kenya'] },
             home:           { desc: 'Live data, games and stories built on open sources. Pick a door.' },
-            factfiction:    { desc: 'Statements built from real World Bank figures the moment you play. Fact or fiction? The numbers decide, and one wrong answer ends the streak' },
+            factfiction:    { desc: 'Statements built from real World Bank figures the moment you play. Fact or fiction? The numbers decide, and you get one extra life per streak' },
             hundred:        { desc: 'If the world were a village of 100 people: who lives where, who has internet, water, electricity, who is a child or over 65' },
             year:           { desc: 'Assembled from what EarthVault itself recorded this year, hour by hour: the hottest and coldest capitals, quakes, fires and the records that fell. In December it becomes the year in review' },
             records:        { desc: 'The hottest, coldest and windiest capital, the strongest quake and the largest fire EarthVault has recorded, hour by hour, and when each record fell' },
@@ -5301,7 +5301,7 @@ function displayMovies(data, query) {
         }
 
         // ---- Planet Quiz: higher or lower, powered by live World Bank numbers ----
-        const QUIZ = { score: 0, streak: 0, best: 0, asked: 0, current: null, lastKind: null, data: null };
+        const QUIZ = { score: 0, streak: 0, best: 0, asked: 0, current: null, lastKind: null, data: null, life: true };
         try { QUIZ.best = parseInt(localStorage.getItem('ev_quiz_best') || '0', 10) || 0; } catch (e) {}
         const QUIZ_KINDS = {
             higher:   { label: ['Higher or lower', 'Περισσότερο ή λιγότερο'], live: false, data: true },
@@ -5461,6 +5461,7 @@ function displayMovies(data, query) {
         <span class="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-slate-300">Score <span class="text-white">${QUIZ.score}</span>/${QUIZ.asked}</span>
         <span class="px-3 py-1.5 rounded-full bg-orange-500/10 border border-orange-500/30 text-orange-300">🔥 Streak ${QUIZ.streak}</span>
         <span class="px-3 py-1.5 rounded-full bg-pink-500/10 border border-pink-500/30 text-pink-300">🏆 Best ${QUIZ.best}</span>
+        ${lifePill(QUIZ.life)}
     </div>`;
         }
         function renderQuiz(live) {
@@ -5509,8 +5510,9 @@ function displayMovies(data, query) {
             if (q.layout === 'slider') { const guess = Number(choice); correct = Math.abs(guess - q.actual) <= q.slider.tol; q.guess = guess; }
             else correct = picked === String(q.answer);
             QUIZ.asked++;
-            const endedStreak = correct ? 0 : QUIZ.streak;
-            if (correct) { QUIZ.score++; QUIZ.streak++; } else QUIZ.streak = 0;
+            const saved = !correct && QUIZ.life && QUIZ.streak > 0;
+            const endedStreak = correct || saved ? 0 : QUIZ.streak;
+            if (correct) { QUIZ.score++; QUIZ.streak++; } else if (saved) QUIZ.life = false; else { QUIZ.streak = 0; QUIZ.life = true; }
             let newBest = false;
             if (QUIZ.streak > QUIZ.best) { QUIZ.best = QUIZ.streak; newBest = QUIZ.best >= 3; try { localStorage.setItem('ev_quiz_best', String(QUIZ.best)); } catch (e) {} }
             document.querySelectorAll('#live-section .quiz-choice').forEach(btn => {
@@ -5527,7 +5529,7 @@ function displayMovies(data, query) {
             const exploreBtn = !canExplore ? '' : LIVE_MODES.includes(ex.mode)
                 ? `<button type="button" onclick="selectMode('${ex.mode}')" class="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-sm font-bold text-slate-200">${L('Open', 'Άνοιξε')} ${trv('labels', ex.mode, MODE_LABELS[ex.mode] || ex.mode)} →</button>`
                 : `<button type="button" onclick="jumpTo('${ex.mode}', '${String(ex.name || '').replace(/'/g, "\\'")}')" class="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-sm font-bold text-slate-200">${L('Explore', 'Εξερεύνησε')} ${escapeHtml(ex.name || '')} →</button>`;
-            verdict.innerHTML = `<p class="text-lg font-black ${correct ? 'text-emerald-400' : 'text-rose-400'}">${correct ? pickRandom(['Correct! 🎯', 'Nailed it! 🌍', 'Yes! 🙌', 'Spot on! ✨']) : pickRandom(['Not this time 😅', 'Close, but no 🙈', 'Nope! 🌀'])}</p>
+            verdict.innerHTML = `<p class="text-lg font-black ${correct ? 'text-emerald-400' : 'text-rose-400'}">${correct ? pickRandom(['Correct! 🎯', 'Nailed it! 🌍', 'Yes! 🙌', 'Spot on! ✨']) : saved ? '❤️ ' + L('Wrong, but your extra life saved the streak!', 'Λάθος, αλλά η έξτρα ζωή έσωσε το σερί!') : pickRandom(['Not this time 😅', 'Close, but no 🙈', 'Nope! 🌀'])}</p>
         <p class="text-sm text-slate-300 mt-1">${q.explain || ''}</p>
         <div class="flex flex-wrap justify-center gap-3 mt-4">
             ${chNext('quiz', QUIZ.score, 'Next question →', 'bg-pink-600 hover:bg-pink-500')}
@@ -5535,11 +5537,11 @@ function displayMovies(data, query) {
         </div>`;
             const header = verdict.closest('.vault-card').querySelector('div');
             if (header) header.outerHTML = quizHeader();
-            if (!correct) { const slot = document.createElement('div'); verdict.appendChild(slot); lbShow('quiz', endedStreak, slot); }
+            if (!correct && !saved) { const slot = document.createElement('div'); verdict.appendChild(slot); lbShow('quiz', endedStreak, slot); }
             if (correct && [3, 5, 10, 15, 20].includes(QUIZ.streak)) { burst({ particleCount: 60 + QUIZ.streak * 10 }); showToast(`🔥 ${QUIZ.streak} in a row!`, 'success', 3000); }
             else if (newBest) { burst({ particleCount: 80, spread: 100 }); showToast(`🏆 New best streak: ${QUIZ.best}`, 'success', 3000); }
         }
-        function resetQuiz() { QUIZ.score = 0; QUIZ.streak = 0; QUIZ.asked = 0; runLiveMode('quiz'); }
+        function resetQuiz() { QUIZ.score = 0; QUIZ.streak = 0; QUIZ.asked = 0; QUIZ.life = true; runLiveMode('quiz'); }
         async function shareQuiz() {
             const text = `I scored ${QUIZ.score}/${QUIZ.asked} on the EarthVault Planet Quiz (best streak ${QUIZ.best}). Can you beat me? 🌍`;
             try {
@@ -5929,10 +5931,13 @@ function displayMovies(data, query) {
             const idx = Math.round(phase * 8) % 8;
             return { phase, illumination, name: ['New moon', 'Waxing crescent', 'First quarter', 'Waxing gibbous', 'Full moon', 'Waning gibbous', 'Last quarter', 'Waning crescent'][idx], emoji: ['🌑', '🌒', '🌓', '🌔', '🌕', '🌖', '🌗', '🌘'][idx] };
         }
-        const scoreHeader = (score, streak, best, tone) => `<div class="flex flex-wrap items-center justify-center gap-3 mb-5 text-[10px] font-black uppercase tracking-widest">
+        // one extra life per streak: the first mistake is forgiven, the second ends the streak
+        const lifePill = has => has === undefined ? '' : `<span class="px-3 py-1.5 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-300" title="${L('One mistake per streak is forgiven', 'Ένα λάθος ανά σερί συγχωρείται')}">${has ? '❤️' : '🖤'} ${L('Life', 'Ζωή')}</span>`;
+        const scoreHeader = (score, streak, best, tone, life) => `<div class="flex flex-wrap items-center justify-center gap-3 mb-5 text-[10px] font-black uppercase tracking-widest">
         <span class="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-slate-300">Score <span class="text-white">${score}</span></span>
         <span class="px-3 py-1.5 rounded-full bg-orange-500/10 border border-orange-500/30 text-orange-300">🔥 Streak ${streak}</span>
         <span class="px-3 py-1.5 rounded-full bg-${tone}-500/10 border border-${tone}-500/30 text-${tone}-300">🏆 Best ${best}</span>
+        ${lifePill(life)}
     </div>`;
 
         // ---- Mystery Country: one puzzle a day, clues unlock with every miss ----
@@ -6017,7 +6022,7 @@ function displayMovies(data, query) {
         }
 
         // ---- Hot or Not: which city is warmer right now? ----
-        const HOT = { score: 0, streak: 0, best: lsGet('ev_hot_best', 0), current: null };
+        const HOT = { score: 0, streak: 0, best: lsGet('ev_hot_best', 0), current: null, life: true };
         async function loadHotOrNot() {
             const live = document.getElementById('live-section');
             const pick = chPick('hotornot');
@@ -6034,7 +6039,7 @@ function displayMovies(data, query) {
         </button>`; };
             live.innerHTML = `
     <div class="vault-card rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10">
-        ${scoreHeader(HOT.score, HOT.streak, HOT.best, 'orange')}
+        ${scoreHeader(HOT.score, HOT.streak, HOT.best, 'orange', HOT.life)}
         ${chActive('hotornot') ? chBanner('orange') : '<p class="text-center text-[10px] font-black text-orange-400 uppercase tracking-[0.3em] mb-2">Live right now</p>'}
         <h3 class="text-center text-xl md:text-3xl font-black text-white mb-6 md:mb-8">Which city is <span class="text-orange-300">warmer</span> at this moment?</h3>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 max-w-2xl mx-auto">${card('a', HOT.current.a)}${card('b', HOT.current.b)}</div>
@@ -6048,16 +6053,17 @@ function displayMovies(data, query) {
             if (chActive('hotornot')) CH.idx++;
             const ta = q.a.wx.current.temperature_2m, tb = q.b.wx.current.temperature_2m;
             const warmer = ta >= tb ? 'a' : 'b', correct = side === warmer;
-            const endedStreak = correct ? 0 : HOT.streak;
-            if (correct) { HOT.score++; HOT.streak++; } else HOT.streak = 0;
+            const saved = !correct && HOT.life && HOT.streak > 0;
+            const endedStreak = correct || saved ? 0 : HOT.streak;
+            if (correct) { HOT.score++; HOT.streak++; } else if (saved) HOT.life = false; else { HOT.streak = 0; HOT.life = true; }
             let newBest = false; if (HOT.streak > HOT.best) { HOT.best = HOT.streak; newBest = HOT.best >= 3; lsSet('ev_hot_best', HOT.best); }
             ['a', 'b'].forEach(s => { const it = q[s], v = document.getElementById(`hot-val-${s}`), btn = document.getElementById(`hot-${s}`); if (v) { v.textContent = `${it.wx.current.temperature_2m.toFixed(1)}°C ${WX_EMOJI(it.wx.current.weather_code)}`; v.classList.remove('opacity-0'); } if (btn) { btn.disabled = true; btn.classList.add(s === warmer ? 'border-emerald-400/70' : 'border-rose-500/40'); if (s === side) btn.classList.add(correct ? 'bg-emerald-500/10' : 'bg-rose-500/10'); } });
             const w = q[warmer], l = q[warmer === 'a' ? 'b' : 'a'];
-            document.getElementById('hot-verdict').innerHTML = `<p class="text-lg font-black ${correct ? 'text-emerald-400' : 'text-rose-400'}">${correct ? pickRandom(['Correct! 🔥', 'Hot streak! 🌡️', 'Yes! ☀️']) : pickRandom(['Brrr, wrong 🧊', 'Not this time ❄️'])}</p>
+            document.getElementById('hot-verdict').innerHTML = `<p class="text-lg font-black ${correct ? 'text-emerald-400' : 'text-rose-400'}">${correct ? pickRandom(['Correct! 🔥', 'Hot streak! 🌡️', 'Yes! ☀️']) : saved ? '❤️ ' + L('Wrong, but your extra life saved the streak!', 'Λάθος, αλλά η έξτρα ζωή έσωσε το σερί!') : pickRandom(['Brrr, wrong 🧊', 'Not this time ❄️'])}</p>
         <p class="text-sm text-slate-300 mt-1">${w.city[0]} is ${Math.abs(ta - tb).toFixed(1)}°C warmer than ${l.city[0]} right now. ${WX_TEXT(w.wx.current.weather_code)} there, ${WX_TEXT(l.wx.current.weather_code).toLowerCase()} in ${l.city[0]}.</p>
         <div class="flex flex-wrap justify-center gap-3 mt-4">${chNext('hotornot', HOT.score, 'Next duel →', 'bg-orange-600 hover:bg-orange-500')}${chActive('hotornot') ? '' : `<button type="button" onclick="jumpTo('weather', '${w.city[0].replace(/'/g, '&#39;')}')" class="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-sm font-bold text-slate-200">50 years of ${w.city[0]} weather →</button>`}</div>`;
-            const header = document.querySelector('#live-section .vault-card > div'); if (header) header.outerHTML = scoreHeader(HOT.score, HOT.streak, HOT.best, 'orange');
-            if (!correct) { const slot = document.createElement('div'); document.getElementById('hot-verdict').appendChild(slot); lbShow('hotornot', endedStreak, slot); }
+            const header = document.querySelector('#live-section .vault-card > div'); if (header) header.outerHTML = scoreHeader(HOT.score, HOT.streak, HOT.best, 'orange', HOT.life);
+            if (!correct && !saved) { const slot = document.createElement('div'); document.getElementById('hot-verdict').appendChild(slot); lbShow('hotornot', endedStreak, slot); }
             if (correct && [3, 5, 10, 15].includes(HOT.streak)) { burst({ particleCount: 60 + HOT.streak * 10 }); showToast(`🔥 ${HOT.streak} in a row!`, 'success', 3000); }
             else if (newBest) { burst({ particleCount: 80 }); showToast(`🏆 New best streak: ${HOT.best}`, 'success', 3000); }
         }
@@ -6162,8 +6168,8 @@ function displayMovies(data, query) {
             CH.seed = opts.seed || Math.random().toString(36).slice(2, 8);
             CH.by = opts.by || ''; CH.theirScore = (opts.theirScore === undefined || opts.theirScore === null) ? null : opts.theirScore;
             CH.rng = seededRandom(chSeedKey());
-            if (game === 'quiz') { QUIZ.score = 0; QUIZ.streak = 0; QUIZ.asked = 0; QUIZ.lastKind = null; }
-            if (game === 'hotornot') { HOT.score = 0; HOT.streak = 0; }
+            if (game === 'quiz') { QUIZ.score = 0; QUIZ.streak = 0; QUIZ.asked = 0; QUIZ.lastKind = null; QUIZ.life = true; }
+            if (game === 'hotornot') { HOT.score = 0; HOT.streak = 0; HOT.life = true; }
             if (currentMode !== game) selectMode(game); else runLiveMode(game);
             window.scrollTo({ top: 0, behavior: 'smooth' });
             if (CH.n && CH.theirScore === null) showToast(`⚔️ ${L(`Challenge round: ${CH.n} questions. Whoever gets your link plays the same ones.`, `Γύρος πρόκλησης: ${CH.n} ερωτήσεις. Όποιος πάρει τον σύνδεσμό σου παίζει τις ίδιες.`)}`, 'info', 4500);
@@ -7958,7 +7964,7 @@ function displayMovies(data, query) {
         function storyProgressStop() { const bar = document.getElementById('story-progress'); if (bar) bar.remove(); if (STORY.onScroll) { window.removeEventListener('scroll', STORY.onScroll); STORY.onScroll = null; } }
 
         // ======================= FACT OR FICTION: ten statements built from real numbers =======================
-        const FF = { current: null, asked: 0, streak: 0, best: lsGet('ev_ff_best', 0), data: null, answered: false, seen: new Set() };
+        const FF = { current: null, asked: 0, streak: 0, best: lsGet('ev_ff_best', 0), data: null, answered: false, seen: new Set(), life: true };
         const ffName = c => `${flagEmoji(c.iso2Code)} ${escapeHtml(c.name)}`;
         function ffMake(d, pick) {
             const metricOf = key => d.metrics.find(m => m.key === key);
@@ -8014,7 +8020,7 @@ function displayMovies(data, query) {
             if (!d.metrics.length) throw new Error(L('The World Bank figures did not arrive. Try again in a minute.', 'Τα στοιχεία της Παγκόσμιας Τράπεζας δεν έφτασαν. Δοκίμασε ξανά σε ένα λεπτό.'));
             FF.data = d; ffStart();
         }
-        function ffStart() { FF.asked = 0; FF.streak = 0; FF.seen = new Set(); ffNext(); }
+        function ffStart() { FF.asked = 0; FF.streak = 0; FF.life = true; FF.seen = new Set(); ffNext(); }
         function ffNext() {
             const pick = a => a[Math.floor(Math.random() * a.length)];
             let st = null, guard = 0; while (guard++ < 15) { st = ffMake(FF.data, pick); if (!FF.seen.has(st.text)) break; }
@@ -8028,6 +8034,7 @@ function displayMovies(data, query) {
             <span class="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-slate-300">${L('Statement', 'Δήλωση')} <span class="text-white">${FF.asked + 1}</span></span>
             <span class="px-3 py-1.5 rounded-full bg-lime-500/10 border border-lime-500/30 text-lime-300">🔥 ${L('Streak', 'Σερί')} ${FF.streak}</span>
             <span class="px-3 py-1.5 rounded-full bg-pink-500/10 border border-pink-500/30 text-pink-300">🏆 ${L('Best', 'Ρεκόρ')} ${FF.best}</span>
+            ${lifePill(FF.life)}
         </div>
         <p class="text-center text-[10px] font-black text-lime-400 uppercase tracking-[0.3em] mb-3">🧠 ${L('Fact or fiction?', 'Αλήθεια ή ψέμα;')}</p>
         <h3 class="text-center text-xl md:text-3xl font-black text-white leading-snug mb-8 max-w-2xl mx-auto">${st.text}</h3>
@@ -8040,21 +8047,22 @@ function displayMovies(data, query) {
             <button type="button" onclick="ffStart()" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-300">${L('Reset streak', 'Μηδένισε το σερί')}</button>
             <button type="button" onclick="simpleShare('${L('My streak in Fact or Fiction on EarthVault', 'Το σερί μου στο Αλήθεια ή Ψέμα του EarthVault')}: ${FF.streak} 🧠 https://chamitro.github.io/EarthVault/?vault=factfiction')" class="px-4 py-2 rounded-xl bg-lime-600/80 hover:bg-lime-500 text-xs font-bold text-white">${L('Share streak', 'Κοινοποίηση σερί')}</button>
         </div>
-        <p class="text-center text-[10px] text-slate-500 mt-6">${L('Every statement is built from World Bank figures the moment you play; the numbers decide. One wrong answer ends the streak.', 'Κάθε δήλωση φτιάχνεται από στοιχεία της Παγκόσμιας Τράπεζας τη στιγμή που παίζεις· οι αριθμοί αποφασίζουν. Ένα λάθος τελειώνει το σερί.')}</p>
+        <p class="text-center text-[10px] text-slate-500 mt-6">${L('Every statement is built from World Bank figures the moment you play; the numbers decide. One mistake per streak is forgiven; the second ends it.', 'Κάθε δήλωση φτιάχνεται από στοιχεία της Παγκόσμιας Τράπεζας τη στιγμή που παίζεις· οι αριθμοί αποφασίζουν. Ένα λάθος ανά σερί συγχωρείται· το δεύτερο το τελειώνει.')}</p>
     </div>`);
         }
         function ffAnswer(choice) {
             if (FF.answered) return; FF.answered = true;
             const st = FF.current, correct = choice === st.truth; FF.asked++;
-            const ended = correct ? 0 : FF.streak;
-            if (correct) FF.streak++; else FF.streak = 0;
+            const saved = !correct && FF.life && FF.streak > 0;
+            const ended = correct || saved ? 0 : FF.streak;
+            if (correct) FF.streak++; else if (saved) FF.life = false; else { FF.streak = 0; FF.life = true; }
             let newBest = false; if (FF.streak > FF.best) { FF.best = FF.streak; newBest = FF.best >= 3; lsSet('ev_ff_best', FF.best); }
             document.querySelectorAll('.ff-choice').forEach(b => { b.disabled = true; b.classList.add('opacity-60'); });
             const ex = st.explore && MODE_INFO[st.explore.mode] && !LIVE_MODES.includes(st.explore.mode) ? `<button type="button" onclick="jumpTo('${st.explore.mode}', '${escapeHtml(st.explore.name).replace(/'/g, '')}')" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-300">${vaultIcon(st.explore.mode)} ${L('Open', 'Άνοιξε')} ${escapeHtml(trv('menu', st.explore.mode, vaultName(st.explore.mode)))} →</button>` : '';
             const verdict = document.getElementById('ff-verdict');
-            verdict.innerHTML = `<div class="text-2xl font-black ${correct ? 'text-emerald-400' : 'text-rose-400'}">${correct ? L('Correct!', 'Σωστά!') : L('Wrong!', 'Λάθος!')} ${st.truth ? L('It is a fact.', 'Είναι αλήθεια.') : L('It is fiction.', 'Είναι ψέμα.')}${!correct && ended ? ` · ${L('streak ended at', 'το σερί τελείωσε στο')} ${ended}` : ''}${newBest ? ` · 🏆 ${L('New best', 'Νέο ρεκόρ')}` : ''}</div><div class="text-sm text-slate-300 mt-2">${st.explain}</div><div class="flex flex-wrap justify-center gap-2 mt-4"><button type="button" onclick="${correct ? 'ffNext()' : 'ffStart()'}" class="px-6 py-3 rounded-2xl bg-lime-500 hover:bg-lime-400 text-slate-900 font-black">${correct ? L('Next', 'Επόμενη') : L('Play again', 'Παίξε ξανά')} →</button>${ex}</div>`;
+            verdict.innerHTML = `<div class="text-2xl font-black ${correct ? 'text-emerald-400' : 'text-rose-400'}">${correct ? L('Correct!', 'Σωστά!') : saved ? '❤️ ' + L('Wrong, but your extra life saved the streak!', 'Λάθος, αλλά η έξτρα ζωή έσωσε το σερί!') : L('Wrong!', 'Λάθος!')} ${st.truth ? L('It is a fact.', 'Είναι αλήθεια.') : L('It is fiction.', 'Είναι ψέμα.')}${!correct && ended ? ` · ${L('streak ended at', 'το σερί τελείωσε στο')} ${ended}` : ''}${newBest ? ` · 🏆 ${L('New best', 'Νέο ρεκόρ')}` : ''}</div><div class="text-sm text-slate-300 mt-2">${st.explain}</div><div class="flex flex-wrap justify-center gap-2 mt-4"><button type="button" onclick="${correct ? 'ffNext()' : 'ffStart()'}" class="px-6 py-3 rounded-2xl bg-lime-500 hover:bg-lime-400 text-slate-900 font-black">${correct ? L('Next', 'Επόμενη') : L('Play again', 'Παίξε ξανά')} →</button>${ex}</div>`;
             if (correct) { if (FF.streak === 5 || FF.streak === 10 || FF.streak % 25 === 0) try { burst({ particleCount: 120, spread: 90 }); } catch (e) {} }
-            else { const slot = document.createElement('div'); slot.className = 'mt-5'; verdict.appendChild(slot); lbShow('factfiction', ended, slot); }
+            else if (!saved) { const slot = document.createElement('div'); slot.className = 'mt-5'; verdict.appendChild(slot); lbShow('factfiction', ended, slot); }
         }
 
         // ======================= THE WORLD AS 100 PEOPLE =======================
@@ -8395,8 +8403,8 @@ function displayMovies(data, query) {
         const isIOS = () => /iPhone|iPad|iPod/i.test(navigator.userAgent) && !window.MSStream;
         function showInstallButtons(show) { document.querySelectorAll('.install-btn').forEach(b => b.classList.toggle('hidden', !show)); }
         // Bump APP_VERSION and APP_NEWS with every release: returning visitors and installed apps get a one-time "updated" notice
-        const APP_VERSION = '2026.10.23-2';
-        const APP_NEWS = ['New: a little Earth companion in the corner shares live facts about the planet. Tap it for another, or switch it off via search (🔍 → companion).', 'Νέο: ένας μικρός σύντροφος της Γης στη γωνία μοιράζεται ζωντανά στοιχεία για τον πλανήτη. Πάτησέ τον για άλλο ένα, ή κλείσε τον από την αναζήτηση (🔍 → σύντροφος).'];
+        const APP_VERSION = '2026.10.23-3';
+        const APP_NEWS = ['New: an extra life ❤️ in Planet Quiz, Hot or Not and Fact or Fiction: one mistake per streak is forgiven. And a little Earth companion in the corner shares live facts.', 'Νέο: έξτρα ζωή ❤️ στο Κουίζ Πλανήτη, στο Ζεστό ή Κρύο και στο Αλήθεια ή Ψέμα: ένα λάθος ανά σερί συγχωρείται. Και ένας μικρός σύντροφος της Γης στη γωνία μοιράζεται ζωντανά στοιχεία.'];
         function updateBanner(text, buttonLabel, onClick) {
             const stack = document.getElementById('toast-stack'); if (!stack) return;
             const el = document.createElement('div');
