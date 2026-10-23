@@ -5513,7 +5513,7 @@ function displayMovies(data, query) {
             if (q.layout === 'slider') { const guess = Number(choice); correct = Math.abs(guess - q.actual) <= q.slider.tol; q.guess = guess; }
             else correct = picked === String(q.answer);
             QUIZ.asked++;
-            const saved = !correct && QUIZ.life && QUIZ.streak > 0;
+            const saved = !correct && QUIZ.life; // every first mistake is forgiven, the second ends the streak
             const endedStreak = correct || saved ? 0 : QUIZ.streak;
             if (correct) { QUIZ.score++; QUIZ.streak++; } else if (saved) QUIZ.life = false; else { QUIZ.streak = 0; QUIZ.life = true; }
             let newBest = false;
@@ -5532,7 +5532,7 @@ function displayMovies(data, query) {
             const exploreBtn = !canExplore ? '' : LIVE_MODES.includes(ex.mode)
                 ? `<button type="button" onclick="selectMode('${ex.mode}')" class="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-sm font-bold text-slate-200">${L('Open', 'Άνοιξε')} ${trv('labels', ex.mode, MODE_LABELS[ex.mode] || ex.mode)} →</button>`
                 : `<button type="button" onclick="jumpTo('${ex.mode}', '${String(ex.name || '').replace(/'/g, "\\'")}')" class="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-sm font-bold text-slate-200">${L('Explore', 'Εξερεύνησε')} ${escapeHtml(ex.name || '')} →</button>`;
-            verdict.innerHTML = `<p class="text-lg font-black ${correct ? 'text-emerald-400' : 'text-rose-400'}">${correct ? pickRandom(['Correct! 🎯', 'Nailed it! 🌍', 'Yes! 🙌', 'Spot on! ✨']) : saved ? '❤️ ' + L('Wrong, but your extra life saved the streak!', 'Λάθος, αλλά η έξτρα ζωή έσωσε το σερί!') : pickRandom(['Not this time 😅', 'Close, but no 🙈', 'Nope! 🌀'])}</p>
+            verdict.innerHTML = `<p class="text-lg font-black ${correct ? 'text-emerald-400' : 'text-rose-400'}">${correct ? pickRandom(['Correct! 🎯', 'Nailed it! 🌍', 'Yes! 🙌', 'Spot on! ✨']) : saved ? '❤️ ' + L('Wrong, but your extra life keeps the streak alive!', 'Λάθος, αλλά η έξτρα ζωή κρατά το σερί ζωντανό!') : pickRandom(['Not this time 😅', 'Close, but no 🙈', 'Nope! 🌀'])}</p>
         <p class="text-sm text-slate-300 mt-1">${q.explain || ''}</p>
         <div class="flex flex-wrap justify-center gap-3 mt-4">
             ${chNext('quiz', QUIZ.score, 'Next question →', 'bg-pink-600 hover:bg-pink-500')}
@@ -6065,13 +6065,13 @@ function displayMovies(data, query) {
             if (chActive('hotornot')) CH.idx++;
             const ta = q.a.wx.current.temperature_2m, tb = q.b.wx.current.temperature_2m;
             const warmer = ta >= tb ? 'a' : 'b', correct = side === warmer;
-            const saved = !correct && HOT.life && HOT.streak > 0;
+            const saved = !correct && HOT.life;
             const endedStreak = correct || saved ? 0 : HOT.streak;
             if (correct) { HOT.score++; HOT.streak++; } else if (saved) HOT.life = false; else { HOT.streak = 0; HOT.life = true; }
             let newBest = false; if (HOT.streak > HOT.best) { HOT.best = HOT.streak; newBest = HOT.best >= 3; lsSet('ev_hot_best', HOT.best); }
             ['a', 'b'].forEach(s => { const it = q[s], v = document.getElementById(`hot-val-${s}`), btn = document.getElementById(`hot-${s}`); if (v) { v.textContent = `${it.wx.current.temperature_2m.toFixed(1)}°C ${WX_EMOJI(it.wx.current.weather_code)}`; v.classList.remove('opacity-0'); } if (btn) { btn.disabled = true; btn.classList.add(s === warmer ? 'border-emerald-400/70' : 'border-rose-500/40'); if (s === side) btn.classList.add(correct ? 'bg-emerald-500/10' : 'bg-rose-500/10'); } });
             const w = q[warmer], l = q[warmer === 'a' ? 'b' : 'a'];
-            document.getElementById('hot-verdict').innerHTML = `<p class="text-lg font-black ${correct ? 'text-emerald-400' : 'text-rose-400'}">${correct ? pickRandom(['Correct! 🔥', 'Hot streak! 🌡️', 'Yes! ☀️']) : saved ? '❤️ ' + L('Wrong, but your extra life saved the streak!', 'Λάθος, αλλά η έξτρα ζωή έσωσε το σερί!') : pickRandom(['Brrr, wrong 🧊', 'Not this time ❄️'])}</p>
+            document.getElementById('hot-verdict').innerHTML = `<p class="text-lg font-black ${correct ? 'text-emerald-400' : 'text-rose-400'}">${correct ? pickRandom(['Correct! 🔥', 'Hot streak! 🌡️', 'Yes! ☀️']) : saved ? '❤️ ' + L('Wrong, but your extra life keeps the streak alive!', 'Λάθος, αλλά η έξτρα ζωή κρατά το σερί ζωντανό!') : pickRandom(['Brrr, wrong 🧊', 'Not this time ❄️'])}</p>
         <p class="text-sm text-slate-300 mt-1">${w.city[0]} is ${Math.abs(ta - tb).toFixed(1)}°C warmer than ${l.city[0]} right now. ${WX_TEXT(w.wx.current.weather_code)} there, ${WX_TEXT(l.wx.current.weather_code).toLowerCase()} in ${l.city[0]}.</p>
         <div class="flex flex-wrap justify-center gap-3 mt-4">${chNext('hotornot', HOT.score, 'Next duel →', 'bg-orange-600 hover:bg-orange-500')}${chActive('hotornot') ? '' : `<button type="button" onclick="jumpTo('weather', '${w.city[0].replace(/'/g, '&#39;')}')" class="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-sm font-bold text-slate-200">50 years of ${w.city[0]} weather →</button>`}</div>`;
             const header = document.querySelector('#live-section .vault-card > div'); if (header) header.outerHTML = scoreHeader(HOT.score, HOT.streak, HOT.best, 'orange', HOT.life);
@@ -8065,14 +8065,14 @@ function displayMovies(data, query) {
         function ffAnswer(choice) {
             if (FF.answered) return; FF.answered = true;
             const st = FF.current, correct = choice === st.truth; FF.asked++;
-            const saved = !correct && FF.life && FF.streak > 0;
+            const saved = !correct && FF.life;
             const ended = correct || saved ? 0 : FF.streak;
             if (correct) FF.streak++; else if (saved) FF.life = false; else { FF.streak = 0; FF.life = true; }
             let newBest = false; if (FF.streak > FF.best) { FF.best = FF.streak; newBest = FF.best >= 3; lsSet('ev_ff_best', FF.best); }
             document.querySelectorAll('.ff-choice').forEach(b => { b.disabled = true; b.classList.add('opacity-60'); });
             const ex = st.explore && MODE_INFO[st.explore.mode] && !LIVE_MODES.includes(st.explore.mode) ? `<button type="button" onclick="jumpTo('${st.explore.mode}', '${escapeHtml(st.explore.name).replace(/'/g, '')}')" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-300">${vaultIcon(st.explore.mode)} ${L('Open', 'Άνοιξε')} ${escapeHtml(trv('menu', st.explore.mode, vaultName(st.explore.mode)))} →</button>` : '';
             const verdict = document.getElementById('ff-verdict');
-            verdict.innerHTML = `<div class="text-2xl font-black ${correct ? 'text-emerald-400' : 'text-rose-400'}">${correct ? L('Correct!', 'Σωστά!') : saved ? '❤️ ' + L('Wrong, but your extra life saved the streak!', 'Λάθος, αλλά η έξτρα ζωή έσωσε το σερί!') : L('Wrong!', 'Λάθος!')} ${st.truth ? L('It is a fact.', 'Είναι αλήθεια.') : L('It is fiction.', 'Είναι ψέμα.')}${!correct && ended ? ` · ${L('streak ended at', 'το σερί τελείωσε στο')} ${ended}` : ''}${newBest ? ` · 🏆 ${L('New best', 'Νέο ρεκόρ')}` : ''}</div><div class="text-sm text-slate-300 mt-2">${st.explain}</div><div class="flex flex-wrap justify-center gap-2 mt-4"><button type="button" onclick="${correct ? 'ffNext()' : 'ffStart()'}" class="px-6 py-3 rounded-2xl bg-lime-500 hover:bg-lime-400 text-slate-900 font-black">${correct ? L('Next', 'Επόμενη') : L('Play again', 'Παίξε ξανά')} →</button>${ex}</div>`;
+            verdict.innerHTML = `<div class="text-2xl font-black ${correct ? 'text-emerald-400' : 'text-rose-400'}">${correct ? L('Correct!', 'Σωστά!') : saved ? '❤️ ' + L('Wrong, but your extra life keeps the streak alive!', 'Λάθος, αλλά η έξτρα ζωή κρατά το σερί ζωντανό!') : L('Wrong!', 'Λάθος!')} ${st.truth ? L('It is a fact.', 'Είναι αλήθεια.') : L('It is fiction.', 'Είναι ψέμα.')}${!correct && ended ? ` · ${L('streak ended at', 'το σερί τελείωσε στο')} ${ended}` : ''}${newBest ? ` · 🏆 ${L('New best', 'Νέο ρεκόρ')}` : ''}</div><div class="text-sm text-slate-300 mt-2">${st.explain}</div><div class="flex flex-wrap justify-center gap-2 mt-4"><button type="button" onclick="${correct ? 'ffNext()' : 'ffStart()'}" class="px-6 py-3 rounded-2xl bg-lime-500 hover:bg-lime-400 text-slate-900 font-black">${correct ? L('Next', 'Επόμενη') : L('Play again', 'Παίξε ξανά')} →</button>${ex}</div>`;
             if (correct) { if (FF.streak === 5 || FF.streak === 10 || FF.streak % 25 === 0) try { burst({ particleCount: 120, spread: 90 }); } catch (e) {} }
             else if (!saved) { const slot = document.createElement('div'); slot.className = 'mt-5'; verdict.appendChild(slot); lbShow('factfiction', ended, slot); }
         }
@@ -8415,7 +8415,7 @@ function displayMovies(data, query) {
         const isIOS = () => /iPhone|iPad|iPod/i.test(navigator.userAgent) && !window.MSStream;
         function showInstallButtons(show) { document.querySelectorAll('.install-btn').forEach(b => b.classList.toggle('hidden', !show)); }
         // Bump APP_VERSION and APP_NEWS with every release: returning visitors and installed apps get a one-time "updated" notice
-        const APP_VERSION = '2026.10.23-4';
+        const APP_VERSION = '2026.10.23-5';
         const APP_NEWS = ['New: an extra life ❤️ in Planet Quiz, Hot or Not and Fact or Fiction: one mistake per streak is forgiven. And a little Earth companion in the corner shares live facts.', 'Νέο: έξτρα ζωή ❤️ στο Κουίζ Πλανήτη, στο Ζεστό ή Κρύο και στο Αλήθεια ή Ψέμα: ένα λάθος ανά σερί συγχωρείται. Και ένας μικρός σύντροφος της Γης στη γωνία μοιράζεται ζωντανά στοιχεία.'];
         function updateBanner(text, buttonLabel, onClick) {
             const stack = document.getElementById('toast-stack'); if (!stack) return;
