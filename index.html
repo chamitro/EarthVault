@@ -863,8 +863,8 @@
                             <button data-vault="factfiction" role="menuitem" onclick="selectMode('factfiction')" class="flex items-center gap-3 px-4 py-2.5 text-[10px] font-bold text-slate-300 hover:text-lime-400 hover:bg-white/5 rounded-xl transition-all">
                                 <span>🧠</span> Fact or Fiction
                             </button>
-                            <button data-vault="history" role="menuitem" onclick="selectMode('history')" class="flex items-center gap-3 px-4 py-2.5 text-[10px] font-bold text-slate-300 hover:text-amber-400 hover:bg-white/5 rounded-xl transition-all">
-                                <span>⏳</span> Time Machine
+                            <button data-vault="emoji" role="menuitem" onclick="selectMode('emoji')" class="flex items-center gap-3 px-4 py-2.5 text-[10px] font-bold text-slate-300 hover:text-amber-400 hover:bg-white/5 rounded-xl transition-all">
+                                <span>🧩</span> Emoji Country
                             </button>
                         </div>
                     </div>
@@ -1125,7 +1125,7 @@
             twins: 'COUNTRY TWINS',
             born: 'SINCE YOU WERE BORN',
             perfect: 'PERFECT WEATHER FINDER',
-            globe: 'LIVE GLOBE', country: 'COUNTRY PROFILE', stories: 'EARTH STORIES', home: 'HOME', factfiction: 'FACT OR FICTION', history: 'TIME MACHINE', hundred: 'WORLD AS 100 PEOPLE', records: 'PLANET RECORDS', year: 'THE YEAR SO FAR'
+            globe: 'LIVE GLOBE', country: 'COUNTRY PROFILE', stories: 'EARTH STORIES', home: 'HOME', factfiction: 'FACT OR FICTION', emoji: 'EMOJI COUNTRY', hundred: 'WORLD AS 100 PEOPLE', records: 'PLANET RECORDS', year: 'THE YEAR SO FAR'
         };
     function selectMode(mode) {
         document.getElementById('selected-mode-text').innerText = trv('labels', mode, MODE_LABELS[mode]);
@@ -1396,7 +1396,7 @@
         }
         
         const facts = {
-            history: ["Wikipedia lists about 60 dated events for every day of the year, so the Time Machine never asks the same day twice.", "The Gregorian calendar skipped ten days in 1582: in Catholic countries, 4 October was followed by 15 October.", "Dates before 1582 are usually given in the Julian calendar, which drifted a day every 128 years.", "The oldest dated event on many days is from the Roman Republic; the newest can be from last year.", "The year 1 AD follows 1 BC directly: there is no year zero."],
+            emoji: ["Flag emojis are two letters: 🇬🇷 is just the regional indicator symbols G and R, drawn as a flag by your phone.", "Every country in Emoji Country has three emojis chosen for a landmark, a food, an animal, a sport or a tradition.", "The Unicode standard has over 3,700 emojis; the first set of 176 was drawn in Japan in 1999.", "The wrong answers are usually neighbours from the same region, so the flag alone is rarely a giveaway."],
             factfiction: ["Most people guess 'fact' far more often than 'fiction', which is why half of every round is fiction.", "Reykjavik is the northernmost capital on Earth; Wellington the southernmost.", "Monaco and Vatican City are the only countries with no forest at all."],
             hundred: ["If the world were 100 people, about 29 would live in East Asia and the Pacific and fewer than 5 in North America.", "In 1950 the village of 100 had 30 people in cities; today it has 58.", "The share of the 100 who can read rose from 56 in 1960 to about 88 today."],
             records: ["The highest air temperature ever reliably measured on Earth is 56.7 °C at Furnace Creek, California, in 1913.", "The strongest earthquake on record was magnitude 9.5 in Chile in 1960.", "Every record on this page is set only by readings EarthVault itself has taken, hour by hour."],
@@ -1456,7 +1456,7 @@
             
             const list = facts[currentMode] || facts.weather;
             document.getElementById('fact-text').innerText = list[Math.floor(Math.random() * list.length)];
-            const icons = { year: '📅', factfiction: '🧠', history: '⏳', hundred: '🧑‍🤝‍🧑', records: '🏆', home: '🏠', globe: '🌐', country: '🧭', stories: '📖', twins: '👯', born: '🎂', perfect: '🌴', weather: '🌪️', ocean: '🌊', forest: '🌳', agri: '🌾', energy: '⚡', water: '💧', univ: '🎓', mental: '🧠', happiness: '😊', carbon: '🏭' , generations: '🤱', human_span: '⏳', internet: '🌐', music: '🎵', cinema: '🎬', endangered: '🐾', migration: '✈️', public_private: '🏛️', health_private: '🏥', economy: '💼', trends: '📊', waste: '♻️', power: '🔌', air: '🌫️', waterstress: '🏜️', alerts: '🛰️', space: '☀️', compare: '⚖️', wildlife: '🦋', quiz: '🎯', iss: '🚀', city: '🏙️', mystery: '🕵️', hotornot: '🌡️', flags: '🚩', rightnow: '🌍', sky: '🌌', asteroids: '☄️', onthisday: '📅', nearby: '🐾', outside: '🏃'};
+            const icons = { year: '📅', factfiction: '🧠', emoji: '🧩', hundred: '🧑‍🤝‍🧑', records: '🏆', home: '🏠', globe: '🌐', country: '🧭', stories: '📖', twins: '👯', born: '🎂', perfect: '🌴', weather: '🌪️', ocean: '🌊', forest: '🌳', agri: '🌾', energy: '⚡', water: '💧', univ: '🎓', mental: '🧠', happiness: '😊', carbon: '🏭' , generations: '🤱', human_span: '⏳', internet: '🌐', music: '🎵', cinema: '🎬', endangered: '🐾', migration: '✈️', public_private: '🏛️', health_private: '🏥', economy: '💼', trends: '📊', waste: '♻️', power: '🔌', air: '🌫️', waterstress: '🏜️', alerts: '🛰️', space: '☀️', compare: '⚖️', wildlife: '🦋', quiz: '🎯', iss: '🚀', city: '🏙️', mystery: '🕵️', hotornot: '🌡️', flags: '🚩', rightnow: '🌍', sky: '🌌', asteroids: '☄️', onthisday: '📅', nearby: '🐾', outside: '🏃'};
             document.getElementById('fact-icon').innerText = icons[currentMode];
         }
 
@@ -4206,7 +4206,7 @@ function displayMovies(data, query) {
             twins:          { desc: 'Which countries look most like yours? Every vault compared, top five twins with every number side by side', examples: ['Greece', 'Japan', 'Brazil', 'Kenya'] },
             home:           { desc: 'Live data, games and stories built on open sources. Pick a door.' },
             factfiction:    { desc: 'Statements built from real World Bank figures the moment you play. Fact or fiction? The numbers decide, and you get one extra life per streak' },
-            history:        { desc: 'Today\'s events from Wikipedia turned into a game: which year was it, which came first, what happened in that year. New events every day, one extra life per streak' },
+            emoji:          { desc: 'Three emojis, four flags: which country is it? 120 countries, every answer explained, one extra life per streak' },
             hundred:        { desc: 'If the world were a village of 100 people: who lives where, who has internet, water, electricity, who is a child or over 65' },
             year:           { desc: 'Assembled from what EarthVault itself recorded this year, hour by hour: the hottest and coldest capitals, quakes, fires and the records that fell. In December it becomes the year in review' },
             records:        { desc: 'The hottest, coldest and windiest capital, the strongest quake and the largest fire EarthVault has recorded, hour by hour, and when each record fell' },
@@ -4254,7 +4254,7 @@ function displayMovies(data, query) {
         }
 
         // ======================= LIVE MODES (no search): Planet Alerts & Space Weather =======================
-        const LIVE_MODES = ['home', 'year', 'factfiction', 'history', 'hundred', 'records', 'globe', 'stories', 'alerts', 'space', 'quiz', 'iss', 'mystery', 'hotornot', 'flags', 'rightnow', 'asteroids', 'onthisday', 'born', 'perfect'];
+        const LIVE_MODES = ['home', 'year', 'factfiction', 'emoji', 'hundred', 'records', 'globe', 'stories', 'alerts', 'space', 'quiz', 'iss', 'mystery', 'hotornot', 'flags', 'rightnow', 'asteroids', 'onthisday', 'born', 'perfect'];
         const MODE_THEMES = {
             alerts:      { color: 'rose',   attr: 'Data by GDACS, NASA EONET & USGS', href: 'https://www.gdacs.org/' },
             space:       { color: 'violet', attr: 'Data by NOAA SWPC', href: 'https://www.swpc.noaa.gov/' },
@@ -4280,7 +4280,7 @@ function displayMovies(data, query) {
             perfect:     { color: 'teal',   attr: 'Data by Open-Meteo', href: 'https://open-meteo.com/' },
             home:        { color: 'emerald', attr: 'Open data · 51 vaults', href: 'https://github.com/chamitro/EarthVault' },
             factfiction: { color: 'lime',   attr: 'Data by World Bank', href: 'https://data.worldbank.org/' },
-            history:     { color: 'amber',  attr: 'Data by Wikipedia', href: 'https://en.wikipedia.org/' },
+            emoji:       { color: 'amber',  attr: '120 countries · hand-picked', href: 'https://github.com/chamitro/EarthVault' },
             hundred:     { color: 'fuchsia', attr: 'Data by World Bank', href: 'https://data.worldbank.org/' },
             records:     { color: 'amber',  attr: 'Recorded hourly from Open-Meteo, USGS & GDACS', href: 'https://www.gdacs.org/' },
             year:        { color: 'amber',  attr: 'EarthVault daily log · USGS · GDACS · Open-Meteo', href: 'https://www.gdacs.org/' },
@@ -4347,7 +4347,7 @@ function displayMovies(data, query) {
             }, 8000);
             if (CH.active && CH.game !== mode) CH.active = false;
             if (CH.pending && CH.pending.game === mode) { const p = CH.pending; CH.pending = null; renderChallengeIntro(p); return; }
-            const loader = { home: loadHome, year: loadYear, factfiction: loadFactFiction, history: loadTimeMachine, hundred: loadHundred, records: loadRecords, globe: loadGlobe, stories: loadStories, alerts: loadPlanetAlerts, space: loadSpaceWeather, quiz: loadQuiz, iss: loadISS, mystery: loadMystery, hotornot: loadHotOrNot, flags: loadFlags, rightnow: loadRightNow, asteroids: loadAsteroids, onthisday: () => loadOnThisDay(), born: loadBorn, perfect: loadPerfect }[mode] || loadPlanetAlerts;
+            const loader = { home: loadHome, year: loadYear, factfiction: loadFactFiction, emoji: loadEmoji, hundred: loadHundred, records: loadRecords, globe: loadGlobe, stories: loadStories, alerts: loadPlanetAlerts, space: loadSpaceWeather, quiz: loadQuiz, iss: loadISS, mystery: loadMystery, hotornot: loadHotOrNot, flags: loadFlags, rightnow: loadRightNow, asteroids: loadAsteroids, onthisday: () => loadOnThisDay(), born: loadBorn, perfect: loadPerfect }[mode] || loadPlanetAlerts;
             loader().catch(e => {
                 console.error('Live feed failed:', e);
                 live.innerHTML = `<div class="vault-card rounded-[2rem] p-8 text-center"><p class="text-rose-400 font-bold mb-2">${t('feed_fail')}</p><p class="text-slate-500 text-xs">${e.message}</p><button onclick="runLiveMode('${mode}')" class="mt-4 px-5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold">${t('retry')}</button></div>`;
@@ -6680,7 +6680,7 @@ function displayMovies(data, query) {
                 hotornot: { name: ['Hot or Not', 'Ζεστό ή Κρύο'], metric: ['longest streak', 'μεγαλύτερο σερί'], fmt: s => `${s} 🔥` },
                 flags: { name: ['Flag Flash', 'Σημαίες Αστραπή'], metric: ['flags in 30 seconds', 'σημαίες σε 30 δευτερόλεπτα'], fmt: s => `${s} 🚩` },
                 factfiction: { name: ['Fact or Fiction', 'Αλήθεια ή Ψέμα'], metric: ['longest streak', 'μεγαλύτερο σερί'], fmt: s => `${s} 🧠` },
-                history: { name: ['Time Machine', 'Μηχανή του Χρόνου'], metric: ['longest streak', 'μεγαλύτερο σερί'], fmt: s => `${s} ⏳` },
+                emoji: { name: ['Emoji Country', 'Χώρα με Emoji'], metric: ['longest streak', 'μεγαλύτερο σερί'], fmt: s => `${s} 🧩` },
                 mystery: { name: ['Mystery Country', 'Μυστήρια Χώρα'], metric: ['fewest guesses', 'λιγότερες προσπάθειες'], fmt: s => L(`${7 - s} guess${7 - s === 1 ? '' : 'es'}`, `${7 - s} προσπ.`) }
             }
         };
@@ -7807,7 +7807,7 @@ function displayMovies(data, query) {
 
         // ======================= EARTH COMPANION: a small globe that shares live facts =======================
         const BUDDY = { off: lsGet('ev_buddy_off', false), fact: null, seen: new Set(), shown: 0, hideT: null, daily: null, dailyAt: 0, loading: false };
-        const BUDDY_QUIET = new Set(['quiz', 'hotornot', 'flags', 'mystery', 'factfiction', 'history', 'globe']); // never interrupt a game or the globe
+        const BUDDY_QUIET = new Set(['quiz', 'hotornot', 'flags', 'mystery', 'factfiction', 'emoji', 'globe']); // never interrupt a game or the globe
         function buddyInit() {
             const el = document.getElementById('buddy'); if (!el || BUDDY.off) return;
             el.classList.remove('hidden'); buddyLabels();
@@ -8085,113 +8085,185 @@ function displayMovies(data, query) {
             else if (!saved) { const slot = document.createElement('div'); slot.className = 'mt-5'; verdict.appendChild(slot); lbShow('factfiction', ended, slot); }
         }
 
-        // ======================= TIME MACHINE: today's events from Wikipedia, as a streak game =======================
-        const TM = { events: [], date: '', current: null, asked: 0, streak: 0, best: lsGet('ev_tm_best', 0), life: true, answered: false, seen: new Set(), lastKind: null };
-        const tmYear = y => y < 0 ? `${Math.abs(y)} ${L('BC', 'π.Χ.')}` : String(y);
-        const tmThumb = e => e.page && e.page.thumbnail ? e.page.thumbnail.source : null;
-        const tmLink = e => e.page && e.page.content_urls ? e.page.content_urls.desktop.page : null;
-        async function loadTimeMachine() {
-            const now = new Date(), mm = String(now.getMonth() + 1).padStart(2, '0'), dd = String(now.getDate()).padStart(2, '0');
-            const feed = await cachedJson(`https://en.wikipedia.org/api/rest_v1/feed/onthisday/events/${mm}/${dd}`, 6 * 3600 * 1000);
-            if (currentMode !== 'history') return;
-            const events = (feed.events || []).filter(e => typeof e.year === 'number' && e.text && e.text.length > 30 && e.year <= now.getFullYear()).map(e => ({ year: e.year, text: e.text, page: e.pages && e.pages[0] ? e.pages[0] : null }));
-            if (events.length < 8) throw new Error(L('Wikipedia did not send today\'s events. Try again in a minute.', 'Η Wikipedia δεν έστειλε τα σημερινά γεγονότα. Δοκίμασε ξανά σε ένα λεπτό.'));
-            TM.events = events; TM.date = now.toLocaleDateString(LANG === 'el' ? 'el-GR' : 'en-GB', { day: 'numeric', month: 'long' });
-            tmStart();
+        // ======================= EMOJI COUNTRY: three emojis, four flags =======================
+        // Emoji Country: three emojis per country, with what each one stands for (English, Greek). Regions: EU, AS, ME, AF, NA, SA, OC
+        const EMOJI_COUNTRIES = [
+            ['FR', 'France', 'EU', '🗼🥐🍷', ['Eiffel Tower', 'croissant', 'wine'], ['Πύργος του Άιφελ', 'κρουασάν', 'κρασί']],
+            ['IT', 'Italy', 'EU', '🍕🏛️🛵', ['pizza', 'Colosseum', 'Vespa scooters'], ['πίτσα', 'Κολοσσαίο', 'Vespa']],
+            ['ES', 'Spain', 'EU', '🥘💃🐂', ['paella', 'flamenco', 'bullfighting'], ['παέγια', 'φλαμένκο', 'ταυρομαχίες']],
+            ['GR', 'Greece', 'EU', '🏛️🫒⛵', ['Parthenon', 'olives', 'island sailing'], ['Παρθενώνας', 'ελιές', 'ιστιοπλοΐα στα νησιά']],
+            ['DE', 'Germany', 'EU', '🍺🚗🏰', ['beer', 'cars', 'castles'], ['μπίρα', 'αυτοκίνητα', 'κάστρα']],
+            ['GB', 'United Kingdom', 'EU', '🎡☕👑', ['London Eye', 'tea', 'the monarchy'], ['London Eye', 'τσάι', 'η μοναρχία']],
+            ['IE', 'Ireland', 'EU', '☘️🎻🍀', ['shamrock', 'fiddle music', 'luck of the Irish'], ['τριφύλλι', 'μουσική με βιολί', 'η ιρλανδική τύχη']],
+            ['PT', 'Portugal', 'EU', '🚋🐟🍮', ['Lisbon trams', 'sardines', 'pastéis de nata'], ['τραμ της Λισαβόνας', 'σαρδέλες', 'πάστεϊς ντε νάτα']],
+            ['NL', 'Netherlands', 'EU', '🌷🚲🧀', ['tulips', 'bicycles', 'cheese'], ['τουλίπες', 'ποδήλατα', 'τυρί']],
+            ['BE', 'Belgium', 'EU', '🍫🧇🍟', ['chocolate', 'waffles', 'fries'], ['σοκολάτα', 'βάφλες', 'τηγανητές πατάτες']],
+            ['CH', 'Switzerland', 'EU', '🏔️⌚🧀', ['the Alps', 'watches', 'cheese'], ['Άλπεις', 'ρολόγια', 'τυρί']],
+            ['AT', 'Austria', 'EU', '🎻🏔️🎿', ['Vienna classical music', 'mountains', 'skiing'], ['κλασική μουσική της Βιέννης', 'βουνά', 'σκι']],
+            ['SE', 'Sweden', 'EU', '🪑🧊🎸', ['flat-pack furniture', 'ice and snow', 'pop music'], ['έπιπλα σε κουτί', 'πάγος και χιόνι', 'ποπ μουσική']],
+            ['NO', 'Norway', 'EU', '🏔️⛵🐟', ['fjords', 'Viking ships', 'salmon'], ['φιόρδ', 'πλοία των Βίκινγκ', 'σολομός']],
+            ['FI', 'Finland', 'EU', '🧖🌲🎅', ['saunas', 'forests', "Santa's Lapland"], ['σάουνες', 'δάση', 'η Λαπωνία του Άγιου Βασίλη']],
+            ['DK', 'Denmark', 'EU', '🧱🧜‍♀️🚲', ['Lego bricks', 'the Little Mermaid', 'bicycles'], ['τουβλάκια Lego', 'η Μικρή Γοργόνα', 'ποδήλατα']],
+            ['IS', 'Iceland', 'EU', '🌋♨️🧊', ['volcanoes', 'hot springs', 'glaciers'], ['ηφαίστεια', 'θερμές πηγές', 'παγετώνες']],
+            ['PL', 'Poland', 'EU', '🥟🏰🎹', ['pierogi', 'castles', "Chopin's piano"], ['πιερόγκι', 'κάστρα', 'το πιάνο του Σοπέν']],
+            ['CZ', 'Czechia', 'EU', '🍺🏰🕰️', ['beer', 'Prague Castle', 'the astronomical clock'], ['μπίρα', 'Κάστρο της Πράγας', 'το αστρονομικό ρολόι']],
+            ['HU', 'Hungary', 'EU', '🌶️♨️🎻', ['paprika', 'thermal baths', 'violin music'], ['πάπρικα', 'ιαματικά λουτρά', 'μουσική με βιολί']],
+            ['RO', 'Romania', 'EU', '🧛🏰🌻', ["Dracula's legend", 'castles', 'sunflowers'], ['ο θρύλος του Δράκουλα', 'κάστρα', 'ηλιοτρόπια']],
+            ['HR', 'Croatia', 'EU', '🏖️🧱⚽', ['Adriatic beaches', "Dubrovnik's walls", 'football'], ['παραλίες της Αδριατικής', 'τα τείχη του Ντουμπρόβνικ', 'ποδόσφαιρο']],
+            ['RU', 'Russia', 'EU', '🪆❄️🚀', ['matryoshka dolls', 'winter', 'the space race'], ['μπάμπουσκες', 'χειμώνας', 'ο διαστημικός αγώνας']],
+            ['UA', 'Ukraine', 'EU', '🌻🌾🥟', ['sunflowers', 'wheat fields', 'varenyky'], ['ηλιοτρόπια', 'σιτοβολώνες', 'βαρένικι']],
+            ['TR', 'Turkey', 'EU', '☕🎈🕌', ['Turkish coffee', 'Cappadocia balloons', 'mosques'], ['τούρκικος καφές', 'αερόστατα της Καππαδοκίας', 'τζαμιά']],
+            ['CY', 'Cyprus', 'EU', '🏖️🫒🐈', ['beaches', 'olives', 'cats everywhere'], ['παραλίες', 'ελιές', 'γάτες παντού']],
+            ['MT', 'Malta', 'EU', '🏝️🛥️🏰', ['small islands', 'boats', 'fortified Valletta'], ['μικρά νησιά', 'βάρκες', 'η οχυρωμένη Βαλέτα']],
+            ['BG', 'Bulgaria', 'EU', '🌹🏔️🥛', ['rose oil', 'mountains', 'yogurt'], ['ροδέλαιο', 'βουνά', 'γιαούρτι']],
+            ['RS', 'Serbia', 'EU', '🎾🏰🍖', ['tennis champions', 'fortresses', 'grilled meat'], ['πρωταθλητές του τένις', 'φρούρια', 'ψητό κρέας']],
+            ['AL', 'Albania', 'EU', '🦅🏖️🏔️', ['the double-headed eagle', 'the Riviera', 'mountains'], ['ο δικέφαλος αετός', 'η Ριβιέρα', 'βουνά']],
+            ['SI', 'Slovenia', 'EU', '🏔️🐝🏞️', ['the Julian Alps', 'beekeeping', 'Lake Bled'], ['Ιουλιανές Άλπεις', 'μελισσοκομία', 'η λίμνη Μπλεντ']],
+            ['LT', 'Lithuania', 'EU', '🏀🥔🏰', ['basketball', 'potato dishes', 'Trakai Castle'], ['μπάσκετ', 'πιάτα με πατάτα', 'το κάστρο Τρακάι']],
+            ['EE', 'Estonia', 'EU', '💻🌲🏰', ['digital government', 'forests', "Tallinn's old town"], ['ψηφιακό κράτος', 'δάση', 'η παλιά πόλη του Ταλίν']],
+            ['MC', 'Monaco', 'EU', '🏎️🎰🛥️', ['the Grand Prix', 'the casino', 'yachts'], ['το Γκραν Πρι', 'το καζίνο', 'γιοτ']],
+            ['JP', 'Japan', 'AS', '🗻🍣🌸', ['Mount Fuji', 'sushi', 'cherry blossoms'], ['το όρος Φούτζι', 'σούσι', 'ανθισμένες κερασιές']],
+            ['CN', 'China', 'AS', '🐼🧱🥢', ['giant pandas', 'the Great Wall', 'chopsticks'], ['πάντα', 'το Σινικό Τείχος', 'ξυλάκια φαγητού']],
+            ['IN', 'India', 'AS', '🕌🐘🍛', ['the Taj Mahal', 'elephants', 'curry'], ['το Ταζ Μαχάλ', 'ελέφαντες', 'κάρι']],
+            ['KR', 'South Korea', 'AS', '🎤🥬🤖', ['K-pop', 'kimchi', 'robots and tech'], ['K-pop', 'κίμτσι', 'ρομπότ και τεχνολογία']],
+            ['TH', 'Thailand', 'AS', '🐘🏝️🍜', ['elephants', 'islands', 'noodle soups'], ['ελέφαντες', 'νησιά', 'σούπες με νουντλς']],
+            ['VN', 'Vietnam', 'AS', '🍜🛵🎋', ['pho', 'scooters', 'bamboo'], ['φο', 'σκούτερ', 'μπαμπού']],
+            ['ID', 'Indonesia', 'AS', '🏝️🌋🦎', ['17,000 islands', 'volcanoes', 'Komodo dragons'], ['17.000 νησιά', 'ηφαίστεια', 'δράκοι του Κομόντο']],
+            ['PH', 'Philippines', 'AS', '🏝️🥭🎤', ['islands', 'mangoes', 'karaoke'], ['νησιά', 'μάνγκο', 'καραόκε']],
+            ['MY', 'Malaysia', 'AS', '🏙️🌴🦧', ['the Petronas Towers', 'palm trees', 'orangutans'], ['οι Πύργοι Πετρόνας', 'φοίνικες', 'ουρακοτάγκοι']],
+            ['SG', 'Singapore', 'AS', '🦁🏙️🍜', ['the Merlion', 'the skyline', 'hawker food'], ['το Μέρλαϊον', 'οι ουρανοξύστες', 'φαγητό των hawker']],
+            ['NP', 'Nepal', 'AS', '🏔️🛕🧗', ['Everest', 'temples', 'climbers'], ['Έβερεστ', 'ναοί', 'ορειβάτες']],
+            ['MN', 'Mongolia', 'AS', '🐎🏕️🦅', ['horses', 'yurts', 'eagle hunters'], ['άλογα', 'γιούρτες', 'κυνηγοί με αετούς']],
+            ['KZ', 'Kazakhstan', 'AS', '🐎🚀🏜️', ['horse culture', 'Baikonur rockets', 'the steppe'], ['κουλτούρα του αλόγου', 'πύραυλοι του Μπαϊκονούρ', 'η στέπα']],
+            ['UZ', 'Uzbekistan', 'AS', '🕌🧵🍈', ['Samarkand mosques', 'the Silk Road', 'melons'], ['τζαμιά της Σαμαρκάνδης', 'ο Δρόμος του Μεταξιού', 'πεπόνια']],
+            ['PK', 'Pakistan', 'AS', '🏏🏔️🥭', ['cricket', 'K2', 'mangoes'], ['κρίκετ', 'το K2', 'μάνγκο']],
+            ['BD', 'Bangladesh', 'AS', '🐯🌧️🛺', ['Bengal tigers', 'the monsoon', 'rickshaws'], ['τίγρεις της Βεγγάλης', 'ο μουσώνας', 'ρίκσο']],
+            ['LK', 'Sri Lanka', 'AS', '🍵🐘🏏', ['Ceylon tea', 'elephants', 'cricket'], ['τσάι Κεϋλάνης', 'ελέφαντες', 'κρίκετ']],
+            ['KH', 'Cambodia', 'AS', '🛕🐘🌾', ['Angkor Wat', 'elephants', 'rice fields'], ['Άνγκορ Βατ', 'ελέφαντες', 'ορυζώνες']],
+            ['MM', 'Myanmar', 'AS', '🛕🌅🚣', ['pagodas', 'Bagan sunrises', 'river boats'], ['παγόδες', 'ανατολές στο Μπαγκάν', 'ποταμόπλοια']],
+            ['BT', 'Bhutan', 'AS', '🐉🏔️😊', ['the Thunder Dragon', 'the Himalayas', 'Gross National Happiness'], ['ο Δράκος της Βροντής', 'τα Ιμαλάια', 'Ακαθάριστη Εθνική Ευτυχία']],
+            ['MV', 'Maldives', 'AS', '🏝️🤿🐠', ['atolls', 'diving', 'reef fish'], ['ατόλες', 'καταδύσεις', 'ψάρια των υφάλων']],
+            ['HK', 'Hong Kong', 'AS', '🏙️🥟🛳️', ['the skyline', 'dim sum', 'the Star Ferry'], ['οι ουρανοξύστες', 'ντιμ σαμ', 'το Star Ferry']],
+            ['IR', 'Iran', 'ME', '🕌🐈🍚', ['Isfahan mosques', 'Persian cats', 'saffron rice'], ['τζαμιά του Ισφαχάν', 'περσικές γάτες', 'ρύζι με σαφράν']],
+            ['IQ', 'Iraq', 'ME', '🏺🌴🕌', ['ancient Mesopotamia', 'date palms', 'mosques'], ['η αρχαία Μεσοποταμία', 'χουρμαδιές', 'τζαμιά']],
+            ['SA', 'Saudi Arabia', 'ME', '🕋🐪🛢️', ['Mecca', 'camels', 'oil'], ['η Μέκκα', 'καμήλες', 'πετρέλαιο']],
+            ['AE', 'United Arab Emirates', 'ME', '🏙️🐪🛍️', ['Dubai skyscrapers', 'camels', 'shopping malls'], ['ουρανοξύστες του Ντουμπάι', 'καμήλες', 'εμπορικά κέντρα']],
+            ['IL', 'Israel', 'ME', '🕍🏖️🍊', ['Jerusalem', 'Tel Aviv beaches', 'Jaffa oranges'], ['Ιερουσαλήμ', 'παραλίες του Τελ Αβίβ', 'πορτοκάλια Γιάφας']],
+            ['JO', 'Jordan', 'ME', '🏛️🏜️🐪', ['Petra', 'Wadi Rum desert', 'camels'], ['Πέτρα', 'η έρημος Ουάντι Ρουμ', 'καμήλες']],
+            ['LB', 'Lebanon', 'ME', '🌲🥙🏔️', ['cedar trees', 'mezze', 'mountains'], ['κέδροι', 'μεζέδες', 'βουνά']],
+            ['QA', 'Qatar', 'ME', '⚽🏙️🐪', ['the 2022 World Cup', "Doha's skyline", 'camels'], ['το Μουντιάλ του 2022', 'οι ουρανοξύστες της Ντόχα', 'καμήλες']],
+            ['OM', 'Oman', 'ME', '🏜️⛵🐢', ['desert', 'dhow boats', 'sea turtles'], ['έρημος', 'πλοία ντάου', 'θαλάσσιες χελώνες']],
+            ['GE', 'Georgia', 'ME', '🍷🏔️🍞', ['the birthplace of wine', 'the Caucasus', 'khachapuri bread'], ['η γενέτειρα του κρασιού', 'ο Καύκασος', 'ψωμί χατσαπούρι']],
+            ['AM', 'Armenia', 'ME', '🏔️🍑⛪', ['Mount Ararat', 'apricots', 'ancient monasteries'], ['το όρος Αραράτ', 'βερίκοκα', 'αρχαία μοναστήρια']],
+            ['AZ', 'Azerbaijan', 'ME', '🔥🛢️🏙️', ['the Land of Fire', 'oil', "Baku's skyline"], ['η Χώρα της Φωτιάς', 'πετρέλαιο', 'οι ουρανοξύστες του Μπακού']],
+            ['EG', 'Egypt', 'AF', '🐫🔺🏺', ['camels', 'pyramids', 'pharaohs'], ['καμήλες', 'πυραμίδες', 'Φαραώ']],
+            ['MA', 'Morocco', 'AF', '🏜️🫖🧶', ['the Sahara', 'mint tea', 'carpets'], ['η Σαχάρα', 'τσάι με μέντα', 'χαλιά']],
+            ['ZA', 'South Africa', 'AF', '🦁🍇🏉', ['lions', 'wine', 'rugby'], ['λιοντάρια', 'κρασί', 'ράγκμπι']],
+            ['KE', 'Kenya', 'AF', '🦁🏃🍵', ['safaris', 'marathon runners', 'tea'], ['σαφάρι', 'μαραθωνοδρόμοι', 'τσάι']],
+            ['TZ', 'Tanzania', 'AF', '🦒🏔️🏝️', ['giraffes', 'Kilimanjaro', 'Zanzibar'], ['καμηλοπαρδάλεις', 'Κιλιμάντζαρο', 'Ζανζιβάρη']],
+            ['ET', 'Ethiopia', 'AF', '☕🏃⛪', ['the birthplace of coffee', 'long-distance runners', 'rock-hewn churches'], ['η γενέτειρα του καφέ', 'δρομείς μεγάλων αποστάσεων', 'λαξευτές εκκλησίες']],
+            ['NG', 'Nigeria', 'AF', '🎬🛢️⚽', ['Nollywood films', 'oil', 'football'], ['ταινίες του Nollywood', 'πετρέλαιο', 'ποδόσφαιρο']],
+            ['GH', 'Ghana', 'AF', '🍫⚽🥁', ['cocoa', 'football', 'drums'], ['κακάο', 'ποδόσφαιρο', 'τύμπανα']],
+            ['SN', 'Senegal', 'AF', '🥁🐟🌳', ['drums', 'fishing', 'baobab trees'], ['τύμπανα', 'ψάρεμα', 'μπαομπάμπ']],
+            ['CI', "Côte d'Ivoire", 'AF', '🍫🐘⚽', ['cocoa', 'elephants', 'football'], ['κακάο', 'ελέφαντες', 'ποδόσφαιρο']],
+            ['CD', 'DR Congo', 'AF', '🦍🌳🎶', ['gorillas', 'rainforest', 'rumba music'], ['γορίλες', 'τροπικό δάσος', 'μουσική ρούμπα']],
+            ['RW', 'Rwanda', 'AF', '🦍🌋☕', ['mountain gorillas', 'volcanoes', 'coffee'], ['γορίλες του βουνού', 'ηφαίστεια', 'καφές']],
+            ['UG', 'Uganda', 'AF', '🦍🏞️🍌', ['gorillas', 'the source of the Nile', 'bananas'], ['γορίλες', 'οι πηγές του Νείλου', 'μπανάνες']],
+            ['MG', 'Madagascar', 'AF', '🐒🌳🦎', ['lemurs', 'baobabs', 'chameleons'], ['λεμούριοι', 'μπαομπάμπ', 'χαμαιλέοντες']],
+            ['NA', 'Namibia', 'AF', '🏜️🦓🐘', ['Namib dunes', 'zebras', 'desert elephants'], ['αμμόλοφοι της Ναμίμπ', 'ζέβρες', 'ελέφαντες της ερήμου']],
+            ['BW', 'Botswana', 'AF', '🐘💎🏜️', ['elephants', 'diamonds', 'the Kalahari'], ['ελέφαντες', 'διαμάντια', 'η Καλαχάρι']],
+            ['ZW', 'Zimbabwe', 'AF', '🌊🐘🪨', ['Victoria Falls', 'elephants', 'Great Zimbabwe stone ruins'], ['οι καταρράκτες Βικτόρια', 'ελέφαντες', 'τα πέτρινα ερείπια της Μεγάλης Ζιμπάμπουε']],
+            ['MZ', 'Mozambique', 'AF', '🏖️🦐🌴', ['beaches', 'prawns', 'palm trees'], ['παραλίες', 'γαρίδες', 'φοίνικες']],
+            ['TN', 'Tunisia', 'AF', '🏛️🫒🏖️', ['Carthage', 'olives', 'beaches'], ['Καρχηδόνα', 'ελιές', 'παραλίες']],
+            ['DZ', 'Algeria', 'AF', '🏜️🕌🫒', ['the Sahara', 'mosques', 'olives'], ['η Σαχάρα', 'τζαμιά', 'ελιές']],
+            ['SD', 'Sudan', 'AF', '🔺🏜️🐪', ['Nubian pyramids', 'desert', 'camels'], ['πυραμίδες της Νουβίας', 'έρημος', 'καμήλες']],
+            ['MU', 'Mauritius', 'AF', '🏝️🦤🍬', ['the island', 'the dodo', 'sugar cane'], ['το νησί', 'το ντόντο', 'ζαχαροκάλαμο']],
+            ['SC', 'Seychelles', 'AF', '🏝️🐢🥥', ['islands', 'giant tortoises', 'coco de mer'], ['νησιά', 'γιγάντιες χελώνες', 'coco de mer']],
+            ['ML', 'Mali', 'AF', '🕌🏜️🎸', ['the mud mosque of Djenné', 'Timbuktu desert', 'desert blues'], ['το πήλινο τζαμί του Τζενέ', 'η έρημος του Τιμπουκτού', 'μπλουζ της ερήμου']],
+            ['US', 'United States', 'NA', '🗽🍔🏈', ['Statue of Liberty', 'burgers', 'American football'], ['Άγαλμα της Ελευθερίας', 'μπέργκερ', 'αμερικανικό ποδόσφαιρο']],
+            ['CA', 'Canada', 'NA', '🍁🏒🦫', ['the maple leaf', 'ice hockey', 'beavers'], ['το φύλλο σφενδάμου', 'χόκεϊ επί πάγου', 'κάστορες']],
+            ['MX', 'Mexico', 'NA', '🌮🌵💀', ['tacos', 'cacti', 'Day of the Dead'], ['τάκος', 'κάκτοι', 'η Μέρα των Νεκρών']],
+            ['CU', 'Cuba', 'NA', '🚗🎺🏖️', ['classic cars', 'trumpets and salsa', 'beaches'], ['παλιά αυτοκίνητα', 'τρομπέτες και σάλσα', 'παραλίες']],
+            ['JM', 'Jamaica', 'NA', '🏃🎶🏖️', ['sprinters', 'reggae', 'beaches'], ['σπρίντερ', 'ρέγκε', 'παραλίες']],
+            ['CR', 'Costa Rica', 'NA', '🦥🌋🏄', ['sloths', 'volcanoes', 'surfing'], ['βραδύποδες', 'ηφαίστεια', 'σέρφινγκ']],
+            ['PA', 'Panama', 'NA', '🚢🌴🐸', ['the canal', 'rainforest', 'golden frogs'], ['η διώρυγα', 'τροπικό δάσος', 'χρυσοί βάτραχοι']],
+            ['GT', 'Guatemala', 'NA', '🌋🛕☕', ['volcanoes', 'Maya temples', 'coffee'], ['ηφαίστεια', 'ναοί των Μάγια', 'καφές']],
+            ['DO', 'Dominican Republic', 'NA', '🏖️⚾🥁', ['beaches', 'baseball', 'merengue'], ['παραλίες', 'μπέιζμπολ', 'μερένγκε']],
+            ['BS', 'Bahamas', 'NA', '🏝️🦩🤿', ['islands', 'flamingos', 'diving'], ['νησιά', 'φλαμίνγκο', 'καταδύσεις']],
+            ['TT', 'Trinidad and Tobago', 'NA', '🥁🎭🦜', ['steelpan drums', 'Carnival', 'parrots'], ['τύμπανα steelpan', 'Καρναβάλι', 'παπαγάλοι']],
+            ['BR', 'Brazil', 'SA', '⚽🎭🌳', ['football', 'Carnival', 'the Amazon'], ['ποδόσφαιρο', 'Καρναβάλι', 'ο Αμαζόνιος']],
+            ['AR', 'Argentina', 'SA', '⚽🥩💃', ['football', 'steak', 'tango'], ['ποδόσφαιρο', 'μπριζόλα', 'τάνγκο']],
+            ['CL', 'Chile', 'SA', '🍷🗿🏔️', ['wine', 'Easter Island moai', 'the Andes'], ['κρασί', 'τα μοάι του Νησιού του Πάσχα', 'οι Άνδεις']],
+            ['PE', 'Peru', 'SA', '🦙🏔️🥔', ['llamas', 'Machu Picchu', 'potatoes'], ['λάμα', 'Μάτσου Πίτσου', 'πατάτες']],
+            ['CO', 'Colombia', 'SA', '☕🦋💃', ['coffee', 'butterflies', 'salsa'], ['καφές', 'πεταλούδες', 'σάλσα']],
+            ['VE', 'Venezuela', 'SA', '🛢️🌊⚾', ['oil', 'Angel Falls', 'baseball'], ['πετρέλαιο', 'οι καταρράκτες Άνχελ', 'μπέιζμπολ']],
+            ['EC', 'Ecuador', 'SA', '🐢🌋🍌', ['Galápagos tortoises', 'volcanoes', 'bananas'], ['χελώνες των Γκαλαπάγκος', 'ηφαίστεια', 'μπανάνες']],
+            ['BO', 'Bolivia', 'SA', '🧂🦙🏔️', ['the Uyuni salt flats', 'llamas', 'the Andes'], ['οι αλυκές Ουγιούνι', 'λάμα', 'οι Άνδεις']],
+            ['UY', 'Uruguay', 'SA', '⚽🧉🏖️', ['football', 'mate', 'beaches'], ['ποδόσφαιρο', 'μάτε', 'παραλίες']],
+            ['PY', 'Paraguay', 'SA', '🧉⚽🌊', ['tereré', 'football', 'the Itaipú dam'], ['τερερέ', 'ποδόσφαιρο', 'το φράγμα Ιταϊπού']],
+            ['AU', 'Australia', 'OC', '🦘🏄🐨', ['kangaroos', 'surfing', 'koalas'], ['καγκουρό', 'σέρφινγκ', 'κοάλα']],
+            ['NZ', 'New Zealand', 'OC', '🥝🏉🐑', ['kiwis', 'rugby', 'sheep'], ['κίουι', 'ράγκμπι', 'πρόβατα']],
+            ['FJ', 'Fiji', 'OC', '🏝️🏉🥥', ['islands', 'rugby sevens', 'coconuts'], ['νησιά', 'ράγκμπι', 'καρύδες']],
+            ['PG', 'Papua New Guinea', 'OC', '🦜🌴🛶', ['birds of paradise', 'jungle', 'canoes'], ['παραδείσια πουλιά', 'ζούγκλα', 'κανό']],
+            ['WS', 'Samoa', 'OC', '🏉🌺🛶', ['rugby', 'hibiscus flowers', 'canoes'], ['ράγκμπι', 'ιβίσκοι', 'κανό']],
+            ['TO', 'Tonga', 'OC', '🐋🏉🌴', ['humpback whales', 'rugby', 'palm trees'], ['μεγάπτερες φάλαινες', 'ράγκμπι', 'φοίνικες']],
+            ['VU', 'Vanuatu', 'OC', '🌋🏝️🤿', ['active volcanoes', 'islands', 'diving'], ['ενεργά ηφαίστεια', 'νησιά', 'καταδύσεις']]
+        ];
+
+        const EM = { current: null, asked: 0, streak: 0, best: lsGet('ev_em_best', 0), life: true, answered: false, seen: new Set() };
+        const emName = c => { if (LANG === 'el') { try { const n = new Intl.DisplayNames(['el'], { type: 'region' }).of(c[0]); if (n && n !== c[0]) return n; } catch (e) {} } return c[1]; };
+        const emParts = em => { try { return [...new Intl.Segmenter('en', { granularity: 'grapheme' }).segment(em)].map(x => x.segment); } catch (e) { return Array.from(em); } };
+        async function loadEmoji() { emStart(); }
+        function emStart() { EM.asked = 0; EM.streak = 0; EM.life = true; EM.seen = new Set(); emNext(); }
+        function emNext() {
+            let fresh = EMOJI_COUNTRIES.filter(c => !EM.seen.has(c[0])); if (!fresh.length) { EM.seen = new Set(); fresh = EMOJI_COUNTRIES; }
+            const c = pickRandom(fresh); EM.seen.add(c[0]);
+            // three decoys, from the same region when possible, so the flag alone does not give it away
+            const same = EMOJI_COUNTRIES.filter(x => x !== c && x[2] === c[2]), others = EMOJI_COUNTRIES.filter(x => x !== c && x[2] !== c[2]), decoys = [];
+            const take = arr => { let g = 0; while (decoys.length < 3 && arr.length && g++ < 60) { const d = pickRandom(arr); if (!decoys.includes(d)) decoys.push(d); } };
+            take(same); take(others);
+            EM.current = { c, choices: [c, ...decoys].sort(() => Math.random() - 0.5) }; EM.answered = false; emRender();
         }
-        function tmStart() { TM.asked = 0; TM.streak = 0; TM.life = true; TM.seen = new Set(); TM.lastKind = null; tmNext(); }
-        function tmPickEvent(exclude) {
-            const fresh = TM.events.filter(e => !TM.seen.has(e.text) && !(exclude || []).includes(e));
-            const pool = fresh.length ? fresh : TM.events.filter(e => !(exclude || []).includes(e));
-            const pics = pool.filter(tmThumb);
-            return pickRandom(pics.length >= 3 && Math.random() < 0.7 ? pics : pool);
-        }
-        function tmDecoyYears(y) {
-            const spread = y >= 1900 ? [3, 25] : y >= 1500 ? [5, 60] : [20, 300], max = new Date().getFullYear(), out = new Set();
-            let g = 0; while (out.size < 3 && g++ < 60) { const d = spread[0] + Math.floor(Math.random() * (spread[1] - spread[0])), c = y + (Math.random() < 0.5 ? -d : d); if (c !== y && c <= max && c !== 0) out.add(c); }
-            return [...out];
-        }
-        function tmNext() {
-            const kinds = ['year', 'first', 'event'].filter(k => k !== TM.lastKind);
-            const kind = pickRandom(kinds); TM.lastKind = kind;
-            let q;
-            if (kind === 'year') {
-                const e = tmPickEvent(); TM.seen.add(e.text);
-                const opts = [e.year, ...tmDecoyYears(e.year)].sort((a, b) => a - b);
-                q = { kind, e, title: L('In which year did this happen?', 'Ποια χρονιά συνέβη αυτό;'), choices: opts.map(y => ({ id: String(y), label: tmYear(y) })), answer: String(e.year), explain: `${tmYear(e.year)}: ${escapeHtml(e.text)}` };
-            } else if (kind === 'first') {
-                const a = tmPickEvent(); let b = tmPickEvent([a]), g = 0; while (Math.abs(a.year - b.year) < 5 && g++ < 20) b = tmPickEvent([a]);
-                TM.seen.add(a.text); TM.seen.add(b.text);
-                q = { kind, e: a, b, title: L('Which happened first?', 'Ποιο έγινε πρώτο;'), choices: [a, b].map((x, i) => ({ id: String(i), label: x.text, thumb: tmThumb(x), year: x.year })), answer: a.year <= b.year ? '0' : '1', explain: `${tmYear(Math.min(a.year, b.year))} ${L('came before', 'ήρθε πριν από το')} ${tmYear(Math.max(a.year, b.year))}.` };
-            } else {
-                const e = tmPickEvent(); TM.seen.add(e.text);
-                const decoys = []; let g = 0; while (decoys.length < 3 && g++ < 40) { const d = tmPickEvent([e, ...decoys]); if (Math.abs(d.year - e.year) >= 3 && !decoys.includes(d)) decoys.push(d); }
-                if (decoys.length < 3) return tmNextFallback();
-                const all = [e, ...decoys].sort(() => Math.random() - 0.5);
-                q = { kind, e, title: `${L('What happened on this day in', 'Τι συνέβη αυτή τη μέρα το')} ${tmYear(e.year)}?`, choices: all.map(x => ({ id: x.text, label: x.text, year: x.year })), answer: e.text, explain: `${tmYear(e.year)}: ${escapeHtml(e.text)}` };
-            }
-            TM.current = q; TM.answered = false; tmRender();
-        }
-        function tmNextFallback() { TM.lastKind = 'event'; tmNext(); }
-        function tmRender() {
-            const q = TM.current, e = q.e, thumb = tmThumb(e);
-            const header = `<div class="flex flex-wrap items-center justify-center gap-3 mb-5 text-[10px] font-black uppercase tracking-widest">
-            <span class="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-slate-300">${L('Question', 'Ερώτηση')} <span class="text-white">${TM.asked + 1}</span></span>
-            <span class="px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300">🔥 ${L('Streak', 'Σερί')} ${TM.streak}</span>
-            <span class="px-3 py-1.5 rounded-full bg-pink-500/10 border border-pink-500/30 text-pink-300">🏆 ${L('Best', 'Ρεκόρ')} ${TM.best}</span>
-            ${lifePill(TM.life)}
+        const emHeader = () => `<div class="flex flex-wrap items-center justify-center gap-3 mb-5 text-[10px] font-black uppercase tracking-widest">
+            <span class="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-slate-300">${L('Country', 'Χώρα')} <span class="text-white">${EM.asked + (EM.answered ? 0 : 1)}</span></span>
+            <span class="px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300">🔥 ${L('Streak', 'Σερί')} ${EM.streak}</span>
+            <span class="px-3 py-1.5 rounded-full bg-pink-500/10 border border-pink-500/30 text-pink-300">🏆 ${L('Best', 'Ρεκόρ')} ${EM.best}</span>
+            ${lifePill(EM.life)}
         </div>`;
-            let body;
-            if (q.kind === 'first') {
-                body = `<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl mx-auto">${q.choices.map(c => `<button type="button" onclick="tmAnswer('${c.id}')" data-choice="${c.id}" class="tm-choice vault-card rounded-[1.5rem] p-4 text-left border border-white/10 hover:border-amber-400/60 flex gap-3 items-start">
-                ${c.thumb ? `<img src="${c.thumb}" alt="" loading="lazy" class="w-16 h-16 rounded-xl object-cover shrink-0">` : `<div class="w-16 h-16 rounded-xl bg-slate-800 shrink-0 flex items-center justify-center text-2xl">📜</div>`}
-                <div class="min-w-0"><div class="tm-year text-[10px] font-black text-amber-400 uppercase tracking-widest opacity-0">${tmYear(c.year)}</div><div class="text-sm text-slate-200 leading-snug">${escapeHtml(c.label)}</div></div></button>`).join('')}</div>`;
-            } else if (q.kind === 'event') {
-                body = `<div class="grid grid-cols-1 gap-3 max-w-2xl mx-auto">${q.choices.map(c => `<button type="button" onclick="tmAnswer(this.dataset.choice)" data-choice="${escapeHtml(c.id)}" class="tm-choice px-5 py-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-sm text-slate-200 text-left leading-snug"><span class="tm-year text-[10px] font-black text-amber-400 uppercase tracking-widest mr-2 opacity-0">${tmYear(c.year)}</span>${escapeHtml(c.label)}</button>`).join('')}</div>`;
-            } else {
-                body = `<div class="max-w-2xl mx-auto flex gap-4 items-start bg-white/5 border border-white/10 rounded-[1.5rem] p-4 md:p-5 mb-6">
-                ${thumb ? `<img src="${thumb}" alt="" loading="lazy" class="w-20 h-20 md:w-28 md:h-28 rounded-xl object-cover shrink-0">` : `<div class="w-20 h-20 rounded-xl bg-slate-800 shrink-0 flex items-center justify-center text-3xl">📜</div>`}
-                <p class="text-base md:text-lg text-white font-bold leading-snug">${escapeHtml(e.text)}</p></div>
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-2xl mx-auto">${q.choices.map(c => `<button type="button" onclick="tmAnswer('${c.id}')" data-choice="${c.id}" class="tm-choice py-5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-xl font-black font-mono-data text-white">${c.label}</button>`).join('')}</div>`;
-            }
+        function emRender() {
+            const q = EM.current;
             showLive(`
     <div class="vault-card rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10">
-        ${header}
-        <p class="text-center text-[10px] font-black text-amber-400 uppercase tracking-[0.3em] mb-2">⏳ ${L('On this day', 'Σαν σήμερα')} · ${TM.date}</p>
-        <h3 class="text-center text-xl md:text-3xl font-black text-white leading-snug mb-6">${q.title}</h3>
-        ${body}
-        <div id="tm-verdict" class="text-center mt-6 min-h-[2rem]"></div>
+        ${emHeader()}
+        <p class="text-center text-[10px] font-black text-amber-400 uppercase tracking-[0.3em] mb-3">🧩 ${L('Which country is this?', 'Ποια χώρα είναι αυτή;')}</p>
+        <div class="text-center text-6xl md:text-8xl leading-none tracking-wider my-6 md:my-8 select-none">${q.c[3]}</div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-xl mx-auto">${q.choices.map(c => `<button type="button" onclick="emAnswer('${c[0]}')" data-choice="${c[0]}" class="em-choice px-5 py-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-base font-bold text-white text-left flex items-center gap-3"><span class="text-3xl">${flagEmoji(c[0])}</span><span>${escapeHtml(emName(c))}</span></button>`).join('')}</div>
+        <div id="em-verdict" class="text-center mt-6 min-h-[2rem]"></div>
         <div class="flex flex-wrap justify-center gap-3 mt-4">
-            <button type="button" onclick="tmStart()" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-300">${L('Reset streak', 'Μηδένισε το σερί')}</button>
-            <button type="button" onclick="simpleShare('${L('My streak in the EarthVault Time Machine', 'Το σερί μου στη Μηχανή του Χρόνου του EarthVault')}: ${TM.streak} ⏳ https://chamitro.github.io/EarthVault/?vault=history')" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-300">${L('Share streak', 'Μοιράσου το σερί')}</button>
+            <button type="button" onclick="emStart()" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-300">${L('Reset streak', 'Μηδένισε το σερί')}</button>
+            <button type="button" onclick="simpleShare('${L('My streak in Emoji Country on EarthVault', 'Το σερί μου στη Χώρα με Emoji του EarthVault')}: ${EM.streak} 🧩 https://chamitro.github.io/EarthVault/?vault=emoji')" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-300">${L('Share streak', 'Μοιράσου το σερί')}</button>
         </div>
-        <p class="text-center text-[10px] text-slate-500 mt-6">${L('Events are the ones Wikipedia lists for today\'s date, so the game changes every day. One mistake per streak is forgiven; the second ends it.', 'Τα γεγονότα είναι όσα καταγράφει η Wikipedia για τη σημερινή ημερομηνία, οπότε το παιχνίδι αλλάζει κάθε μέρα. Ένα λάθος ανά σερί συγχωρείται· το δεύτερο το τελειώνει.')}</p>
+        <p class="text-center text-[10px] text-slate-500 mt-6">${L('120 countries, three emojis each: a landmark, a food, an animal, a sport or a tradition. One mistake per streak is forgiven; the second ends it.', '120 χώρες, τρία emoji η καθεμία: ένα μνημείο, ένα φαγητό, ένα ζώο, ένα άθλημα ή μια παράδοση. Ένα λάθος ανά σερί συγχωρείται· το δεύτερο το τελειώνει.')}</p>
     </div>`);
         }
-        function tmAnswer(id) {
-            if (TM.answered) return; TM.answered = true;
-            const q = TM.current, correct = id === q.answer; TM.asked++;
-            const saved = !correct && TM.life;
-            const ended = correct || saved ? 0 : TM.streak;
-            if (correct) TM.streak++; else if (saved) TM.life = false; else { TM.streak = 0; TM.life = true; }
-            let newBest = false; if (TM.streak > TM.best) { TM.best = TM.streak; newBest = TM.best >= 3; lsSet('ev_tm_best', TM.best); }
-            document.querySelectorAll('.tm-choice').forEach(b => {
-                b.disabled = true; const cid = b.dataset.choice; const y = b.querySelector('.tm-year'); if (y) y.classList.remove('opacity-0');
-                if (cid === q.answer) b.classList.add('bg-emerald-500/30', 'border-emerald-400/60'); else if (cid === id) b.classList.add('bg-rose-500/30', 'border-rose-500/50'); else b.classList.add('opacity-60');
-            });
-            const link = tmLink(q.e);
-            const verdict = document.getElementById('tm-verdict');
+        function emAnswer(iso2) {
+            if (EM.answered) return; EM.answered = true;
+            const q = EM.current, c = q.c, correct = iso2 === c[0]; EM.asked++;
+            const saved = !correct && EM.life;
+            const ended = correct || saved ? 0 : EM.streak;
+            if (correct) EM.streak++; else if (saved) EM.life = false; else { EM.streak = 0; EM.life = true; }
+            let newBest = false; if (EM.streak > EM.best) { EM.best = EM.streak; newBest = EM.best >= 3; lsSet('ev_em_best', EM.best); }
+            document.querySelectorAll('.em-choice').forEach(b => { b.disabled = true; const id = b.dataset.choice; if (id === c[0]) b.classList.add('bg-emerald-500/30', 'border-emerald-400/60'); else if (id === iso2) b.classList.add('bg-rose-500/30', 'border-rose-500/50'); else b.classList.add('opacity-60'); });
+            const parts = emParts(c[3]), words = LANG === 'el' ? c[5] : c[4];
+            const why = parts.length === words.length ? parts.map((p, i) => `<span class="whitespace-nowrap">${p} ${escapeHtml(words[i])}</span>`).join(' <span class="text-slate-600">·</span> ') : `${c[3]} = ${escapeHtml(words.join(', '))}`;
+            const verdict = document.getElementById('em-verdict');
             verdict.innerHTML = `<div class="text-2xl font-black ${correct ? 'text-emerald-400' : 'text-rose-400'}">${correct ? L('Correct!', 'Σωστά!') : saved ? '❤️ ' + L('Wrong, but your extra life keeps the streak alive!', 'Λάθος, αλλά η έξτρα ζωή κρατά το σερί ζωντανό!') : L('Wrong!', 'Λάθος!')}${!correct && ended ? ` · ${L('streak ended at', 'το σερί τελείωσε στο')} ${ended}` : ''}${newBest ? ` · 🏆 ${L('New best', 'Νέο ρεκόρ')}` : ''}</div>
-        <div class="text-sm text-slate-300 mt-2">${q.explain}</div>
-        <div class="flex flex-wrap justify-center gap-2 mt-4"><button type="button" onclick="${correct || saved ? 'tmNext()' : 'tmStart()'}" class="px-6 py-3 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-900 font-black">${correct || saved ? L('Next', 'Επόμενη') : L('Play again', 'Παίξε ξανά')} →</button>${link ? `<a href="${link}" target="_blank" rel="noopener" class="px-4 py-3 rounded-2xl bg-white/5 hover:bg-white/10 text-sm font-bold text-slate-200">${L('Read on Wikipedia', 'Διάβασε στη Wikipedia')} →</a>` : ''}</div>`;
-            const header = document.querySelector('#live-section .vault-card > div'); if (header) header.outerHTML = `<div class="flex flex-wrap items-center justify-center gap-3 mb-5 text-[10px] font-black uppercase tracking-widest">
-            <span class="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-slate-300">${L('Question', 'Ερώτηση')} <span class="text-white">${TM.asked}</span></span>
-            <span class="px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300">🔥 ${L('Streak', 'Σερί')} ${TM.streak}</span>
-            <span class="px-3 py-1.5 rounded-full bg-pink-500/10 border border-pink-500/30 text-pink-300">🏆 ${L('Best', 'Ρεκόρ')} ${TM.best}</span>
-            ${lifePill(TM.life)}
-        </div>`;
-            if (correct) { if (TM.streak === 5 || TM.streak === 10 || TM.streak % 25 === 0) try { burst({ particleCount: 120, spread: 90 }); } catch (e) {} }
-            else if (!saved) { const slot = document.createElement('div'); slot.className = 'mt-5'; verdict.appendChild(slot); lbShow('history', ended, slot); }
+        <div class="text-base text-white font-bold mt-3">${flagEmoji(c[0])} ${escapeHtml(emName(c))}</div>
+        <div class="text-sm text-slate-300 mt-1 leading-relaxed">${why}</div>
+        <div class="flex flex-wrap justify-center gap-2 mt-4"><button type="button" onclick="${correct || saved ? 'emNext()' : 'emStart()'}" class="px-6 py-3 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-900 font-black">${correct || saved ? L('Next', 'Επόμενη') : L('Play again', 'Παίξε ξανά')} →</button><button type="button" onclick="selectMode('country'); openCountryByIso('${c[0]}')" class="px-4 py-3 rounded-2xl bg-white/5 hover:bg-white/10 text-sm font-bold text-slate-200">🧭 ${L('Open profile', 'Άνοιξε το προφίλ')}</button></div>`;
+            const header = document.querySelector('#live-section .vault-card > div'); if (header) header.outerHTML = emHeader();
+            if (correct) { if (EM.streak === 5 || EM.streak === 10 || EM.streak % 25 === 0) try { burst({ particleCount: 120, spread: 90 }); } catch (e) {} }
+            else if (!saved) { const slot = document.createElement('div'); slot.className = 'mt-5'; verdict.appendChild(slot); lbShow('emoji', ended, slot); }
         }
 
         // ======================= THE WORLD AS 100 PEOPLE =======================
@@ -8333,10 +8405,10 @@ function displayMovies(data, query) {
         }
 
         const GR = {
-            menu: { year: 'Η Χρονιά Μέχρι Τώρα', factfiction: 'Αλήθεια ή Ψέμα', history: 'Μηχανή του Χρόνου', hundred: 'Ο Κόσμος ως 100 Άνθρωποι', records: 'Ρεκόρ του Πλανήτη', home: 'Αρχική', globe: 'Ζωντανή Υδρόγειος', country: 'Προφίλ Χώρας', stories: 'Ιστορίες της Γης', twins: 'Δίδυμες Χώρες', born: 'Ο Πλανήτης από τη Γέννησή σου', perfect: 'Εύρεση Τέλειου Καιρού', quiz: 'Κουίζ Πλανήτη', mystery: 'Μυστήρια Χώρα (ημερήσιο)', hotornot: 'Ζεστό ή Κρύο (ζωντανή μονομαχία)', flags: 'Σημαίες Αστραπή', rightnow: 'Ο Πλανήτης Τώρα', alerts: 'Συναγερμοί Πλανήτη', space: 'Διαστημικός Καιρός', iss: 'Διαστημικός Σταθμός', sky: 'Ο Ουρανός Απόψε', asteroids: 'Παρατηρητήριο Αστεροειδών', onthisday: 'Σαν Σήμερα στη Γη', nearby: 'Άγρια Ζωή Κοντά σου', outside: 'Καλύτερη Ώρα Έξω', weather: 'Αρχείο Καιρού', ocean: 'Παλμός Ωκεανού', forest: 'Δασική Κληρονομιά', agri: 'Γεωργία', energy: 'Ενέργεια & ΑΠΕ', water: 'Ασφάλεια Νερού', carbon: 'Εκπομπές Άνθρακα', endangered: 'Απειλούμενα Είδη', waste: 'Απορρίμματα & Ανακύκλωση', power: 'Ενεργειακό Μείγμα', air: 'Ποιότητα Αέρα', waterstress: 'Υδατική Πίεση', wildlife: 'Γκαλερί Άγριας Ζωής', human_span: 'Προσδόκιμο Ζωής', mental: 'Ψυχική Υγεία', happiness: 'Ευτυχία & Ευημερία', generations: 'Γενιές', univ: 'Πρόσβαση στο Πανεπιστήμιο', public_private: 'Εκπαίδευση: Δημόσια vs Ιδιωτική', health_private: 'Υγεία: Δημόσια vs Ιδιωτική', migration: 'Μετανάστευση & Διασπορά', economy: 'Οικονομία & Αγορά Εργασίας', internet: 'Πρόσβαση στο Διαδίκτυο', music: 'Μουσική Κουλτούρα', cinema: 'Κινηματογράφος', trends: 'Τάσεις Διαδικτύου', city: 'Ιστορίες Πόλεων', compare: 'Χώρα vs Χώρα' },
-            labels: { year: 'Η ΧΡΟΝΙΑ ΜΕΧΡΙ ΤΩΡΑ', factfiction: 'ΑΛΗΘΕΙΑ Ή ΨΕΜΑ', history: 'ΜΗΧΑΝΗ ΤΟΥ ΧΡΟΝΟΥ', hundred: 'Ο ΚΟΣΜΟΣ ΩΣ 100', records: 'ΡΕΚΟΡ ΤΟΥ ΠΛΑΝΗΤΗ', home: 'ΑΡΧΙΚΗ', globe: 'ΖΩΝΤΑΝΗ ΥΔΡΟΓΕΙΟΣ', country: 'ΠΡΟΦΙΛ ΧΩΡΑΣ', stories: 'ΙΣΤΟΡΙΕΣ ΤΗΣ ΓΗΣ', twins: 'ΔΙΔΥΜΕΣ ΧΩΡΕΣ', born: 'ΑΠΟ ΤΗ ΓΕΝΝΗΣΗ ΣΟΥ', perfect: 'ΤΕΛΕΙΟΣ ΚΑΙΡΟΣ', quiz: 'ΚΟΥΙΖ ΠΛΑΝΗΤΗ', mystery: 'ΜΥΣΤΗΡΙΑ ΧΩΡΑ', hotornot: 'ΖΕΣΤΟ Ή ΚΡΥΟ', flags: 'ΣΗΜΑΙΕΣ ΑΣΤΡΑΠΗ', rightnow: 'Ο ΠΛΑΝΗΤΗΣ ΤΩΡΑ', alerts: 'ΣΥΝΑΓΕΡΜΟΙ ΠΛΑΝΗΤΗ', space: 'ΔΙΑΣΤΗΜΙΚΟΣ ΚΑΙΡΟΣ', iss: 'ΔΙΑΣΤΗΜΙΚΟΣ ΣΤΑΘΜΟΣ', sky: 'Ο ΟΥΡΑΝΟΣ ΑΠΟΨΕ', asteroids: 'ΑΣΤΕΡΟΕΙΔΕΙΣ', onthisday: 'ΣΑΝ ΣΗΜΕΡΑ', nearby: 'ΑΓΡΙΑ ΖΩΗ ΚΟΝΤΑ ΣΟΥ', outside: 'ΚΑΛΥΤΕΡΗ ΩΡΑ ΕΞΩ', weather: 'ΑΡΧΕΙΟ ΚΑΙΡΟΥ', ocean: 'ΠΑΛΜΟΣ ΩΚΕΑΝΟΥ', forest: 'ΔΑΣΙΚΗ ΚΛΗΡΟΝΟΜΙΑ', agri: 'ΓΕΩΡΓΙΑ', energy: 'ΕΝΕΡΓΕΙΑ & ΑΠΕ', water: 'ΑΣΦΑΛΕΙΑ ΝΕΡΟΥ', carbon: 'ΕΚΠΟΜΠΕΣ ΑΝΘΡΑΚΑ', endangered: 'ΑΠΕΙΛΟΥΜΕΝΑ ΕΙΔΗ', waste: 'ΑΠΟΡΡΙΜΜΑΤΑ & ΑΝΑΚΥΚΛΩΣΗ', power: 'ΕΝΕΡΓΕΙΑΚΟ ΜΕΙΓΜΑ', air: 'ΠΟΙΟΤΗΤΑ ΑΕΡΑ', waterstress: 'ΥΔΑΤΙΚΗ ΠΙΕΣΗ', wildlife: 'ΓΚΑΛΕΡΙ ΑΓΡΙΑΣ ΖΩΗΣ', human_span: 'ΠΡΟΣΔΟΚΙΜΟ ΖΩΗΣ', mental: 'ΨΥΧΙΚΗ ΥΓΕΙΑ', happiness: 'ΕΥΤΥΧΙΑ & ΕΥΗΜΕΡΙΑ', generations: 'ΓΕΝΙΕΣ', univ: 'ΠΑΝΕΠΙΣΤΗΜΙΟ', public_private: 'ΕΚΠΑΙΔΕΥΣΗ: ΔΗΜΟΣΙΑ vs ΙΔΙΩΤΙΚΗ', health_private: 'ΥΓΕΙΑ: ΔΗΜΟΣΙΑ vs ΙΔΙΩΤΙΚΗ', migration: 'ΜΕΤΑΝΑΣΤΕΥΣΗ & ΔΙΑΣΠΟΡΑ', economy: 'ΟΙΚΟΝΟΜΙΑ & ΕΡΓΑΣΙΑ', internet: 'ΠΡΟΣΒΑΣΗ ΣΤΟ ΔΙΑΔΙΚΤΥΟ', music: 'ΜΟΥΣΙΚΗ ΚΟΥΛΤΟΥΡΑ', cinema: 'ΚΙΝΗΜΑΤΟΓΡΑΦΟΣ', trends: 'ΤΑΣΕΙΣ ΔΙΑΔΙΚΤΥΟΥ', city: 'ΙΣΤΟΡΙΕΣ ΠΟΛΕΩΝ', compare: 'ΧΩΡΑ VS ΧΩΡΑ' },
-            titles: { year: 'Η Χρονιά Μέχρι Τώρα', factfiction: 'Αλήθεια ή Ψέμα', history: 'Μηχανή του Χρόνου', hundred: 'Ο Κόσμος ως 100 Άνθρωποι', records: 'Ρεκόρ του Πλανήτη', home: 'Εξερεύνησε τον πλανήτη με δεδομένα', globe: 'Ζωντανή Υδρόγειος', country: 'Προφίλ Χώρας', stories: 'Ιστορίες της Γης', twins: 'Δίδυμες Χώρες', born: 'Ο Πλανήτης από τότε που Γεννήθηκες', perfect: 'Εύρεση Τέλειου Καιρού', weather: 'Ιστορία του Καιρού', ocean: 'Παλμός του Ωκεανού', univ: 'Πρόσβαση στο Πανεπιστήμιο', forest: 'Δασική Κληρονομιά', agri: 'Γεωργία', human_span: 'Προσδόκιμο Ζωής', energy: 'Ενέργεια & Ανανεώσιμες', water: 'Ποιότητα & Ασφάλεια Νερού', mental: 'Ψυχική Υγεία', happiness: 'Ευτυχία & Ευημερία', carbon: 'Εκπομπές Άνθρακα', generations: 'Γενιές', internet: 'Πρόσβαση στο Διαδίκτυο', music: 'Μουσική Κουλτούρα', cinema: 'Ανακάλυψη Κινηματογράφου', endangered: 'Απειλούμενα Είδη', migration: 'Μετανάστευση & Διασπορά', public_private: 'Εκπαίδευση: Δημόσια vs Ιδιωτική', health_private: 'Υγεία: Δημόσια vs Ιδιωτική', economy: 'Οικονομία & Αγορά Εργασίας', trends: 'Τάσεις του Διαδικτύου', waste: 'Απορρίμματα & Ανακύκλωση', power: 'Ενεργειακό Μείγμα', air: 'Ποιότητα Αέρα', waterstress: 'Υδατική Πίεση', alerts: 'Συναγερμοί Πλανήτη', space: 'Διαστημικός Καιρός', compare: 'Χώρα εναντίον Χώρας', wildlife: 'Γκαλερί Άγριας Ζωής', quiz: 'Κουίζ Πλανήτη', iss: 'Εντοπισμός Διαστημικού Σταθμού', city: 'Ιστορίες Πόλεων', mystery: 'Μυστήρια Χώρα', hotornot: 'Ζεστό ή Κρύο', flags: 'Σημαίες Αστραπή', rightnow: 'Ο Πλανήτης Τώρα', sky: 'Ο Ουρανός Απόψε', asteroids: 'Παρατηρητήριο Αστεροειδών', onthisday: 'Σαν Σήμερα στη Γη', nearby: 'Άγρια Ζωή Κοντά σου', outside: 'Καλύτερη Ώρα Έξω' },
-            desc: { year: 'Συναρμολογείται από όσα κατέγραψε το ίδιο το EarthVault φέτος, ώρα με την ώρα: οι πιο ζεστές και κρύες πρωτεύουσες, σεισμοί, πυρκαγιές και τα ρεκόρ που έπεσαν. Τον Δεκέμβριο γίνεται η ανασκόπηση της χρονιάς', factfiction: 'Δηλώσεις φτιαγμένες από αληθινά στοιχεία της Παγκόσμιας Τράπεζας τη στιγμή που παίζεις. Αλήθεια ή ψέμα; Οι αριθμοί αποφασίζουν, και ένα λάθος τελειώνει το σερί', history: 'Τα γεγονότα της σημερινής ημέρας από τη Wikipedia γίνονται παιχνίδι: ποια χρονιά ήταν, ποιο έγινε πρώτο, τι συνέβη εκείνη τη χρονιά. Νέα γεγονότα κάθε μέρα, μία έξτρα ζωή ανά σερί', hundred: 'Αν ο κόσμος ήταν ένα χωριό 100 ανθρώπων: ποιος ζει πού, ποιος έχει διαδίκτυο, νερό, ρεύμα, ποιος είναι παιδί ή άνω των 65', records: 'Η πιο ζεστή, η πιο κρύα και η πιο ανεμώδης πρωτεύουσα, ο ισχυρότερος σεισμός και η μεγαλύτερη πυρκαγιά που έχει καταγράψει το EarthVault, ώρα με την ώρα, και πότε έπεσε κάθε ρεκόρ', home: 'Ζωντανά δεδομένα, παιχνίδια και ιστορίες από ανοιχτές πηγές. Διάλεξε μια πόρτα.', globe: 'Ο πλανήτης σε 3D με ζωντανές πυρκαγιές, καταιγίδες, σεισμούς, ηφαίστεια, θερμοκρασίες πρωτευουσών και τον διαστημικό σταθμό. Πάτησε μια χώρα για το προφίλ της', country: 'Μία σελίδα για κάθε χώρα: ο αριθμός κάθε θησαυροφυλακίου με την παγκόσμια θέση του, ο καιρός στην πρωτεύουσα τώρα, ενεργοί συναγερμοί, οι πιο κοντινές δίδυμες και μια πόρτα σε κάθε θησαυροφυλάκιο', stories: 'Εννέα ξεναγήσεις μέσα στα δεδομένα, γράφημα-γράφημα: αυτή την εβδομάδα στη Γη (ζωντανά), ο αιώνας του άνθρακα, η θάλασσα που θερμαίνεται, τα δάση, η στροφή στις ανανεώσιμες, οκτώ δισεκατομμύρια εμείς, ποιος ζει περισσότερο, πού μετακινούνται οι άνθρωποι και η Μεσόγειος που θερμαίνεται', twins: 'Ποιες χώρες μοιάζουν πιο πολύ στη δική σου; Σύγκριση σε κάθε θησαυροφυλάκιο, οι πέντε πιο κοντινές με κάθε αριθμό δίπλα-δίπλα', born: 'Βάλε την ημερομηνία γέννησής σου: πώς άλλαξαν ο αέρας, το κλίμα, οι άνθρωποι και ο πλανήτης στη ζωή σου', perfect: 'Διάλεξε την ιδανική σου θερμοκρασία και βρες τις πρωτεύουσες που την έχουν αυτή τη στιγμή', weather: '50 χρόνια ημερήσιας ιστορίας θερμοκρασίας για κάθε πόλη', ocean: 'Ζωντανή θερμοκρασία θάλασσας και θαλάσσιοι καύσωνες για κάθε παράκτια πόλη', forest: 'Δασοκάλυψη και τάσεις αποψίλωσης ανά χώρα', agri: 'Ποσοστό γης που χρησιμοποιείται για καλλιέργειες, ανά χώρα', energy: 'Μερίδιο ανανεώσιμων και υδροηλεκτρικών στην ηλεκτρική ενέργεια ανά χώρα', water: 'Πρόσβαση σε ασφαλές πόσιμο νερό ανά χώρα', carbon: 'Εκπομπές αερίων του θερμοκηπίου σε σχέση με προϋπολογισμό άνθρακα με βάση το 1990', endangered: 'Απειλούμενα θηλαστικά, πουλιά, ψάρια και φυτά ανά χώρα', waste: 'Ποσοστά ανακύκλωσης, κομποστοποίησης και ταφής από τον ΟΟΣΑ', power: 'Μερίδια ορυκτών, άνθρακα και πυρηνικών στο δίκτυο, συν κατανάλωση ρεύματος ανά άτομο', wildlife: 'Αληθινές φωτογραφίες άγριας ζωής από πολίτες-επιστήμονες, και τι ζει εκεί', quiz: 'Επτά είδη ερωτήσεων με αληθινά δεδομένα: περισσότερο ή λιγότερο, ο πρώτος από τέσσερις, πρωτεύουσες, σημαίες, εκτιμήσεις και ζωντανός καιρός. Μετά προκάλεσε έναν φίλο με σύνδεσμο', iss: 'Πού βρίσκεται ο Διεθνής Διαστημικός Σταθμός αυτή τη στιγμή, ζωντανά στον χάρτη', city: 'Πότε ιδρύθηκε μια πόλη, ποιοι γεννήθηκαν εκεί και οι στιγμές που τη διαμόρφωσαν', mystery: 'Μία μυστική χώρα κάθε μέρα. Έξι προσπάθειες, νέα ένδειξη μετά από κάθε λάθος', hotornot: 'Δύο πόλεις, ζωντανές θερμοκρασίες: ποια είναι πιο ζεστή αυτή τη στιγμή;', flags: 'Τριάντα δευτερόλεπτα, τέσσερις επιλογές ανά σημαία. Πόσες θα αναγνωρίσεις;', rightnow: 'Οι πιο ζεστές, κρύες, ανεμώδεις και καθαρές πόλεις της Γης αυτό το λεπτό', sky: 'Ηλιοβασίλεμα, ώρα σκότους, φεγγάρι, σύννεφα και πιθανότητα σέλας για κάθε πόλη απόψε', asteroids: 'Κάθε αστεροειδής που περνά κοντά στη Γη αυτή την εβδομάδα, με μέγεθος και απόσταση', onthisday: 'Σεισμοί, αποστολές, εκλείψεις και ανακαλύψεις που έγιναν σαν σήμερα', nearby: 'Τι εντόπισαν οι άνθρωποι στη φύση σε ακτίνα 40 χλμ. από κάθε πόλη αυτόν τον μήνα', outside: 'Οι επόμενες 48 ώρες βαθμολογημένες για περπάτημα, τρέξιμο ή πικνίκ: καιρός, αέρας, UV και γύρη μαζί', air: 'Ετήσια έκθεση σε PM2.5 συν ζωντανή μέτρηση στην πρωτεύουσα', waterstress: 'Πόσο από το ανανεώσιμο γλυκό νερό αντλεί μια χώρα κάθε χρόνο', human_span: 'Προσδόκιμο ζωής, με τη διαφορά ανάμεσα σε γυναίκες και άνδρες', mental: 'Θνησιμότητα από αυτοκτονίες ανά 100.000 κατοίκους, ανά φύλο', happiness: 'Βαθμολογίες της Παγκόσμιας Έκθεσης Ευτυχίας με κατάταξη, ώρες εργασίας και ασφάλεια', generations: 'Δείκτες γονιμότητας και η δημογραφική μετάβαση', univ: 'Πανεπιστημιακή εκπαίδευση, με τον διαχωρισμό ανά φύλο', public_private: 'Εγγραφές σε δημόσια και ιδιωτικά σχολεία και δαπάνες για την εκπαίδευση', health_private: 'Ποιος πληρώνει την υγεία: κράτος, ιδιώτες και από την τσέπη', migration: 'Καθαρή μετανάστευση, μεταναστευτικός πληθυσμός και εμβάσματα', economy: 'ΑΕΠ κατά κεφαλήν, ανεργία, ανισότητα και συμμετοχή στην εργασία', internet: 'Πρόσβαση στο διαδίκτυο, με ανάλυση ανά φύλο', music: 'Οι πιο δημοφιλείς καλλιτέχνες και τραγούδια ανά χώρα', cinema: 'Οι ταινίες με την υψηλότερη βαθμολογία που γυρίστηκαν σε μια χώρα', trends: 'Για τι μιλάει το Reddit, παγκόσμια και σε μια χώρα', alerts: 'Πυρκαγιές, καταιγίδες, πλημμύρες, ηφαίστεια, ξηρασίες και σεισμοί που συμβαίνουν τώρα, παγκοσμίως. Πάτησε μια κατηγορία για όλα τα γεγονότα', space: 'Γεωμαγνητικές καταιγίδες, πιθανότητα σέλας και ηλιακή δραστηριότητα, ζωντανά από τη NOAA', compare: 'Βάλε δύο χώρες δίπλα-δίπλα σε οποιονδήποτε δείκτη' }
+            menu: { year: 'Η Χρονιά Μέχρι Τώρα', factfiction: 'Αλήθεια ή Ψέμα', emoji: 'Χώρα με Emoji', hundred: 'Ο Κόσμος ως 100 Άνθρωποι', records: 'Ρεκόρ του Πλανήτη', home: 'Αρχική', globe: 'Ζωντανή Υδρόγειος', country: 'Προφίλ Χώρας', stories: 'Ιστορίες της Γης', twins: 'Δίδυμες Χώρες', born: 'Ο Πλανήτης από τη Γέννησή σου', perfect: 'Εύρεση Τέλειου Καιρού', quiz: 'Κουίζ Πλανήτη', mystery: 'Μυστήρια Χώρα (ημερήσιο)', hotornot: 'Ζεστό ή Κρύο (ζωντανή μονομαχία)', flags: 'Σημαίες Αστραπή', rightnow: 'Ο Πλανήτης Τώρα', alerts: 'Συναγερμοί Πλανήτη', space: 'Διαστημικός Καιρός', iss: 'Διαστημικός Σταθμός', sky: 'Ο Ουρανός Απόψε', asteroids: 'Παρατηρητήριο Αστεροειδών', onthisday: 'Σαν Σήμερα στη Γη', nearby: 'Άγρια Ζωή Κοντά σου', outside: 'Καλύτερη Ώρα Έξω', weather: 'Αρχείο Καιρού', ocean: 'Παλμός Ωκεανού', forest: 'Δασική Κληρονομιά', agri: 'Γεωργία', energy: 'Ενέργεια & ΑΠΕ', water: 'Ασφάλεια Νερού', carbon: 'Εκπομπές Άνθρακα', endangered: 'Απειλούμενα Είδη', waste: 'Απορρίμματα & Ανακύκλωση', power: 'Ενεργειακό Μείγμα', air: 'Ποιότητα Αέρα', waterstress: 'Υδατική Πίεση', wildlife: 'Γκαλερί Άγριας Ζωής', human_span: 'Προσδόκιμο Ζωής', mental: 'Ψυχική Υγεία', happiness: 'Ευτυχία & Ευημερία', generations: 'Γενιές', univ: 'Πρόσβαση στο Πανεπιστήμιο', public_private: 'Εκπαίδευση: Δημόσια vs Ιδιωτική', health_private: 'Υγεία: Δημόσια vs Ιδιωτική', migration: 'Μετανάστευση & Διασπορά', economy: 'Οικονομία & Αγορά Εργασίας', internet: 'Πρόσβαση στο Διαδίκτυο', music: 'Μουσική Κουλτούρα', cinema: 'Κινηματογράφος', trends: 'Τάσεις Διαδικτύου', city: 'Ιστορίες Πόλεων', compare: 'Χώρα vs Χώρα' },
+            labels: { year: 'Η ΧΡΟΝΙΑ ΜΕΧΡΙ ΤΩΡΑ', factfiction: 'ΑΛΗΘΕΙΑ Ή ΨΕΜΑ', emoji: 'ΧΩΡΑ ΜΕ EMOJI', hundred: 'Ο ΚΟΣΜΟΣ ΩΣ 100', records: 'ΡΕΚΟΡ ΤΟΥ ΠΛΑΝΗΤΗ', home: 'ΑΡΧΙΚΗ', globe: 'ΖΩΝΤΑΝΗ ΥΔΡΟΓΕΙΟΣ', country: 'ΠΡΟΦΙΛ ΧΩΡΑΣ', stories: 'ΙΣΤΟΡΙΕΣ ΤΗΣ ΓΗΣ', twins: 'ΔΙΔΥΜΕΣ ΧΩΡΕΣ', born: 'ΑΠΟ ΤΗ ΓΕΝΝΗΣΗ ΣΟΥ', perfect: 'ΤΕΛΕΙΟΣ ΚΑΙΡΟΣ', quiz: 'ΚΟΥΙΖ ΠΛΑΝΗΤΗ', mystery: 'ΜΥΣΤΗΡΙΑ ΧΩΡΑ', hotornot: 'ΖΕΣΤΟ Ή ΚΡΥΟ', flags: 'ΣΗΜΑΙΕΣ ΑΣΤΡΑΠΗ', rightnow: 'Ο ΠΛΑΝΗΤΗΣ ΤΩΡΑ', alerts: 'ΣΥΝΑΓΕΡΜΟΙ ΠΛΑΝΗΤΗ', space: 'ΔΙΑΣΤΗΜΙΚΟΣ ΚΑΙΡΟΣ', iss: 'ΔΙΑΣΤΗΜΙΚΟΣ ΣΤΑΘΜΟΣ', sky: 'Ο ΟΥΡΑΝΟΣ ΑΠΟΨΕ', asteroids: 'ΑΣΤΕΡΟΕΙΔΕΙΣ', onthisday: 'ΣΑΝ ΣΗΜΕΡΑ', nearby: 'ΑΓΡΙΑ ΖΩΗ ΚΟΝΤΑ ΣΟΥ', outside: 'ΚΑΛΥΤΕΡΗ ΩΡΑ ΕΞΩ', weather: 'ΑΡΧΕΙΟ ΚΑΙΡΟΥ', ocean: 'ΠΑΛΜΟΣ ΩΚΕΑΝΟΥ', forest: 'ΔΑΣΙΚΗ ΚΛΗΡΟΝΟΜΙΑ', agri: 'ΓΕΩΡΓΙΑ', energy: 'ΕΝΕΡΓΕΙΑ & ΑΠΕ', water: 'ΑΣΦΑΛΕΙΑ ΝΕΡΟΥ', carbon: 'ΕΚΠΟΜΠΕΣ ΑΝΘΡΑΚΑ', endangered: 'ΑΠΕΙΛΟΥΜΕΝΑ ΕΙΔΗ', waste: 'ΑΠΟΡΡΙΜΜΑΤΑ & ΑΝΑΚΥΚΛΩΣΗ', power: 'ΕΝΕΡΓΕΙΑΚΟ ΜΕΙΓΜΑ', air: 'ΠΟΙΟΤΗΤΑ ΑΕΡΑ', waterstress: 'ΥΔΑΤΙΚΗ ΠΙΕΣΗ', wildlife: 'ΓΚΑΛΕΡΙ ΑΓΡΙΑΣ ΖΩΗΣ', human_span: 'ΠΡΟΣΔΟΚΙΜΟ ΖΩΗΣ', mental: 'ΨΥΧΙΚΗ ΥΓΕΙΑ', happiness: 'ΕΥΤΥΧΙΑ & ΕΥΗΜΕΡΙΑ', generations: 'ΓΕΝΙΕΣ', univ: 'ΠΑΝΕΠΙΣΤΗΜΙΟ', public_private: 'ΕΚΠΑΙΔΕΥΣΗ: ΔΗΜΟΣΙΑ vs ΙΔΙΩΤΙΚΗ', health_private: 'ΥΓΕΙΑ: ΔΗΜΟΣΙΑ vs ΙΔΙΩΤΙΚΗ', migration: 'ΜΕΤΑΝΑΣΤΕΥΣΗ & ΔΙΑΣΠΟΡΑ', economy: 'ΟΙΚΟΝΟΜΙΑ & ΕΡΓΑΣΙΑ', internet: 'ΠΡΟΣΒΑΣΗ ΣΤΟ ΔΙΑΔΙΚΤΥΟ', music: 'ΜΟΥΣΙΚΗ ΚΟΥΛΤΟΥΡΑ', cinema: 'ΚΙΝΗΜΑΤΟΓΡΑΦΟΣ', trends: 'ΤΑΣΕΙΣ ΔΙΑΔΙΚΤΥΟΥ', city: 'ΙΣΤΟΡΙΕΣ ΠΟΛΕΩΝ', compare: 'ΧΩΡΑ VS ΧΩΡΑ' },
+            titles: { year: 'Η Χρονιά Μέχρι Τώρα', factfiction: 'Αλήθεια ή Ψέμα', emoji: 'Χώρα με Emoji', hundred: 'Ο Κόσμος ως 100 Άνθρωποι', records: 'Ρεκόρ του Πλανήτη', home: 'Εξερεύνησε τον πλανήτη με δεδομένα', globe: 'Ζωντανή Υδρόγειος', country: 'Προφίλ Χώρας', stories: 'Ιστορίες της Γης', twins: 'Δίδυμες Χώρες', born: 'Ο Πλανήτης από τότε που Γεννήθηκες', perfect: 'Εύρεση Τέλειου Καιρού', weather: 'Ιστορία του Καιρού', ocean: 'Παλμός του Ωκεανού', univ: 'Πρόσβαση στο Πανεπιστήμιο', forest: 'Δασική Κληρονομιά', agri: 'Γεωργία', human_span: 'Προσδόκιμο Ζωής', energy: 'Ενέργεια & Ανανεώσιμες', water: 'Ποιότητα & Ασφάλεια Νερού', mental: 'Ψυχική Υγεία', happiness: 'Ευτυχία & Ευημερία', carbon: 'Εκπομπές Άνθρακα', generations: 'Γενιές', internet: 'Πρόσβαση στο Διαδίκτυο', music: 'Μουσική Κουλτούρα', cinema: 'Ανακάλυψη Κινηματογράφου', endangered: 'Απειλούμενα Είδη', migration: 'Μετανάστευση & Διασπορά', public_private: 'Εκπαίδευση: Δημόσια vs Ιδιωτική', health_private: 'Υγεία: Δημόσια vs Ιδιωτική', economy: 'Οικονομία & Αγορά Εργασίας', trends: 'Τάσεις του Διαδικτύου', waste: 'Απορρίμματα & Ανακύκλωση', power: 'Ενεργειακό Μείγμα', air: 'Ποιότητα Αέρα', waterstress: 'Υδατική Πίεση', alerts: 'Συναγερμοί Πλανήτη', space: 'Διαστημικός Καιρός', compare: 'Χώρα εναντίον Χώρας', wildlife: 'Γκαλερί Άγριας Ζωής', quiz: 'Κουίζ Πλανήτη', iss: 'Εντοπισμός Διαστημικού Σταθμού', city: 'Ιστορίες Πόλεων', mystery: 'Μυστήρια Χώρα', hotornot: 'Ζεστό ή Κρύο', flags: 'Σημαίες Αστραπή', rightnow: 'Ο Πλανήτης Τώρα', sky: 'Ο Ουρανός Απόψε', asteroids: 'Παρατηρητήριο Αστεροειδών', onthisday: 'Σαν Σήμερα στη Γη', nearby: 'Άγρια Ζωή Κοντά σου', outside: 'Καλύτερη Ώρα Έξω' },
+            desc: { year: 'Συναρμολογείται από όσα κατέγραψε το ίδιο το EarthVault φέτος, ώρα με την ώρα: οι πιο ζεστές και κρύες πρωτεύουσες, σεισμοί, πυρκαγιές και τα ρεκόρ που έπεσαν. Τον Δεκέμβριο γίνεται η ανασκόπηση της χρονιάς', factfiction: 'Δηλώσεις φτιαγμένες από αληθινά στοιχεία της Παγκόσμιας Τράπεζας τη στιγμή που παίζεις. Αλήθεια ή ψέμα; Οι αριθμοί αποφασίζουν, και ένα λάθος τελειώνει το σερί', emoji: 'Τρία emoji, τέσσερις σημαίες: ποια χώρα είναι; 120 χώρες, κάθε απάντηση εξηγείται, μία έξτρα ζωή ανά σερί', hundred: 'Αν ο κόσμος ήταν ένα χωριό 100 ανθρώπων: ποιος ζει πού, ποιος έχει διαδίκτυο, νερό, ρεύμα, ποιος είναι παιδί ή άνω των 65', records: 'Η πιο ζεστή, η πιο κρύα και η πιο ανεμώδης πρωτεύουσα, ο ισχυρότερος σεισμός και η μεγαλύτερη πυρκαγιά που έχει καταγράψει το EarthVault, ώρα με την ώρα, και πότε έπεσε κάθε ρεκόρ', home: 'Ζωντανά δεδομένα, παιχνίδια και ιστορίες από ανοιχτές πηγές. Διάλεξε μια πόρτα.', globe: 'Ο πλανήτης σε 3D με ζωντανές πυρκαγιές, καταιγίδες, σεισμούς, ηφαίστεια, θερμοκρασίες πρωτευουσών και τον διαστημικό σταθμό. Πάτησε μια χώρα για το προφίλ της', country: 'Μία σελίδα για κάθε χώρα: ο αριθμός κάθε θησαυροφυλακίου με την παγκόσμια θέση του, ο καιρός στην πρωτεύουσα τώρα, ενεργοί συναγερμοί, οι πιο κοντινές δίδυμες και μια πόρτα σε κάθε θησαυροφυλάκιο', stories: 'Εννέα ξεναγήσεις μέσα στα δεδομένα, γράφημα-γράφημα: αυτή την εβδομάδα στη Γη (ζωντανά), ο αιώνας του άνθρακα, η θάλασσα που θερμαίνεται, τα δάση, η στροφή στις ανανεώσιμες, οκτώ δισεκατομμύρια εμείς, ποιος ζει περισσότερο, πού μετακινούνται οι άνθρωποι και η Μεσόγειος που θερμαίνεται', twins: 'Ποιες χώρες μοιάζουν πιο πολύ στη δική σου; Σύγκριση σε κάθε θησαυροφυλάκιο, οι πέντε πιο κοντινές με κάθε αριθμό δίπλα-δίπλα', born: 'Βάλε την ημερομηνία γέννησής σου: πώς άλλαξαν ο αέρας, το κλίμα, οι άνθρωποι και ο πλανήτης στη ζωή σου', perfect: 'Διάλεξε την ιδανική σου θερμοκρασία και βρες τις πρωτεύουσες που την έχουν αυτή τη στιγμή', weather: '50 χρόνια ημερήσιας ιστορίας θερμοκρασίας για κάθε πόλη', ocean: 'Ζωντανή θερμοκρασία θάλασσας και θαλάσσιοι καύσωνες για κάθε παράκτια πόλη', forest: 'Δασοκάλυψη και τάσεις αποψίλωσης ανά χώρα', agri: 'Ποσοστό γης που χρησιμοποιείται για καλλιέργειες, ανά χώρα', energy: 'Μερίδιο ανανεώσιμων και υδροηλεκτρικών στην ηλεκτρική ενέργεια ανά χώρα', water: 'Πρόσβαση σε ασφαλές πόσιμο νερό ανά χώρα', carbon: 'Εκπομπές αερίων του θερμοκηπίου σε σχέση με προϋπολογισμό άνθρακα με βάση το 1990', endangered: 'Απειλούμενα θηλαστικά, πουλιά, ψάρια και φυτά ανά χώρα', waste: 'Ποσοστά ανακύκλωσης, κομποστοποίησης και ταφής από τον ΟΟΣΑ', power: 'Μερίδια ορυκτών, άνθρακα και πυρηνικών στο δίκτυο, συν κατανάλωση ρεύματος ανά άτομο', wildlife: 'Αληθινές φωτογραφίες άγριας ζωής από πολίτες-επιστήμονες, και τι ζει εκεί', quiz: 'Επτά είδη ερωτήσεων με αληθινά δεδομένα: περισσότερο ή λιγότερο, ο πρώτος από τέσσερις, πρωτεύουσες, σημαίες, εκτιμήσεις και ζωντανός καιρός. Μετά προκάλεσε έναν φίλο με σύνδεσμο', iss: 'Πού βρίσκεται ο Διεθνής Διαστημικός Σταθμός αυτή τη στιγμή, ζωντανά στον χάρτη', city: 'Πότε ιδρύθηκε μια πόλη, ποιοι γεννήθηκαν εκεί και οι στιγμές που τη διαμόρφωσαν', mystery: 'Μία μυστική χώρα κάθε μέρα. Έξι προσπάθειες, νέα ένδειξη μετά από κάθε λάθος', hotornot: 'Δύο πόλεις, ζωντανές θερμοκρασίες: ποια είναι πιο ζεστή αυτή τη στιγμή;', flags: 'Τριάντα δευτερόλεπτα, τέσσερις επιλογές ανά σημαία. Πόσες θα αναγνωρίσεις;', rightnow: 'Οι πιο ζεστές, κρύες, ανεμώδεις και καθαρές πόλεις της Γης αυτό το λεπτό', sky: 'Ηλιοβασίλεμα, ώρα σκότους, φεγγάρι, σύννεφα και πιθανότητα σέλας για κάθε πόλη απόψε', asteroids: 'Κάθε αστεροειδής που περνά κοντά στη Γη αυτή την εβδομάδα, με μέγεθος και απόσταση', onthisday: 'Σεισμοί, αποστολές, εκλείψεις και ανακαλύψεις που έγιναν σαν σήμερα', nearby: 'Τι εντόπισαν οι άνθρωποι στη φύση σε ακτίνα 40 χλμ. από κάθε πόλη αυτόν τον μήνα', outside: 'Οι επόμενες 48 ώρες βαθμολογημένες για περπάτημα, τρέξιμο ή πικνίκ: καιρός, αέρας, UV και γύρη μαζί', air: 'Ετήσια έκθεση σε PM2.5 συν ζωντανή μέτρηση στην πρωτεύουσα', waterstress: 'Πόσο από το ανανεώσιμο γλυκό νερό αντλεί μια χώρα κάθε χρόνο', human_span: 'Προσδόκιμο ζωής, με τη διαφορά ανάμεσα σε γυναίκες και άνδρες', mental: 'Θνησιμότητα από αυτοκτονίες ανά 100.000 κατοίκους, ανά φύλο', happiness: 'Βαθμολογίες της Παγκόσμιας Έκθεσης Ευτυχίας με κατάταξη, ώρες εργασίας και ασφάλεια', generations: 'Δείκτες γονιμότητας και η δημογραφική μετάβαση', univ: 'Πανεπιστημιακή εκπαίδευση, με τον διαχωρισμό ανά φύλο', public_private: 'Εγγραφές σε δημόσια και ιδιωτικά σχολεία και δαπάνες για την εκπαίδευση', health_private: 'Ποιος πληρώνει την υγεία: κράτος, ιδιώτες και από την τσέπη', migration: 'Καθαρή μετανάστευση, μεταναστευτικός πληθυσμός και εμβάσματα', economy: 'ΑΕΠ κατά κεφαλήν, ανεργία, ανισότητα και συμμετοχή στην εργασία', internet: 'Πρόσβαση στο διαδίκτυο, με ανάλυση ανά φύλο', music: 'Οι πιο δημοφιλείς καλλιτέχνες και τραγούδια ανά χώρα', cinema: 'Οι ταινίες με την υψηλότερη βαθμολογία που γυρίστηκαν σε μια χώρα', trends: 'Για τι μιλάει το Reddit, παγκόσμια και σε μια χώρα', alerts: 'Πυρκαγιές, καταιγίδες, πλημμύρες, ηφαίστεια, ξηρασίες και σεισμοί που συμβαίνουν τώρα, παγκοσμίως. Πάτησε μια κατηγορία για όλα τα γεγονότα', space: 'Γεωμαγνητικές καταιγίδες, πιθανότητα σέλας και ηλιακή δραστηριότητα, ζωντανά από τη NOAA', compare: 'Βάλε δύο χώρες δίπλα-δίπλα σε οποιονδήποτε δείκτη' }
         };
         function t(key) { const e = UI[key]; if (!e) return key; return (LANG === 'el' && e[1]) ? e[1] : e[0]; }
         function trv(group, mode, fallback) { return (LANG === 'el' && GR[group] && GR[group][mode]) ? GR[group][mode] : fallback; }
@@ -8387,7 +8459,7 @@ function displayMovies(data, query) {
             set('pollution-label', isOcean ? t('s_current') : t('s_pollution'));
             document.querySelectorAll('.rec-prefix').forEach(el => el.innerText = isOcean ? t('s_on') : t('s_year'));
             const titles = {
-                history: "Time Machine", weather: "Weather History Vault", ocean: "Ocean Pulse Vault", univ: "University Access Vault", forest: "Forest Heritage Vault", agri: "Agriculture Vault", human_span: "Human Span Vault", energy: "Energy & Renewables Vault", water: "Water Quality & Safety Vault", mental: "Mental Health Vault", happiness: "Happiness & Wellbeing Vault", carbon: "Carbon Emissions Vault", generations: "Generations Vault", internet: "Internet Access Vault", music: "Music Culture Vault", cinema: "Cinema Discovery Vault", endangered: "Endangered Species Vault", migration: "Migration & Diaspora Vault", public_private: "Education: Public vs Private Vault", health_private: "Health: Public vs Private Vault", economy: "Economy & Labor Market Vault", trends: "Internet Trends Vault", waste: "Waste & Recycling Vault", power: "Power Mix Vault", air: "Air Quality Vault", waterstress: "Water Stress Vault", alerts: "Planet Alerts", space: "Space Weather Vault", compare: "Country vs Country", wildlife: "Wildlife Gallery", quiz: "Planet Quiz", iss: "Space Station Tracker", city: "City Stories", mystery: "Mystery Country", hotornot: "Hot or Not", flags: "Flag Flash", rightnow: "Planet Right Now", sky: "Sky Tonight", asteroids: "Asteroid Watch", onthisday: "On This Day on Earth", nearby: "Wildlife Near You", outside: "Best Hour Outside", twins: "Country Twins", born: "The Planet Since You Were Born", globe: "Live Globe", country: "Country Profile", stories: "Earth Stories", home: "Explore the planet in data", factfiction: "Fact or Fiction", hundred: "The World as 100 People", records: "Planet Records", year: "The Year So Far", perfect: "Perfect Weather Finder"
+                emoji: "Emoji Country", weather: "Weather History Vault", ocean: "Ocean Pulse Vault", univ: "University Access Vault", forest: "Forest Heritage Vault", agri: "Agriculture Vault", human_span: "Human Span Vault", energy: "Energy & Renewables Vault", water: "Water Quality & Safety Vault", mental: "Mental Health Vault", happiness: "Happiness & Wellbeing Vault", carbon: "Carbon Emissions Vault", generations: "Generations Vault", internet: "Internet Access Vault", music: "Music Culture Vault", cinema: "Cinema Discovery Vault", endangered: "Endangered Species Vault", migration: "Migration & Diaspora Vault", public_private: "Education: Public vs Private Vault", health_private: "Health: Public vs Private Vault", economy: "Economy & Labor Market Vault", trends: "Internet Trends Vault", waste: "Waste & Recycling Vault", power: "Power Mix Vault", air: "Air Quality Vault", waterstress: "Water Stress Vault", alerts: "Planet Alerts", space: "Space Weather Vault", compare: "Country vs Country", wildlife: "Wildlife Gallery", quiz: "Planet Quiz", iss: "Space Station Tracker", city: "City Stories", mystery: "Mystery Country", hotornot: "Hot or Not", flags: "Flag Flash", rightnow: "Planet Right Now", sky: "Sky Tonight", asteroids: "Asteroid Watch", onthisday: "On This Day on Earth", nearby: "Wildlife Near You", outside: "Best Hour Outside", twins: "Country Twins", born: "The Planet Since You Were Born", globe: "Live Globe", country: "Country Profile", stories: "Earth Stories", home: "Explore the planet in data", factfiction: "Fact or Fiction", hundred: "The World as 100 People", records: "Planet Records", year: "The Year So Far", perfect: "Perfect Weather Finder"
             };
             set('main-title', trv('titles', mode, titles[mode] || 'EarthVault'));
             set('main-subtitle', trv('desc', mode, (MODE_INFO[mode] && MODE_INFO[mode].desc) || t('subtitle_default')));
@@ -8532,8 +8604,8 @@ function displayMovies(data, query) {
         const isIOS = () => /iPhone|iPad|iPod/i.test(navigator.userAgent) && !window.MSStream;
         function showInstallButtons(show) { document.querySelectorAll('.install-btn').forEach(b => b.classList.toggle('hidden', !show)); }
         // Bump APP_VERSION and APP_NEWS with every release: returning visitors and installed apps get a one-time "updated" notice
-        const APP_VERSION = '2026.10.23-8';
-        const APP_NEWS = ['New game: Time Machine ⏳. Today\'s events from Wikipedia: which year, which came first, what happened that year. New every day, with an extra life.', 'Νέο παιχνίδι: Μηχανή του Χρόνου ⏳. Τα σημερινά γεγονότα από τη Wikipedia: ποια χρονιά, ποιο έγινε πρώτο, τι συνέβη εκείνη τη χρονιά. Νέο κάθε μέρα, με έξτρα ζωή.'];
+        const APP_VERSION = '2026.10.23-9';
+        const APP_NEWS = ['New game: Emoji Country 🧩. Three emojis, four flags, which country is it? 120 countries, every answer explained, with an extra life.', 'Νέο παιχνίδι: Χώρα με Emoji 🧩. Τρία emoji, τέσσερις σημαίες, ποια χώρα είναι; 120 χώρες, κάθε απάντηση εξηγείται, με έξτρα ζωή.'];
         function updateBanner(text, buttonLabel, onClick) {
             const stack = document.getElementById('toast-stack'); if (!stack) return;
             const el = document.createElement('div');
