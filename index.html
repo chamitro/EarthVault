@@ -5324,7 +5324,7 @@ function displayMovies(data, query) {
         // Measures with a range people can picture, for the slider questions
         const QUIZ_ESTIMATES = { 'SP.DYN.LE00.IN': { min: 45, max: 90, step: 1 }, 'SP.DYN.TFRT.IN': { min: 0.5, max: 8, step: 0.1 }, 'IT.NET.USER.ZS': { min: 0, max: 100, step: 1 }, 'AG.LND.FRST.ZS': { min: 0, max: 100, step: 1 }, 'EG.ELC.RNEW.ZS': { min: 0, max: 100, step: 1 }, 'SP.POP.65UP.TO.ZS': { min: 0, max: 35, step: 0.5 }, 'SL.UEM.TOTL.ZS': { min: 0, max: 40, step: 0.5 }, 'AG.LND.AGRI.ZS': { min: 0, max: 100, step: 1 }, 'owid_ladder': { min: 2, max: 8, step: 0.1 } };
         // Same rule for every measure: a guess within 10% of the slider's range counts (so ±10 on the 0–100 ones)
-        const quizTol = cfg => Number((Math.round((cfg.max - cfg.min) / 10 / cfg.step) * cfg.step).toFixed(2));
+        const quizTol = cfg => Number((Math.round((cfg.max - cfg.min) * 0.15 / cfg.step) * cfg.step).toFixed(2)); // 15% of the slider range counts as correct
         async function loadCapitalWeather() {
             const stored = lsGet('ev_caps_v1', null);
             if (stored && stored.t && Date.now() - stored.t < 30 * 60 * 1000 && Array.isArray(stored.rows) && stored.rows.length > 100) { if (stored.asOf) stored.rows.asOf = stored.asOf; return stored.rows; }
@@ -5405,34 +5405,45 @@ function displayMovies(data, query) {
         const quizName = c => `${flagEmoji(c.iso2Code)} ${escapeHtml(c.name)}`;
         const quizSameRegion = (d, c, n, pick, exclude) => { const ex = new Set([c.id, ...(exclude || [])]); const out = []; const pool = d.main.filter(x => x.region.id === c.region.id && !ex.has(x.id)); let g = 0; while (out.length < n && g++ < 60) { const src = pool.length >= n && pick([1, 1, 1, 0]) ? pool : d.main; const x = pick(src); if (!ex.has(x.id)) { ex.add(x.id); out.push(x); } } return out; };
         const quizWithMetric = (d, key) => d.main.filter(c => d.val[c.id] && d.val[c.id][key]);
+        // two neighbours from the same region plus one country from another region: easier than four look-alikes
+        const quizMixedDecoys = (d, c, pick) => { const near = quizSameRegion(d, c, 2, pick); const far = d.main.filter(x => x.region.id !== c.region.id && x.id !== c.id && !near.includes(x)); const out = [...near]; let g = 0; while (out.length < 3 && far.length && g++ < 30) { const x = pick(far); if (!out.includes(x)) out.push(x); } return out; };
         const quizMake = {
             higher(d, pick) {
                 const m = pick(d.metrics), pool = quizWithMetric(d, m.key); if (pool.length < 10) throw new Error('thin metric');
-                const a = pick(pool); let b = pick(pool), g = 0; while ((b.id === a.id || d.val[b.id][m.key].v === d.val[a.id][m.key].v) && g++ < 25) b = pick(pool);
+                // easier: the two values must be clearly apart (at least 40%), so the answer is never a coin flip
+                const far = (x, y) => { const p = Math.abs(d.val[x.id][m.key].v), q = Math.abs(d.val[y.id][m.key].v); return Math.abs(p - q) >= 0.4 * Math.max(p, q, 1e-9); };
+                const a = pick(pool); let b = pick(pool), g = 0; while ((b.id === a.id || !far(a, b)) && g++ < 60) b = pick(pool);
+                if (b.id === a.id || !far(a, b)) throw new Error('no clear pair');
                 const va = d.val[a.id][m.key], vb = d.val[b.id][m.key], hi = va.v > vb.v ? a : b, lo = hi === a ? b : a;
                 const ratio = d.val[lo.id][m.key].v ? d.val[hi.id][m.key].v / d.val[lo.id][m.key].v : null;
-                return { kind: 'higher', prompt: `${L('Which country has the higher', 'Ποια χώρα έχει μεγαλύτερο')}<br><span class="text-pink-300">${L(m.mt.l[0], m.mt.l[1])}</span>?`, layout: 'cards',
+                return { kind: 'higher', metric: m.key, prompt: `${L('Which country has the higher', 'Ποια χώρα έχει μεγαλύτερο')}<br><span class="text-pink-300">${L(m.mt.l[0], m.mt.l[1])}</span>?`, layout: 'cards',
                     choices: [a, b].map(c => ({ id: c.id, html: `<div class="text-5xl md:text-6xl mb-3">${flagEmoji(c.iso2Code)}</div><div class="text-lg md:text-xl font-black text-white">${escapeHtml(c.name)}</div><div class="text-[10px] text-slate-500 uppercase tracking-widest mt-1">${escapeHtml(c.region.value)}</div>`, reveal: `${twinFmt(m.mt, d.val[c.id][m.key].v)} <span class="text-xs text-slate-500">(${d.val[c.id][m.key].y})</span>` })),
                     answer: hi.id, explain: `${escapeHtml(hi.name)} ${L('is higher', 'είναι πιο ψηλά')}${ratio && ratio > 1.05 ? ` - ${L('about', 'περίπου')} ${ratio >= 10 ? Math.round(ratio) : ratio.toFixed(1)}× ${escapeHtml(lo.name)}` : ''}.`, explore: { mode: m.mt.v, name: hi.name } };
             },
             top4(d, pick) {
                 const m = pick(d.metrics), pool = quizWithMetric(d, m.key); if (pool.length < 12) throw new Error('thin metric');
-                const set = [], ids = new Set(); let g = 0; while (set.length < 4 && g++ < 40) { const c = pick(pool); if (!ids.has(c.id) && !set.some(x => d.val[x.id][m.key].v === d.val[c.id][m.key].v)) { ids.add(c.id); set.push(c); } }
-                if (set.length < 4) throw new Error('no set');
-                const sorted = [...set].sort((x, y) => d.val[y.id][m.key].v - d.val[x.id][m.key].v);
-                return { kind: 'top4', prompt: `${L('Which of these four has the highest', 'Ποια από τις τέσσερις έχει το μεγαλύτερο')}<br><span class="text-pink-300">${L(m.mt.l[0], m.mt.l[1])}</span>?`, layout: 'buttons',
+                let set = [], sorted = [];
+                for (let t = 0; t < 10; t++) { // easier: keep drawing sets until the winner leads the runner-up by at least 25%
+                    set = []; const ids = new Set(); let g = 0; while (set.length < 4 && g++ < 40) { const c = pick(pool); if (!ids.has(c.id) && !set.some(x => d.val[x.id][m.key].v === d.val[c.id][m.key].v)) { ids.add(c.id); set.push(c); } }
+                    if (set.length < 4) continue;
+                    sorted = [...set].sort((x, y) => d.val[y.id][m.key].v - d.val[x.id][m.key].v);
+                    const v0 = Math.abs(d.val[sorted[0].id][m.key].v), v1 = Math.abs(d.val[sorted[1].id][m.key].v);
+                    if (v0 - v1 >= 0.25 * Math.max(v0, 1e-9)) break; sorted = [];
+                }
+                if (sorted.length < 4) throw new Error('no clear set');
+                return { kind: 'top4', metric: m.key, prompt: `${L('Which of these four has the highest', 'Ποια από τις τέσσερις έχει το μεγαλύτερο')}<br><span class="text-pink-300">${L(m.mt.l[0], m.mt.l[1])}</span>?`, layout: 'buttons',
                     choices: set.map(c => ({ id: c.id, html: quizName(c) })), answer: sorted[0].id,
                     explain: sorted.map((c, i) => `${i + 1}. ${quizName(c)} <b class="text-white">${twinFmt(m.mt, d.val[c.id][m.key].v)}</b>`).join('<br>'), explore: { mode: m.mt.v, name: sorted[0].name } };
             },
             capital(d, pick) {
                 const pool = d.main.filter(c => c.capitalCity); const c = pick(pool);
-                const others = quizSameRegion(d, c, 3, pick).filter(x => x.capitalCity && x.capitalCity !== c.capitalCity); if (others.length < 3) throw new Error('no distractors');
+                const others = quizMixedDecoys(d, c, pick).filter(x => x.capitalCity && x.capitalCity !== c.capitalCity); if (others.length < 3) throw new Error('no distractors');
                 const set = chShuffle([c, ...others], () => pick([0.1, 0.3, 0.5, 0.7, 0.9]));
                 return { kind: 'capital', prompt: `${L('What is the capital of', 'Ποια είναι η πρωτεύουσα της')} ${quizName(c)}?`, layout: 'buttons',
                     choices: set.map(x => ({ id: x.id, html: escapeHtml(x.capitalCity) })), answer: c.id, explain: `${quizName(c)}: <b class="text-white">${escapeHtml(c.capitalCity)}</b>.`, explore: { mode: 'city', name: c.capitalCity } };
             },
             flag(d, pick) {
-                const c = pick(d.main); const others = quizSameRegion(d, c, 3, pick); if (others.length < 3) throw new Error('no distractors');
+                const c = pick(d.main); const others = quizMixedDecoys(d, c, pick); if (others.length < 3) throw new Error('no distractors');
                 const set = chShuffle([c, ...others], () => pick([0.1, 0.3, 0.5, 0.7, 0.9]));
                 return { kind: 'flag', prompt: `${L('Which flag belongs to', 'Ποια σημαία ανήκει στη χώρα')} <span class="text-pink-300">${escapeHtml(c.name)}</span>?`, layout: 'buttons', big: true,
                     choices: set.map(x => ({ id: x.id, html: `<span class="text-6xl md:text-7xl leading-none">${flagEmoji(x.iso2Code)}</span>` })), answer: c.id, explain: set.map(x => `${flagEmoji(x.iso2Code)} ${escapeHtml(x.name)}`).join(' · '), explore: { mode: 'flags' } };
@@ -5446,7 +5457,7 @@ function displayMovies(data, query) {
             },
             warmer(d, pick, weather) {
                 if (!weather) throw new Error('no weather');
-                const a = pick(weather); let b = pick(weather), g = 0; while ((b === a || Math.abs(a.t - b.t) < 1.5) && g++ < 30) b = pick(weather);
+                const a = pick(weather); let b = pick(weather), g = 0; while ((b === a || Math.abs(a.t - b.t) < 4) && g++ < 40) b = pick(weather); // easier: at least 4 °C apart
                 const w = a.t >= b.t ? a : b;
                 const card = r => { let lt = ''; try { lt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', timeZone: r.tz }); } catch (e) {} return { id: r.iso2, html: `<div class="text-5xl md:text-6xl mb-3">${flagEmoji(r.iso2)}</div><div class="text-lg md:text-xl font-black text-white">${escapeHtml(r.city)}</div><div class="text-[10px] text-slate-500 uppercase tracking-widest mt-1">${escapeHtml(r.country)} · ${lt} ${r.day ? '☀️' : '🌙'}</div>`, reveal: `${r.t.toFixed(1)}°C ${WX_EMOJI(r.code)}` }; };
                 return { kind: 'warmer', prompt: `${L('Which capital is', 'Ποια πρωτεύουσα είναι')} <span class="text-pink-300">${L('warmer right now', 'πιο ζεστή αυτή τη στιγμή')}</span>?`, layout: 'cards', choices: [card(a), card(b)], answer: w.iso2,
@@ -5455,7 +5466,7 @@ function displayMovies(data, query) {
             later(d, pick, weather) {
                 if (!weather) throw new Error('no weather');
                 const tod = r => (((Date.now() / 1000 + r.offset) % 86400) + 86400) % 86400;
-                const a = pick(weather); let b = pick(weather), g = 0; while ((b === a || Math.abs(tod(a) - tod(b)) < 3600 || Math.abs(tod(a) - tod(b)) > 82800) && g++ < 30) b = pick(weather);
+                const a = pick(weather); let b = pick(weather), g = 0; while ((b === a || Math.abs(tod(a) - tod(b)) < 3 * 3600 || Math.abs(tod(a) - tod(b)) > 21 * 3600) && g++ < 40) b = pick(weather); // easier: at least 3 hours apart
                 const w = tod(a) > tod(b) ? a : b;
                 const lt = r => { try { return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', timeZone: r.tz }); } catch (e) { return ''; } };
                 const card = r => ({ id: r.iso2, html: `<div class="text-5xl md:text-6xl mb-3">${flagEmoji(r.iso2)}</div><div class="text-lg md:text-xl font-black text-white">${escapeHtml(r.city)}</div><div class="text-[10px] text-slate-500 uppercase tracking-widest mt-1">${escapeHtml(r.country)}</div>`, reveal: `🕒 ${lt(r)}` });
@@ -8604,8 +8615,8 @@ function displayMovies(data, query) {
         const isIOS = () => /iPhone|iPad|iPod/i.test(navigator.userAgent) && !window.MSStream;
         function showInstallButtons(show) { document.querySelectorAll('.install-btn').forEach(b => b.classList.toggle('hidden', !show)); }
         // Bump APP_VERSION and APP_NEWS with every release: returning visitors and installed apps get a one-time "updated" notice
-        const APP_VERSION = '2026.10.23-9';
-        const APP_NEWS = ['New game: Emoji Country 🧩. Three emojis, four flags, which country is it? 120 countries, every answer explained, with an extra life.', 'Νέο παιχνίδι: Χώρα με Emoji 🧩. Τρία emoji, τέσσερις σημαίες, ποια χώρα είναι; 120 χώρες, κάθε απάντηση εξηγείται, με έξτρα ζωή.'];
+        const APP_VERSION = '2026.10.24-1';
+        const APP_NEWS = ['Planet Quiz is a little easier: clearer gaps between the two countries, a clear winner in top-of-four, wider estimate tolerance, and mixed options in capitals and flags. Plus the new Emoji Country game.', 'Το Κουίζ Πλανήτη έγινε λίγο πιο εύκολο: καθαρότερες διαφορές ανάμεσα στις δύο χώρες, ξεκάθαρος νικητής στον πρώτο από τέσσερις, μεγαλύτερη ανοχή στην εκτίμηση και ανάμεικτες επιλογές σε πρωτεύουσες και σημαίες. Και το νέο παιχνίδι Χώρα με Emoji.'];
         function updateBanner(text, buttonLabel, onClick) {
             const stack = document.getElementById('toast-stack'); if (!stack) return;
             const el = document.createElement('div');
