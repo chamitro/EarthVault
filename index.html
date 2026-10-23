@@ -5237,7 +5237,10 @@ function displayMovies(data, query) {
         const pickRandom = arr => arr[Math.floor(Math.random() * arr.length)];
         const CAPITAL_FIX = { CF: ['4.3612', '18.5550'], VE: ['10.4880', '-66.8792'], PK: ['33.7215', '73.0433'], BO: ['-16.5000', '-68.1500'], MG: ['-18.9137', '47.5361'], MM: ['19.7366', '96.2072'], CI: ['6.8206', '-5.2767'], HN: ['14.0818', '-87.2068'], ML: ['12.6092', '-7.9752'], LA: ['17.9667', '102.6000'] };
         async function wbCountries() {
-            const cl = await cachedJson('https://api.worldbank.org/v2/country?format=json&per_page=300', 24 * 3600 * 1000);
+            // the list is kept on disk for a week, so a hanging World Bank call on a phone does not block every vault
+            let cl;
+            try { cl = await cachedJson('https://api.worldbank.org/v2/country?format=json&per_page=300', 24 * 3600 * 1000); if (cl && cl[1] && cl[1].length > 100) lsSet('ev_countries_v1', { t: Date.now(), list: cl[1] }); }
+            catch (e) { const st = lsGet('ev_countries_v1', null); if (st && Array.isArray(st.list) && st.list.length > 100 && Date.now() - st.t < 7 * 24 * 3600 * 1000) { console.warn('Using the stored country list:', e.message); cl = [null, st.list]; } else throw e; }
             return cl[1].filter(isRealCountry).map(c => { const f = CAPITAL_FIX[c.iso2Code]; return f ? Object.assign({}, c, { latitude: f[0], longitude: f[1] }) : c; }); // the World Bank places ten capitals hundreds of km away
         }
 
@@ -5923,7 +5926,16 @@ function displayMovies(data, query) {
         const localDateKey = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
         const lsGet = (k, fallback) => { try { const v = JSON.parse(localStorage.getItem(k)); return v === null || v === undefined ? fallback : v; } catch (e) { return fallback; } };
         const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
-        const wbLatestMap = async ind => { const rows = await cachedJson(`https://api.worldbank.org/v2/country/all/indicator/${ind}?format=json&mrnev=1&per_page=400`, 24 * 3600 * 1000); const m = {}; (rows[1] || []).forEach(r => { if (r.value !== null) m[r.countryiso3code] = { val: r.value, year: r.date }; }); return m; };
+        const wbLatestMap = async ind => {
+            try { const rows = await cachedJson(`https://api.worldbank.org/v2/country/all/indicator/${ind}?format=json&mrnev=1&per_page=400`, 24 * 3600 * 1000); const m = {}; (rows[1] || []).forEach(r => { if (r.value !== null) m[r.countryiso3code] = { val: r.value, year: r.date }; }); return m; }
+            catch (e) {
+                // the Country Twins dataset (in memory or on disk from an earlier visit) carries the same measures
+                const tw = (typeof twinData !== 'undefined' && twinData) || lsGet('ev_twin_v2', null), m = {};
+                if (tw && tw.val) Object.keys(tw.val).forEach(id => { const x = tw.val[id][ind]; if (x) m[id] = { val: x.v, year: x.y }; });
+                if (Object.keys(m).length > 50) { console.warn('Using the stored dataset for', ind, '-', e.message); return m; }
+                throw e;
+            }
+        };
         function moonPhase(date = new Date()) {
             const synodic = 29.530588853, ref = Date.UTC(2000, 0, 6, 18, 14);
             const phase = (((date.getTime() - ref) / 86400000) % synodic + synodic) % synodic / synodic;
@@ -8403,7 +8415,7 @@ function displayMovies(data, query) {
         const isIOS = () => /iPhone|iPad|iPod/i.test(navigator.userAgent) && !window.MSStream;
         function showInstallButtons(show) { document.querySelectorAll('.install-btn').forEach(b => b.classList.toggle('hidden', !show)); }
         // Bump APP_VERSION and APP_NEWS with every release: returning visitors and installed apps get a one-time "updated" notice
-        const APP_VERSION = '2026.10.23-3';
+        const APP_VERSION = '2026.10.23-4';
         const APP_NEWS = ['New: an extra life ❤️ in Planet Quiz, Hot or Not and Fact or Fiction: one mistake per streak is forgiven. And a little Earth companion in the corner shares live facts.', 'Νέο: έξτρα ζωή ❤️ στο Κουίζ Πλανήτη, στο Ζεστό ή Κρύο και στο Αλήθεια ή Ψέμα: ένα λάθος ανά σερί συγχωρείται. Και ένας μικρός σύντροφος της Γης στη γωνία μοιράζεται ζωντανά στοιχεία.'];
         function updateBanner(text, buttonLabel, onClick) {
             const stack = document.getElementById('toast-stack'); if (!stack) return;
