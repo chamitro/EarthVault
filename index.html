@@ -5944,7 +5944,7 @@ function displayMovies(data, query) {
             return { phase, illumination, name: ['New moon', 'Waxing crescent', 'First quarter', 'Waxing gibbous', 'Full moon', 'Waning gibbous', 'Last quarter', 'Waning crescent'][idx], emoji: ['🌑', '🌒', '🌓', '🌔', '🌕', '🌖', '🌗', '🌘'][idx] };
         }
         // one extra life per streak: the first mistake is forgiven, the second ends the streak
-        const lifePill = has => has === undefined ? '' : `<span class="px-3 py-1.5 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-300" title="${L('One mistake per streak is forgiven', 'Ένα λάθος ανά σερί συγχωρείται')}">${has ? '❤️' : '🖤'} ${L('Life', 'Ζωή')}</span>`;
+        const lifePill = has => has === undefined ? '' : `<span class="px-3 py-1.5 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-300" title="${L('One mistake per streak is forgiven', 'Ένα λάθος ανά σερί συγχωρείται')}">${has ? '❤️ ' + L('1 mistake allowed', '1 λάθος επιτρέπεται') : '🖤 ' + L('next mistake ends the streak', 'το επόμενο λάθος τελειώνει το σερί')}</span>`;
         const scoreHeader = (score, streak, best, tone, life) => `<div class="flex flex-wrap items-center justify-center gap-3 mb-5 text-[10px] font-black uppercase tracking-widest">
         <span class="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-slate-300">Score <span class="text-white">${score}</span></span>
         <span class="px-3 py-1.5 rounded-full bg-orange-500/10 border border-orange-500/30 text-orange-300">🔥 Streak ${streak}</span>
@@ -7787,6 +7787,7 @@ function displayMovies(data, query) {
     <div class="vault-card rounded-[2rem] p-5 md:p-8 mt-5">
         <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">🗂️ ${L('All the vaults', 'Όλα τα θησαυροφυλάκια')}</div>
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">${menuGroups().map(g => `<div><div class="text-[10px] font-black uppercase tracking-widest mb-2 text-slate-300">${escapeHtml(g.name)}</div><div class="flex flex-wrap gap-1.5">${g.items.map(it => `<button type="button" onclick="selectMode('${it.mode}')" class="px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 text-[11px] font-bold text-slate-200">${it.icon} ${escapeHtml(it.name)}</button>`).join('')}</div></div>`).join('')}</div>
+        <p class="text-center text-[10px] text-slate-600 mt-6">EarthVault ${APP_VERSION}</p>
     </div>`);
             const fill = (id, v, sub) => { const el = document.getElementById(id); if (el) el.innerHTML = v; const s = document.getElementById(id + '-sub'); if (s && sub !== undefined) s.textContent = sub; };
             const safe = p => p.catch(e => { console.warn('Home tile failed:', e.message); return null; });
@@ -8415,7 +8416,7 @@ function displayMovies(data, query) {
         const isIOS = () => /iPhone|iPad|iPod/i.test(navigator.userAgent) && !window.MSStream;
         function showInstallButtons(show) { document.querySelectorAll('.install-btn').forEach(b => b.classList.toggle('hidden', !show)); }
         // Bump APP_VERSION and APP_NEWS with every release: returning visitors and installed apps get a one-time "updated" notice
-        const APP_VERSION = '2026.10.23-5';
+        const APP_VERSION = '2026.10.23-6';
         const APP_NEWS = ['New: an extra life ❤️ in Planet Quiz, Hot or Not and Fact or Fiction: one mistake per streak is forgiven. And a little Earth companion in the corner shares live facts.', 'Νέο: έξτρα ζωή ❤️ στο Κουίζ Πλανήτη, στο Ζεστό ή Κρύο και στο Αλήθεια ή Ψέμα: ένα λάθος ανά σερί συγχωρείται. Και ένας μικρός σύντροφος της Γης στη γωνία μοιράζεται ζωντανά στοιχεία.'];
         function updateBanner(text, buttonLabel, onClick) {
             const stack = document.getElementById('toast-stack'); if (!stack) return;
