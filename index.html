@@ -5355,7 +5355,7 @@ function displayMovies(data, query) {
         // Measures with a range people can picture, for the slider questions
         const QUIZ_ESTIMATES = { 'SP.DYN.LE00.IN': { min: 45, max: 90, step: 1 }, 'SP.DYN.TFRT.IN': { min: 0.5, max: 8, step: 0.1 }, 'IT.NET.USER.ZS': { min: 0, max: 100, step: 1 }, 'AG.LND.FRST.ZS': { min: 0, max: 100, step: 1 }, 'EG.ELC.RNEW.ZS': { min: 0, max: 100, step: 1 }, 'SP.POP.65UP.TO.ZS': { min: 0, max: 35, step: 0.5 }, 'SL.UEM.TOTL.ZS': { min: 0, max: 40, step: 0.5 }, 'AG.LND.AGRI.ZS': { min: 0, max: 100, step: 1 }, 'owid_ladder': { min: 2, max: 8, step: 0.1 } };
         // Same rule for every measure: a guess within 10% of the slider's range counts (so ±10 on the 0–100 ones)
-        const quizTol = cfg => Number((Math.round((cfg.max - cfg.min) * 0.15 / cfg.step) * cfg.step).toFixed(2)); // 15% of the slider range counts as correct
+        const quizTol = cfg => Number((Math.round((cfg.max - cfg.min) * 0.25 / cfg.step) * cfg.step).toFixed(2)); // 25% of the slider range counts as correct (±25 on a 0-100 scale)
         async function loadCapitalWeather() {
             const stored = lsGet('ev_caps_v1', null);
             if (stored && stored.t && Date.now() - stored.t < 30 * 60 * 1000 && Array.isArray(stored.rows) && stored.rows.length > 100) { if (stored.asOf) stored.rows.asOf = stored.asOf; return stored.rows; }
@@ -8646,8 +8646,8 @@ function displayMovies(data, query) {
         const isIOS = () => /iPhone|iPad|iPod/i.test(navigator.userAgent) && !window.MSStream;
         function showInstallButtons(show) { document.querySelectorAll('.install-btn').forEach(b => b.classList.toggle('hidden', !show)); }
         // Bump APP_VERSION and APP_NEWS with every release: returning visitors and installed apps get a one-time "updated" notice
-        const APP_VERSION = '2026.10.24-2';
-        const APP_NEWS = ['Planet Quiz is a little easier: clearer gaps between the two countries, a clear winner in top-of-four, wider estimate tolerance, and mixed options in capitals and flags. Plus the new Emoji Country game.', 'Το Κουίζ Πλανήτη έγινε λίγο πιο εύκολο: καθαρότερες διαφορές ανάμεσα στις δύο χώρες, ξεκάθαρος νικητής στον πρώτο από τέσσερις, μεγαλύτερη ανοχή στην εκτίμηση και ανάμεικτες επιλογές σε πρωτεύουσες και σημαίες. Και το νέο παιχνίδι Χώρα με Emoji.'];
+        const APP_VERSION = '2026.10.24-3';
+        const APP_NEWS = ['Planet Quiz: the slider questions are more forgiving, within ±25 on a 0–100 scale now counts as correct.', 'Κουίζ Πλανήτη: οι ερωτήσεις με το ρυθμιστή είναι πιο επιεικείς, ±25 σε κλίμακα 0–100 μετράει πλέον ως σωστό.'];
         function updateBanner(text, buttonLabel, onClick) {
             const stack = document.getElementById('toast-stack'); if (!stack) return;
             const el = document.createElement('div');

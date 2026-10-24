@@ -1,6 +1,6 @@
 // EarthVault service worker: network-first for the page so updates and fresh data win,
 // cache fallback for offline. Bump CACHE_NAME whenever the shell changes.
-const CACHE_NAME = 'earthvault-v18';
+const CACHE_NAME = 'earthvault-v19';
 const ASSETS = [
   'index.html',
   'manifest.json',
