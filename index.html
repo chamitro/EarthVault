@@ -1872,16 +1872,43 @@
         }
 
         // Fetch JSON with a hard timeout so a stalled request can never leave the app stuck on "Working".
+        // Stored copies of the slow yearly sources (World Bank, Our World in Data, NOAA, OECD, Wikidata). When a call fails or
+        // times out, the last copy this browser saved (up to 7 days old) is shown with a notice, instead of an error.
+        const KEEP_HOSTS = /worldbank\.org$|ourworldindata\.org$|global-warming\.org$|gml\.noaa\.gov$|sdmx\.oecd\.org$|query\.wikidata\.org$/;
+        const keepKey = url => 'ev_keep_' + url.replace(/^https?:\/\//, '').slice(0, 180);
+        function keepPut(url, data) {
+            if (!KEEP_HOSTS.test(url.split('/')[2])) return;
+            try {
+                const body = JSON.stringify({ t: Date.now(), data }); if (body.length > 400000) return; // the big datasets have their own stores
+                let idx = []; try { idx = JSON.parse(localStorage.getItem('ev_keep_index') || '[]'); } catch (e) {}
+                const k = keepKey(url); idx = idx.filter(x => x !== k); idx.push(k);
+                while (idx.length > 80) localStorage.removeItem(idx.shift());
+                try { localStorage.setItem(k, body); }
+                catch (e) { idx.splice(0, Math.ceil(idx.length / 2)).forEach(x => localStorage.removeItem(x)); try { localStorage.setItem(k, body); } catch (e2) { return; } } // storage full: drop the oldest half
+                localStorage.setItem('ev_keep_index', JSON.stringify(idx));
+            } catch (e) {}
+        }
+        function keepGet(url, maxAgeMs = 7 * 24 * 3600 * 1000) {
+            try { const raw = localStorage.getItem(keepKey(url)); if (!raw) return null; const o = JSON.parse(raw); return o && Date.now() - o.t <= maxAgeMs ? o : null; } catch (e) { return null; }
+        }
+        const keepNoticed = {};
+        function keepNotice(url, t, why) {
+            const host = url.split('/')[2]; console.warn('Using the stored copy from', host, '-', why);
+            if (keepNoticed[host]) return; keepNoticed[host] = true;
+            const h = Math.round((Date.now() - t) / 3600000), age = h < 1 ? L('less than an hour ago', 'πριν από λιγότερο από μία ώρα') : h < 48 ? `${h} ${L('h ago', 'ώρες πριν')}` : `${Math.round(h / 24)} ${L('days ago', 'μέρες πριν')}`;
+            try { showToast(`${host} ${L('is slow right now; showing the figures saved', 'αργεί αυτή τη στιγμή· εμφανίζονται τα στοιχεία που αποθηκεύτηκαν')} ${age}.`, 'warn', 7000); } catch (e) {}
+        }
         async function fetchJson(url, ms = 40000) {
             const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
             const timer = ctrl ? setTimeout(() => ctrl.abort(), ms) : null;
             try {
                 const res = await fetch(url, ctrl ? { signal: ctrl.signal } : undefined);
                 if (!res.ok) throw new Error(`Data service replied ${res.status} (${url.split('/')[2]})`);
-                return await res.json();
+                const data = await res.json(); keepPut(url, data); return data;
             } catch (e) {
-                if (e && e.name === 'AbortError') throw new Error(`No reply from ${url.split('/')[2]} after ${Math.round(ms / 1000)}s. Please try again.`);
-                throw e;
+                const why = e && e.name === 'AbortError' ? `No reply from ${url.split('/')[2]} after ${Math.round(ms / 1000)}s. Please try again.` : (e && e.message) || String(e);
+                const kept = keepGet(url); if (kept) { keepNotice(url, kept.t, why); return kept.data; }
+                throw new Error(why);
             } finally { if (timer) clearTimeout(timer); }
         }
         // Surface any uncaught error as a toast so failures are never silent.
@@ -4305,9 +4332,13 @@ function displayMovies(data, query) {
             catch (e) {
                 if (hit) { console.warn('Using an older cached copy from', host, '-', e.message); return hit.data; }
                 try { data = await attempt(slow ? 60000 : 25000); }
-                catch (e2) { throw new Error(e2 && e2.name === 'AbortError' ? `${host} did not answer in time` : (e2 && e2.message) || String(e2)); }
+                catch (e2) {
+                    const why = e2 && e2.name === 'AbortError' ? `${host} did not answer in time` : (e2 && e2.message) || String(e2);
+                    const kept = keepGet(url); if (kept) { keepNotice(url, kept.t, why); liveCache[url] = { t: Date.now() - ttlMs + 5 * 60 * 1000, data: kept.data }; return kept.data; } // retried after 5 minutes
+                    throw new Error(why);
+                }
             }
-            liveCache[url] = { t: Date.now(), data };
+            liveCache[url] = { t: Date.now(), data }; keepPut(url, data);
             return data;
         }
         function timeAgo(ms) {
@@ -6315,10 +6346,10 @@ function displayMovies(data, query) {
         async function cachedText(url, ttlMs = 24 * 3600 * 1000) {
             const hit = liveCache[url];
             if (hit && Date.now() - hit.t < ttlMs) return hit.data;
-            const res = await fetch(url);
-            if (!res.ok) throw new Error(`${res.status} from ${url.split('/')[2]}`);
-            const data = await res.text();
-            liveCache[url] = { t: Date.now(), data };
+            let data;
+            try { const res = await fetch(url); if (!res.ok) throw new Error(`${res.status} from ${url.split('/')[2]}`); data = await res.text(); }
+            catch (e) { const kept = keepGet(url); if (kept) { keepNotice(url, kept.t, e.message); return kept.data; } throw e; }
+            liveCache[url] = { t: Date.now(), data }; keepPut(url, data);
             return data;
         }
         async function simpleShare(text) {
@@ -8615,7 +8646,7 @@ function displayMovies(data, query) {
         const isIOS = () => /iPhone|iPad|iPod/i.test(navigator.userAgent) && !window.MSStream;
         function showInstallButtons(show) { document.querySelectorAll('.install-btn').forEach(b => b.classList.toggle('hidden', !show)); }
         // Bump APP_VERSION and APP_NEWS with every release: returning visitors and installed apps get a one-time "updated" notice
-        const APP_VERSION = '2026.10.24-1';
+        const APP_VERSION = '2026.10.24-2';
         const APP_NEWS = ['Planet Quiz is a little easier: clearer gaps between the two countries, a clear winner in top-of-four, wider estimate tolerance, and mixed options in capitals and flags. Plus the new Emoji Country game.', 'Το Κουίζ Πλανήτη έγινε λίγο πιο εύκολο: καθαρότερες διαφορές ανάμεσα στις δύο χώρες, ξεκάθαρος νικητής στον πρώτο από τέσσερις, μεγαλύτερη ανοχή στην εκτίμηση και ανάμεικτες επιλογές σε πρωτεύουσες και σημαίες. Και το νέο παιχνίδι Χώρα με Emoji.'];
         function updateBanner(text, buttonLabel, onClick) {
             const stack = document.getElementById('toast-stack'); if (!stack) return;
