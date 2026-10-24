@@ -858,7 +858,7 @@
                                 <span>🌡️</span> Hot or Not (live duel)
                             </button>
                             <button data-vault="flags" role="menuitem" onclick="selectMode('flags')" class="flex items-center gap-3 px-4 py-2.5 text-[10px] font-bold text-slate-300 hover:text-yellow-400 hover:bg-white/5 rounded-xl transition-all">
-                                <span>🚩</span> Flag Flash (30 s)
+                                <span>🚩</span> Flag Flash
                             </button>
                             <button data-vault="factfiction" role="menuitem" onclick="selectMode('factfiction')" class="flex items-center gap-3 px-4 py-2.5 text-[10px] font-bold text-slate-300 hover:text-lime-400 hover:bg-white/5 rounded-xl transition-all">
                                 <span>🧠</span> Fact or Fiction
@@ -6131,7 +6131,7 @@ function displayMovies(data, query) {
         }
 
         // ---- Flag Flash: 60 seconds, as many flags as you can ----
-        const FLAGS = { timer: null, timeLeft: 30, score: 0, asked: 0, best: lsGet('ev_flags_best', 0), pool: [], current: null };
+        const FLAGS = { timer: null, timeLeft: 60, score: 0, asked: 0, best: lsGet('ev_flags_best', 0), pool: [], current: null };
         function stopFlags() { if (FLAGS.timer) { clearInterval(FLAGS.timer); FLAGS.timer = null; } }
         async function loadFlags() {
             const live = document.getElementById('live-section');
@@ -8648,7 +8648,7 @@ function displayMovies(data, query) {
         const isIOS = () => /iPhone|iPad|iPod/i.test(navigator.userAgent) && !window.MSStream;
         function showInstallButtons(show) { document.querySelectorAll('.install-btn').forEach(b => b.classList.toggle('hidden', !show)); }
         // Bump APP_VERSION and APP_NEWS with every release: returning visitors and installed apps get a one-time "updated" notice
-        const APP_VERSION = '2026.10.24-5';
+        const APP_VERSION = '2026.10.24-6';
         const APP_NEWS = ['Planet Quiz and Hot or Not: one skip per streak. Flag Flash runs for 60 seconds.', 'Κουίζ Πλανήτη και Ζεστό ή Κρύο: μία παράλειψη ανά σερί. Το Σημαίες Αστραπή διαρκεί 60 δευτερόλεπτα.'];
         function updateBanner(text, buttonLabel, onClick) {
             const stack = document.getElementById('toast-stack'); if (!stack) return;
