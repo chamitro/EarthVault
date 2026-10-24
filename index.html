@@ -5341,7 +5341,7 @@ function displayMovies(data, query) {
         }
 
         // ---- Planet Quiz: higher or lower, powered by live World Bank numbers ----
-        const QUIZ = { score: 0, streak: 0, best: 0, asked: 0, current: null, lastKind: null, data: null, life: true };
+        const QUIZ = { score: 0, streak: 0, best: 0, asked: 0, current: null, lastKind: null, data: null, life: true, skip: true }; // one skip per streak
         try { QUIZ.best = parseInt(localStorage.getItem('ev_quiz_best') || '0', 10) || 0; } catch (e) {}
         const QUIZ_KINDS = {
             higher:   { label: ['Higher or lower', 'Περισσότερο ή λιγότερο'], live: false, data: true },
@@ -5542,7 +5542,7 @@ function displayMovies(data, query) {
         ${q.hint ? `<div class="text-center mt-4"><button type="button" id="quiz-hint-btn" onclick="quizHint()" class="px-4 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-xs font-bold text-amber-300">💡 ${L('Hint', 'Βοήθεια')}</button><div id="quiz-hint" class="hidden max-w-xl mx-auto mt-3 px-4 py-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-100 leading-relaxed">${q.hint}</div></div>` : ''}
         <div id="quiz-verdict" class="text-center mt-6 min-h-[2rem]"></div>
         ${chActive('quiz') ? '' : `<div class="flex flex-wrap justify-center gap-3 mt-4">
-            <button type="button" onclick="runLiveMode('quiz')" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-300">Skip</button>
+            <button type="button" onclick="quizSkip()" ${QUIZ.skip ? '' : 'disabled'} class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-300 ${QUIZ.skip ? '' : 'opacity-40 cursor-not-allowed'}">${QUIZ.skip ? L('Skip (1 per streak)', 'Παράλειψη (1 ανά σερί)') : L('No skip left', 'Χωρίς παράλειψη')}</button>
             <button type="button" onclick="resetQuiz()" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-300">Reset score</button>
             <button type="button" onclick="shareQuiz()" class="px-4 py-2 rounded-xl bg-pink-600/80 hover:bg-pink-500 text-xs font-bold text-white">Share score</button>
             ${chButton('quiz')}
@@ -5563,7 +5563,7 @@ function displayMovies(data, query) {
             QUIZ.asked++;
             const saved = !correct && QUIZ.life; // every first mistake is forgiven, the second ends the streak
             const endedStreak = correct || saved ? 0 : QUIZ.streak;
-            if (correct) { QUIZ.score++; QUIZ.streak++; } else if (saved) QUIZ.life = false; else { QUIZ.streak = 0; QUIZ.life = true; }
+            if (correct) { QUIZ.score++; QUIZ.streak++; } else if (saved) QUIZ.life = false; else { QUIZ.streak = 0; QUIZ.life = true; QUIZ.skip = true; }
             let newBest = false;
             if (QUIZ.streak > QUIZ.best) { QUIZ.best = QUIZ.streak; newBest = QUIZ.best >= 3; try { localStorage.setItem('ev_quiz_best', String(QUIZ.best)); } catch (e) {} }
             document.querySelectorAll('#live-section .quiz-choice').forEach(btn => {
@@ -5592,7 +5592,9 @@ function displayMovies(data, query) {
             if (correct && [3, 5, 10, 15, 20].includes(QUIZ.streak)) { burst({ particleCount: 60 + QUIZ.streak * 10 }); showToast(`🔥 ${QUIZ.streak} in a row!`, 'success', 3000); }
             else if (newBest) { burst({ particleCount: 80, spread: 100 }); showToast(`🏆 New best streak: ${QUIZ.best}`, 'success', 3000); }
         }
-        function resetQuiz() { QUIZ.score = 0; QUIZ.streak = 0; QUIZ.asked = 0; QUIZ.life = true; runLiveMode('quiz'); }
+        function resetQuiz() { QUIZ.score = 0; QUIZ.streak = 0; QUIZ.asked = 0; QUIZ.life = true; QUIZ.skip = true; runLiveMode('quiz'); }
+        function quizSkip() { if (!QUIZ.skip) return; QUIZ.skip = false; runLiveMode('quiz'); }
+        function hotSkip() { if (!HOT.skip) return; HOT.skip = false; runLiveMode('hotornot'); }
         async function shareQuiz() {
             const text = `I scored ${QUIZ.score}/${QUIZ.asked} on the EarthVault Planet Quiz (best streak ${QUIZ.best}). Can you beat me? 🌍`;
             try {
@@ -6082,7 +6084,7 @@ function displayMovies(data, query) {
         }
 
         // ---- Hot or Not: which city is warmer right now? ----
-        const HOT = { score: 0, streak: 0, best: lsGet('ev_hot_best', 0), current: null, life: true };
+        const HOT = { score: 0, streak: 0, best: lsGet('ev_hot_best', 0), current: null, life: true, skip: true };
         async function loadHotOrNot() {
             const live = document.getElementById('live-section');
             const pick = chPick('hotornot');
@@ -6104,7 +6106,7 @@ function displayMovies(data, query) {
         <h3 class="text-center text-xl md:text-3xl font-black text-white mb-6 md:mb-8">Which city is <span class="text-orange-300">warmer</span> at this moment?</h3>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 max-w-2xl mx-auto">${card('a', HOT.current.a)}${card('b', HOT.current.b)}</div>
         <div id="hot-verdict" class="text-center mt-6 min-h-[2rem]"></div>
-        ${chActive('hotornot') ? '' : `<div class="flex flex-wrap justify-center gap-3 mt-4"><button type="button" onclick="runLiveMode('hotornot')" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-300">Skip</button><button type="button" onclick="HOT.score=0;HOT.streak=0;runLiveMode('hotornot')" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-300">Reset score</button>${chButton('hotornot')}</div>`}
+        ${chActive('hotornot') ? '' : `<div class="flex flex-wrap justify-center gap-3 mt-4"><button type="button" onclick="hotSkip()" ${HOT.skip ? '' : 'disabled'} class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-300 ${HOT.skip ? '' : 'opacity-40 cursor-not-allowed'}">${HOT.skip ? L('Skip (1 per streak)', 'Παράλειψη (1 ανά σερί)') : L('No skip left', 'Χωρίς παράλειψη')}</button><button type="button" onclick="HOT.score=0;HOT.streak=0;HOT.life=true;HOT.skip=true;runLiveMode('hotornot')" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-300">Reset score</button>${chButton('hotornot')}</div>`}
         <p class="text-center text-[10px] text-slate-500 mt-5">Temperatures are live from Open-Meteo, so the answer changes through the day.</p>
     </div>`;
         }
@@ -6115,7 +6117,7 @@ function displayMovies(data, query) {
             const warmer = ta >= tb ? 'a' : 'b', correct = side === warmer;
             const saved = !correct && HOT.life;
             const endedStreak = correct || saved ? 0 : HOT.streak;
-            if (correct) { HOT.score++; HOT.streak++; } else if (saved) HOT.life = false; else { HOT.streak = 0; HOT.life = true; }
+            if (correct) { HOT.score++; HOT.streak++; } else if (saved) HOT.life = false; else { HOT.streak = 0; HOT.life = true; HOT.skip = true; }
             let newBest = false; if (HOT.streak > HOT.best) { HOT.best = HOT.streak; newBest = HOT.best >= 3; lsSet('ev_hot_best', HOT.best); }
             ['a', 'b'].forEach(s => { const it = q[s], v = document.getElementById(`hot-val-${s}`), btn = document.getElementById(`hot-${s}`); if (v) { v.textContent = `${it.wx.current.temperature_2m.toFixed(1)}°C ${WX_EMOJI(it.wx.current.weather_code)}`; v.classList.remove('opacity-0'); } if (btn) { btn.disabled = true; btn.classList.add(s === warmer ? 'border-emerald-400/70' : 'border-rose-500/40'); if (s === side) btn.classList.add(correct ? 'bg-emerald-500/10' : 'bg-rose-500/10'); } });
             const w = q[warmer], l = q[warmer === 'a' ? 'b' : 'a'];
@@ -6228,8 +6230,8 @@ function displayMovies(data, query) {
             CH.seed = opts.seed || Math.random().toString(36).slice(2, 8);
             CH.by = opts.by || ''; CH.theirScore = (opts.theirScore === undefined || opts.theirScore === null) ? null : opts.theirScore;
             CH.rng = seededRandom(chSeedKey());
-            if (game === 'quiz') { QUIZ.score = 0; QUIZ.streak = 0; QUIZ.asked = 0; QUIZ.lastKind = null; QUIZ.life = true; }
-            if (game === 'hotornot') { HOT.score = 0; HOT.streak = 0; HOT.life = true; }
+            if (game === 'quiz') { QUIZ.score = 0; QUIZ.streak = 0; QUIZ.asked = 0; QUIZ.lastKind = null; QUIZ.life = true; QUIZ.skip = true; }
+            if (game === 'hotornot') { HOT.score = 0; HOT.streak = 0; HOT.life = true; HOT.skip = true; }
             if (currentMode !== game) selectMode(game); else runLiveMode(game);
             window.scrollTo({ top: 0, behavior: 'smooth' });
             if (CH.n && CH.theirScore === null) showToast(`⚔️ ${L(`Challenge round: ${CH.n} questions. Whoever gets your link plays the same ones.`, `Γύρος πρόκλησης: ${CH.n} ερωτήσεις. Όποιος πάρει τον σύνδεσμό σου παίζει τις ίδιες.`)}`, 'info', 4500);
@@ -8646,8 +8648,8 @@ function displayMovies(data, query) {
         const isIOS = () => /iPhone|iPad|iPod/i.test(navigator.userAgent) && !window.MSStream;
         function showInstallButtons(show) { document.querySelectorAll('.install-btn').forEach(b => b.classList.toggle('hidden', !show)); }
         // Bump APP_VERSION and APP_NEWS with every release: returning visitors and installed apps get a one-time "updated" notice
-        const APP_VERSION = '2026.10.24-4';
-        const APP_NEWS = ['Flag Flash now runs for 60 seconds. Planet Quiz slider questions are more forgiving (±25 on a 0–100 scale).', 'Το Σημαίες Αστραπή διαρκεί πλέον 60 δευτερόλεπτα. Οι ερωτήσεις με ρυθμιστή στο Κουίζ Πλανήτη είναι πιο επιεικείς (±25 σε κλίμακα 0–100).'];
+        const APP_VERSION = '2026.10.24-5';
+        const APP_NEWS = ['Planet Quiz and Hot or Not: one skip per streak. Flag Flash runs for 60 seconds.', 'Κουίζ Πλανήτη και Ζεστό ή Κρύο: μία παράλειψη ανά σερί. Το Σημαίες Αστραπή διαρκεί 60 δευτερόλεπτα.'];
         function updateBanner(text, buttonLabel, onClick) {
             const stack = document.getElementById('toast-stack'); if (!stack) return;
             const el = document.createElement('div');
